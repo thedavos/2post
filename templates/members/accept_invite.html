@@ -1,9 +1,11 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Join {{ invitation.organization.name }} - 2post</title>
+    {% include "partials/_brand_head.html" with brand_og_title="Join · 2post" %}
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -25,7 +27,13 @@
             width: 100%;
             box-shadow: 0 1px 3px rgba(0,0,0,0.04);
         }
-        .logo { font-size: 18px; font-weight: 800; color: #EA580C; margin-bottom: 24px; letter-spacing: -0.02em; }
+        .logo {
+            display: block;
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+            margin-bottom: 24px;
+        }
         h1 { font-size: 20px; font-weight: 700; margin-bottom: 8px; color: #1C1917; }
         .subtitle { font-size: 15px; color: #78716C; line-height: 1.6; margin-bottom: 24px; }
         .info-box {
@@ -79,7 +87,7 @@
 </head>
 <body>
     <div class="card">
-        <div class="logo">2post</div>
+        <img class="logo" src="{% static 'img/2post-logo.webp' %}" alt="2post">
 
         <h1>Join {{ invitation.organization.name }}</h1>
         <p class="subtitle">

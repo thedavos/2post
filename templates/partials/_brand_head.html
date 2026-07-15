@@ -1,0 +1,18 @@
+{% load static %}
+<link rel="icon" href="{% static 'favicon/favicon.ico' %}" sizes="any">
+<link rel="icon" type="image/svg+xml" href="{% static 'favicon/favicon.svg' %}">
+<link rel="icon" type="image/png" sizes="96x96" href="{% static 'favicon/favicon-96x96.png' %}">
+<link rel="apple-touch-icon" sizes="180x180" href="{% static 'favicon/apple-touch-icon.png' %}">
+<link rel="manifest" href="{% static 'favicon/site.webmanifest' %}">
+<meta name="theme-color" content="#000000">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="2post">
+<meta property="og:title" content="{% firstof brand_og_title "2post" %}">
+<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'img/2post-og.jpg' %}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="2post">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{% firstof brand_og_title "2post" %}">
+<meta name="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'img/2post-og.jpg' %}">
+<meta name="twitter:image:alt" content="2post">

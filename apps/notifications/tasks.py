@@ -44,7 +44,7 @@ def send_daily_digests():
             "notifications": notifications,
             "user": user,
             "date": timezone.now(),
-            "app_url": getattr(settings, "APP_URL", "http://localhost:8000"),
+            "app_url": getattr(settings, "APP_URL", "http://localhost:8000").rstrip("/"),
         }
 
         try:
