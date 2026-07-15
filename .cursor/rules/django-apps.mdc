@@ -1,0 +1,14 @@
+---
+description: Django app structure, models, and testing conventions
+globs: apps/**/*.py
+alwaysApply: false
+---
+
+# Django apps
+
+- Domain logic lives under `apps/<domain>/` (models, views, services, tasks, tests). Shared helpers belong in `apps/common/`.
+- Prefer `OrgScopedModel` / `WorkspaceScopedModel` (or managers) for tenant-owned data.
+- Background work: `@background` tasks under `tasks.py`; document cadence if adding periodic jobs.
+- Migrations: generate with `makemigrations`; do not hand-edit generated migrations unless fixing a known issue. Ruff excludes `*/migrations/*`.
+- Colocate tests in `apps/<domain>/tests/` (or `tests.py`). Use `config.settings.test` via pytest.
+- Public HTTP API is Django Ninja under `apps/api/`; MCP tools under `apps/mcp/` must reuse the same permission checks.
