@@ -17,7 +17,6 @@
             --landing-warm: #F7F6F2;
             --landing-cream: #FFF7ED;
             --landing-dark: #1C1917;
-            /* Bluesky brand blue, the single cool supporting accent */
             --landing-cool: #1185FE;
             --landing-ease: cubic-bezier(0.16, 1, 0.3, 1);
             --space-1: 4px;
@@ -35,8 +34,15 @@
             background: var(--landing-warm);
             color: var(--text-primary);
             font-family: var(--font-body);
+            font-synthesis: none;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
             overflow-x: clip;
         }
+        .landing-stack-sm { margin-top: var(--space-5); }
+        .landing-stack-md { margin-top: var(--space-6); }
+        .landing-stack-lg { margin-top: var(--space-7); }
+        .landing-stack-xl { margin-top: var(--space-8); }
         .landing-page a { text-decoration: none; }
         .landing-container {
             width: min(100%, 1440px);
@@ -50,17 +56,18 @@
             font-size: 0.75rem;
             font-weight: 500;
             letter-spacing: 0.07em;
-            color: var(--text-tertiary);
-            margin: 0 0 var(--space-3);
+            color: var(--text-secondary);
+            margin: 0 0 var(--space-2);
         }
         .landing-eyebrow.is-caps { text-transform: uppercase; }
         .landing-display {
             font-family: var(--font-display);
             font-weight: 400;
             letter-spacing: -0.035em;
-            line-height: 1;
+            line-height: 1.1;
             color: var(--text-primary);
             margin: 0;
+            text-wrap: balance;
         }
         .landing-display-xl {
             font-size: 2.75rem;
@@ -79,18 +86,25 @@
         @media (min-width: 1024px) {
             .landing-display-lg { font-size: 3rem; }
         }
+        .landing-display-md {
+            font-size: 2rem;
+            letter-spacing: -0.025em;
+            line-height: 1.1;
+        }
         .landing-body {
             font-size: 1.125rem;
             line-height: 1.6;
             color: var(--text-secondary);
             max-width: 60ch;
             margin: 0;
+            text-wrap: pretty;
         }
         .landing-body-sm {
             font-size: 1rem;
             line-height: 1.6;
             color: var(--text-secondary);
             margin: 0;
+            text-wrap: pretty;
         }
         .landing-support {
             font-size: 1.5rem;
@@ -116,7 +130,7 @@
             transition: transform 200ms var(--landing-ease), box-shadow 200ms var(--landing-ease), background 200ms var(--landing-ease), color 200ms var(--landing-ease), border-color 200ms var(--landing-ease);
         }
         .landing-cta:active {
-            transform: translateY(0);
+            transform: scale(0.96);
             transition-duration: 150ms;
         }
         .landing-cta-primary {
@@ -246,7 +260,7 @@
             max-width: 36rem;
         }
         .landing-hero-sub {
-            margin-top: var(--space-4);
+            margin-top: var(--space-5);
             max-width: 32rem;
         }
         .landing-hero-ctas {
@@ -266,8 +280,9 @@
             height: 13.75rem;
             object-fit: cover;
             object-position: left top;
-            border: 1px solid var(--neutral-300);
-            border-right: none;
+            outline: 1px solid oklch(0 0 0 / 0.1);
+            outline-offset: -1px;
+            border: none;
             border-radius: var(--landing-radius-lg) 0 0 var(--landing-radius-lg);
             box-shadow: 0 18px 40px rgba(28, 25, 23, 0.12);
             background: var(--landing-cream);
@@ -282,7 +297,7 @@
         }
         @media (min-width: 1024px) {
             .landing-hero {
-                padding: var(--space-7) 0 var(--space-8);
+                padding: var(--space-8) 0;
                 min-height: calc(100svh - 4.5rem);
                 display: flex;
                 align-items: center;
@@ -308,7 +323,9 @@
                 max-width: none;
                 height: auto;
                 object-fit: contain;
-                border-right: 1px solid var(--neutral-300);
+                outline: 1px solid oklch(0 0 0 / 0.1);
+                outline-offset: -1px;
+                border: none;
                 border-radius: var(--landing-radius-lg) 0 0 var(--landing-radius-lg);
             }
             .landing-hero-caption {
@@ -334,19 +351,17 @@
             .landing-problem { padding: var(--space-9) 0; }
             .landing-problem-grid {
                 grid-template-columns: repeat(12, minmax(0, 1fr));
-                gap: var(--space-6);
+                gap: var(--space-8);
+                align-items: start;
             }
             .landing-problem-block { grid-column: 2 / span 5; }
-            .landing-promise-block {
-                grid-column: 7 / span 5;
-                margin-top: var(--space-8);
-            }
+            .landing-promise-block { grid-column: 7 / span 5; }
         }
         .landing-steps {
             display: grid;
-            gap: var(--space-6);
+            gap: var(--space-7);
             max-width: 64rem;
-            margin-top: var(--space-8);
+            margin-top: var(--space-9);
         }
         .landing-step-canvas {
             display: flex;
@@ -378,7 +393,7 @@
             border: 1px solid var(--neutral-200);
             border-radius: var(--landing-radius-sm);
             padding: var(--space-2) var(--space-3);
-            font-size: 0.8125rem;
+            font-size: 0.875rem;
             font-weight: 500;
             color: var(--text-primary);
             box-shadow: var(--shadow-sm);
@@ -417,7 +432,7 @@
         }
         .landing-step-title {
             margin: var(--space-4) 0 0;
-            font-size: 0.9375rem;
+            font-size: 0.875rem;
             font-weight: 500;
             color: var(--text-primary);
         }
@@ -430,25 +445,22 @@
         }
         @media (min-width: 768px) {
             .landing-steps { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-            .landing-step:nth-child(2) { margin-top: var(--space-5); }
-            .landing-step:nth-child(3) { margin-top: var(--space-7); }
-        }
-        @media (min-width: 1024px) {
-            .landing-steps { margin-top: var(--space-9); }
         }
         .landing-tour-compose {
             background: var(--landing-cream);
             padding: var(--space-8) 0;
         }
         .landing-tour-compose .landing-container > .landing-body {
-            margin-top: var(--space-4);
+            margin-top: var(--space-5);
         }
         .landing-tour-compose .landing-shot {
-            margin-top: var(--space-7);
+            margin-top: var(--space-8);
             width: 100%;
             min-width: 0;
             border-radius: var(--landing-radius-lg);
-            border: 1px solid var(--neutral-300);
+            outline: 1px solid oklch(0 0 0 / 0.1);
+            outline-offset: -1px;
+            border: none;
             box-shadow: var(--shadow-lg);
             display: block;
         }
@@ -477,7 +489,7 @@
             align-items: center;
             justify-content: space-between;
             gap: var(--space-4);
-            margin-bottom: var(--space-4);
+            margin-bottom: var(--space-5);
             padding-bottom: var(--space-4);
             border-bottom: 1px solid var(--neutral-200);
         }
@@ -493,7 +505,7 @@
             padding: var(--space-1) var(--space-3);
         }
         .landing-portal-status {
-            font-size: 0.8125rem;
+            font-size: 0.875rem;
             color: var(--text-tertiary);
         }
         .landing-portal-title {
@@ -503,7 +515,7 @@
             color: var(--text-primary);
         }
         .landing-portal-copy {
-            font-size: 0.9375rem;
+            font-size: 1rem;
             line-height: 1.55;
             color: var(--text-secondary);
             margin: 0 0 var(--space-4);
@@ -514,7 +526,7 @@
             gap: var(--space-2);
         }
         .landing-portal-btn {
-            font-size: 0.8125rem;
+            font-size: 0.875rem;
             font-weight: 500;
             padding: var(--space-2) var(--space-3);
             border-radius: var(--landing-radius-sm);
@@ -544,14 +556,16 @@
             text-align: center;
         }
         .landing-tour-results-copy .landing-body {
-            margin: var(--space-4) auto 0;
+            margin: var(--space-5) auto 0;
         }
         .landing-tour-results .landing-shot {
             display: block;
             width: min(100%, 1200px);
             margin-inline: auto;
             border-radius: var(--landing-radius-lg);
-            border: 1px solid var(--neutral-300);
+            outline: 1px solid oklch(0 0 0 / 0.1);
+            outline-offset: -1px;
+            border: none;
             box-shadow: var(--shadow-lg);
             aspect-ratio: 16 / 9;
             object-fit: cover;
@@ -568,35 +582,20 @@
             padding: var(--space-8) 0;
         }
         .landing-platforms-list {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: var(--space-3) var(--space-4);
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-4);
             margin: var(--space-6) 0 var(--space-5);
             padding: 0;
             list-style: none;
         }
         .landing-platforms-list li {
-            font-size: 0.9375rem;
+            font-size: 0.875rem;
             font-weight: 500;
-            color: var(--text-primary);
-            padding: var(--space-3) var(--space-4);
-            border: 1px solid var(--neutral-200);
-            border-radius: var(--landing-radius-sm);
-            background: color-mix(in srgb, var(--surface-0) 70%, transparent);
-        }
-        @media (min-width: 768px) {
-            .landing-platforms-list {
-                grid-template-columns: repeat(4, minmax(0, 1fr));
-            }
-        }
-        @media (min-width: 1024px) {
-            .landing-platforms { padding: var(--space-9) 0; }
-            .landing-platforms-list {
-                grid-template-columns: repeat(6, minmax(0, 1fr));
-            }
-            .landing-platforms-list li:last-child {
-                grid-column: span 2;
-            }
+            color: var(--text-secondary);
+            padding: 0;
+            border: none;
+            background: none;
         }
         .landing-platforms-cta {
             display: inline-flex;
@@ -606,6 +605,9 @@
             color: var(--brand-600);
         }
         .landing-platforms-cta:hover { color: var(--brand-700); }
+        @media (min-width: 1024px) {
+            .landing-platforms { padding: var(--space-9) 0; }
+        }
         .landing-ownership {
             background: var(--landing-dark);
             color: #fff;
@@ -616,6 +618,7 @@
         .landing-ownership .landing-support { color: #fff; }
         .landing-ownership .landing-body,
         .landing-ownership .landing-body-sm { color: rgba(255, 255, 255, 0.86); }
+        .landing-ownership .landing-body-sm.is-muted { color: var(--neutral-300); }
         .landing-ownership-grid {
             display: grid;
             gap: var(--space-6);
@@ -630,6 +633,7 @@
             gap: var(--space-3);
             margin-top: var(--space-6);
         }
+        .landing-ownership-ctas.is-flush { margin-top: 0; }
         .landing-ownership .landing-cta-secondary {
             background: transparent;
             color: #fff;
@@ -708,22 +712,19 @@
             background: var(--landing-cream);
             padding: var(--space-8) 0;
         }
-        .landing-agencies-grid {
+        .landing-agencies-actions {
             display: grid;
-            gap: var(--space-6);
-            margin-top: var(--space-7);
-            align-items: start;
+            gap: var(--space-4);
+            width: fit-content;
         }
         .landing-agencies .landing-shot {
             width: 100%;
             border-radius: var(--landing-radius-lg);
-            border: 1px solid var(--neutral-300);
+            outline: 1px solid oklch(0 0 0 / 0.1);
+            outline-offset: -1px;
+            border: none;
             box-shadow: var(--shadow-md);
             display: block;
-        }
-        .landing-agencies-side {
-            display: grid;
-            gap: var(--space-4);
         }
         .landing-agencies-note {
             font-size: 0.875rem;
@@ -732,10 +733,6 @@
         }
         @media (min-width: 1024px) {
             .landing-agencies { padding: var(--space-9) 0; }
-            .landing-agencies-grid {
-                grid-template-columns: 1.6fr 0.8fr;
-                gap: var(--space-6);
-            }
         }
         .landing-closing {
             background: var(--landing-warm);
@@ -758,7 +755,6 @@
         }
         @media (min-width: 1024px) {
             .landing-closing { padding: var(--space-9) 0; }
-            .landing-closing-copy { width: 58%; max-width: none; }
         }
         .landing-footer {
             background: var(--surface-0);
@@ -906,11 +902,11 @@
                 <div class="landing-problem-block">
                     <p class="landing-eyebrow">Demasiadas cuentas. Demasiadas pestañas.</p>
                     <h2 class="landing-display landing-display-lg">Tu operación social no debería crecer al ritmo de tu factura.</h2>
-                    <p class="landing-body" style="margin-top:var(--space-4);">Cada cliente suma cuentas, aprobaciones, permisos y conversaciones. En muchos SaaS, también suma asientos, canales y funciones bloqueadas por plan.</p>
+                    <p class="landing-body landing-stack-sm">Cada cliente suma cuentas, aprobaciones, permisos y conversaciones. En muchos SaaS, también suma asientos, canales y funciones bloqueadas por plan.</p>
                 </div>
                 <div class="landing-promise-block">
-                    <h2 class="landing-display landing-display-lg">Un solo sistema para tu equipo, tus clientes y tus datos.</h2>
-                    <p class="landing-body" style="margin-top:var(--space-4);">Aloja 2post donde decidas, conecta tus propias apps de desarrollador y administra cada workspace con roles y permisos claros.</p>
+                    <h3 class="landing-support">Un solo sistema para tu equipo, tus clientes y tus datos.</h3>
+                    <p class="landing-body landing-stack-sm">Aloja 2post donde decidas, conecta tus propias apps de desarrollador y administra cada workspace con roles y permisos claros.</p>
                 </div>
             </div>
             <div class="landing-steps landing-reveal">
@@ -948,7 +944,7 @@
         <div class="landing-container">
             <p class="landing-eyebrow is-caps">Crear y programar</p>
             <h2 class="landing-display landing-display-lg">Crea una vez. Ajusta cada red.</h2>
-            <p class="landing-body">Escribe el contenido base, adapta texto y medios por plataforma, y programa con el calendario o las colas de publicación.</p>
+            <p class="landing-body landing-stack-sm">Escribe el contenido base, adapta texto y medios por plataforma, y programa con el calendario o las colas de publicación.</p>
             <img class="landing-shot landing-reveal" src="{% static 'img/landing/post-editor.webp' %}" alt="Editor de publicaciones con ajustes específicos por plataforma" width="1440" height="900">
         </div>
     </section>
@@ -959,7 +955,7 @@
             <div>
                 <p class="landing-eyebrow">Aprobaciones</p>
                 <h2 class="landing-display landing-display-lg">Aprueba sin perseguir correos.</h2>
-                <p class="landing-body" style="margin-top:var(--space-4);">Define revisiones internas y envía a cada cliente un enlace seguro para aprobar, rechazar o comentar sin crear una cuenta.</p>
+                <p class="landing-body landing-stack-sm">Define flujos de revisión internos. Los clientes aprueban, rechazan o comentan desde su portal.</p>
             </div>
             <div class="landing-portal landing-reveal" role="img" aria-label="Flujo de aprobación y portal de cliente en 2post">
                 <div class="landing-portal-bar">
@@ -981,11 +977,11 @@
     <section class="landing-tour-results">
         <div class="landing-container">
             <div class="landing-tour-results-copy">
-                <p class="landing-eyebrow">Inbox y analítica</p>
-                <h2 class="landing-display landing-display-lg">Responde y mide desde el mismo lugar.</h2>
-                <p class="landing-body">Reúne conversaciones compatibles en un inbox y consulta métricas de publicaciones y canales obtenidas desde las APIs oficiales.</p>
+                <p class="landing-eyebrow">Analítica</p>
+                <h2 class="landing-display landing-display-lg">Mide lo que publicas en cada canal.</h2>
+                <p class="landing-body">Consulta métricas de publicaciones y canales obtenidas directamente desde las APIs oficiales de cada plataforma.</p>
             </div>
-            <img class="landing-shot landing-reveal" src="{% static 'img/landing/analytics.webp' %}" alt="Inbox unificado y panel de analítica de 2post" width="1440" height="810">
+            <img class="landing-shot landing-reveal" src="{% static 'img/landing/analytics.webp' %}" alt="Panel de analítica de publicaciones y canales en 2post" width="1440" height="810">
         </div>
     </section>
 
@@ -1019,25 +1015,25 @@
                 <div>
                     <p class="landing-eyebrow" id="open-source">Tu stack social, bajo tu control</p>
                     <h2 class="landing-display landing-display-lg">Ejecuta 2post donde tú decidas.</h2>
-                    <p class="landing-body" style="margin-top:var(--space-4);">El código es open source y las integraciones se conectan directamente con las APIs oficiales mediante tus propias credenciales de desarrollador.</p>
-                    <div class="landing-ownership-facts" style="margin-top:var(--space-6);">
+                    <p class="landing-body landing-stack-sm">El código es open source y las integraciones se conectan directamente con las APIs oficiales mediante tus propias credenciales de desarrollador.</p>
+                    <div class="landing-ownership-facts landing-stack-md">
                         <div>
                             <h3 class="landing-support">Sin licencias por asiento</h3>
-                            <p class="landing-body-sm" style="margin-top:var(--space-2);">2post no limita asientos, canales, workspaces ni funciones dentro del software.</p>
+                            <p class="landing-body-sm landing-stack-sm">2post no limita asientos, canales, workspaces ni funciones dentro del software.</p>
                         </div>
                         <div>
                             <h3 class="landing-support">Despliega a tu manera</h3>
-                            <p class="landing-body-sm" style="margin-top:var(--space-2);">Usa Docker en tu servidor o despliega en Railway, Render o Heroku.</p>
-                            <p class="landing-body-sm" style="margin-top:var(--space-3);color:var(--neutral-300);">El self-hosting requiere infraestructura y puede generar costos de servidor, almacenamiento, correo y servicios externos.</p>
+                            <p class="landing-body-sm landing-stack-sm">Usa Docker en tu servidor o despliega en Railway, Render o Heroku.</p>
+                            <p class="landing-body-sm landing-stack-sm is-muted">El self-hosting requiere infraestructura y puede generar costos de servidor, almacenamiento, correo y servicios externos.</p>
                         </div>
                         <div>
                             <h3 class="landing-support">Listo para automatizaciones y agentes</h3>
-                            <p class="landing-body-sm" style="margin-top:var(--space-2);">Usa la API REST o el servidor MCP para consultar cuentas y analítica, administrar medios, y crear o programar publicaciones con permisos controlados.</p>
+                            <p class="landing-body-sm landing-stack-sm">Usa la API REST o el servidor MCP para consultar cuentas y analítica, administrar medios, y crear o programar publicaciones con permisos controlados.</p>
                         </div>
                     </div>
                 </div>
                 <div>
-                    <div class="landing-ownership-ctas" style="margin-top:0;">
+                    <div class="landing-ownership-ctas is-flush">
                         <a class="landing-cta landing-cta-primary" href="https://github.com/thedavos/2post" rel="noopener noreferrer">Explorar el código en GitHub</a>
                         <a class="landing-cta landing-cta-secondary" href="https://github.com/thedavos/2post#readme" rel="noopener noreferrer">Ver guía de self-host</a>
                     </div>
@@ -1046,8 +1042,8 @@
 
             <div class="landing-waitlist" id="waitlist">
                 <p class="landing-eyebrow">2post.app</p>
-                <h3 class="landing-display landing-display-lg" style="font-size:2rem;">¿Prefieres que nos encarguemos del hosting?</h3>
-                <p class="landing-body" style="margin-top:var(--space-4);">La versión alojada todavía no está disponible. Déjanos tu correo y te avisaremos cuando abra.</p>
+                <h3 class="landing-display landing-display-md">¿Prefieres que nos encarguemos del hosting?</h3>
+                <p class="landing-body landing-stack-sm">La versión alojada todavía no está disponible. Déjanos tu correo y te avisaremos cuando abra.</p>
                 <form class="landing-waitlist-form" id="landing-waitlist-form" action="#" method="post">
                     <div>
                         <label for="landing-waitlist-email">Correo electrónico</label>
@@ -1066,14 +1062,12 @@
         <div class="landing-container">
             <p class="landing-eyebrow">Para agencias</p>
             <h2 class="landing-display landing-display-lg">Un workspace por cliente. El equipo en orden.</h2>
-            <p class="landing-body" style="margin-top:var(--space-4);">Separa marcas y cuentas, asigna permisos por rol y permite que cada cliente revise contenido desde su propio portal con enlace mágico.</p>
-            <div class="landing-agencies-grid">
-                <img class="landing-shot landing-reveal" src="{% static 'img/landing/idea-kanban.webp' %}" alt="" width="1440" height="900">
-                <div class="landing-agencies-side">
-                    <a class="landing-cta landing-cta-primary" href="{% url 'account_signup' %}" style="width:fit-content;">Crear cuenta</a>
-                    <p class="landing-agencies-note">Disponible en instalaciones self-host y locales de 2post.</p>
-                </div>
+            <p class="landing-body landing-stack-sm">Separa marcas y cuentas, asigna permisos por rol y permite que cada cliente revise contenido desde su propio portal con enlace mágico.</p>
+            <div class="landing-agencies-actions landing-stack-md">
+                <a class="landing-cta landing-cta-primary" href="{% url 'account_signup' %}" style="width:fit-content;">Crear cuenta</a>
+                <p class="landing-agencies-note">Disponible en instalaciones self-host y locales de 2post.</p>
             </div>
+            <img class="landing-shot landing-reveal landing-stack-lg" src="{% static 'img/landing/idea-kanban.webp' %}" alt="Tablero kanban de ideas y workspaces por cliente en 2post" width="1440" height="900">
         </div>
     </section>
 
@@ -1081,7 +1075,7 @@
     <section class="landing-closing">
         <div class="landing-container landing-closing-copy">
             <h2 class="landing-display landing-display-lg">Haz que tu operación social te pertenezca.</h2>
-            <p class="landing-body" style="margin-top:var(--space-4);">Instala 2post, conecta tus cuentas y administra tu contenido con tus propias reglas.</p>
+            <p class="landing-body landing-stack-sm">Instala 2post, conecta tus cuentas y administra tu contenido con tus propias reglas.</p>
             <div class="landing-closing-ctas">
                 <a class="landing-cta landing-cta-primary" href="{% url 'account_signup' %}">Crear cuenta</a>
                 <a class="landing-cta landing-cta-text" href="https://github.com/thedavos/2post" rel="noopener noreferrer">Ver en GitHub</a>
