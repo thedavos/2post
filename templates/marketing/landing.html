@@ -381,7 +381,7 @@
             display: grid;
             gap: var(--space-7);
             max-width: 64rem;
-            margin-top: var(--space-9);
+            margin-top: var(--space-5);
         }
         .landing-step-canvas {
             display: flex;
@@ -874,6 +874,41 @@
             background: var(--landing-cream);
             padding: var(--space-8) 0;
         }
+        .landing-agencies-intro {
+            max-width: 42rem;
+        }
+        .landing-agencies-layout {
+            display: grid;
+            gap: var(--space-7);
+            margin-top: var(--space-7);
+            align-items: start;
+        }
+        .landing-agency-benefits {
+            display: grid;
+            gap: var(--space-6);
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+        .landing-agency-benefit {
+            display: grid;
+            gap: var(--space-2);
+            max-width: 28rem;
+        }
+        .landing-agency-benefit h3 {
+            margin: 0;
+            font-size: 1.125rem;
+            font-weight: 500;
+            line-height: 1.3;
+            color: var(--text-primary);
+        }
+        .landing-agency-benefit p {
+            margin: 0;
+            font-size: 1rem;
+            line-height: 1.55;
+            color: var(--text-secondary);
+            text-wrap: pretty;
+        }
         .landing-agencies-note {
             font-size: 0.875rem;
             color: var(--text-tertiary);
@@ -890,6 +925,11 @@
         }
         @media (min-width: 1024px) {
             .landing-agencies { padding: var(--space-9) 0; }
+            .landing-agencies-layout {
+                grid-template-columns: 1fr 1.2fr;
+                gap: var(--space-8);
+                align-items: center;
+            }
         }
         .landing-closing {
             background: var(--landing-warm);
@@ -1063,6 +1103,7 @@
                     <p class="landing-body landing-stack-sm">Escribe una vez, adapta por red, pide aprobación y publica. Todo en 2post, con roles claros y datos bajo tu control.</p>
                 </div>
             </div>
+            <p class="landing-eyebrow landing-stack-xl">Cómo funciona</p>
             <div class="landing-steps landing-reveal">
                 <div class="landing-step">
                     <div class="landing-step-canvas is-connect" aria-hidden="true">
@@ -1139,6 +1180,41 @@
         </div>
     </section>
 
+    <!-- agencies -->
+    <section class="landing-agencies" id="agencias">
+        <div class="landing-container">
+            <div class="landing-agencies-intro">
+                <p class="landing-eyebrow">Para agencias</p>
+                <h2 class="landing-display landing-display-lg">Opera varios clientes sin mezclar marcas ni permisos.</h2>
+                <p class="landing-body landing-stack-sm">2post está pensado para equipos que publican por cuenta de terceros: un workspace por cliente, roles claros y un portal para que el cliente apruebe sin crear usuario.</p>
+            </div>
+            <div class="landing-agencies-layout">
+                <ul class="landing-agency-benefits">
+                    <li class="landing-agency-benefit">
+                        <h3>Un workspace por cliente</h3>
+                        <p>Separa marcas, cuentas conectadas, medios y calendario. Cada cliente vive en su propio espacio, sin cruzar contenido ni accesos.</p>
+                    </li>
+                    <li class="landing-agency-benefit">
+                        <h3>Roles y permisos del equipo</h3>
+                        <p>Define quién escribe, quién revisa y quién publica. El control de acceso es por workspace, no un permiso genérico para toda la agencia.</p>
+                    </li>
+                    <li class="landing-agency-benefit">
+                        <h3>Portal de aprobación del cliente</h3>
+                        <p>Envía un enlace seguro. El cliente aprueba, rechaza o comenta sin cuenta en 2post y sin pedirle acceso al dashboard del equipo.</p>
+                    </li>
+                    <li class="landing-agency-benefit">
+                        <h3>Flujo completo por marca</h3>
+                        <p>Composer con overrides por red, colas, calendario, biblioteca de medios y analítica. Todo dentro del workspace del cliente.</p>
+                    </li>
+                </ul>
+                <div>
+                    <img class="landing-shot landing-reveal" src="{% static 'img/landing/idea-kanban.webp' %}" alt="Tablero kanban de ideas y workspaces por cliente en 2post" width="1440" height="900">
+                    <p class="landing-agencies-note landing-stack-sm">Disponible ahora en esta instancia. Pronto también en la nube, en 2post.app.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- platforms -->
     <section class="landing-platforms">
         <div class="landing-container">
@@ -1194,24 +1270,13 @@
         </div>
     </section>
 
-    <!-- agencies -->
-    <section class="landing-agencies" id="agencias">
-        <div class="landing-container">
-            <p class="landing-eyebrow">Para agencias</p>
-            <h2 class="landing-display landing-display-lg">Un workspace por cliente. El equipo en orden.</h2>
-            <p class="landing-body landing-stack-sm">Separa marcas y cuentas, asigna permisos por rol y deja que cada cliente revise desde su propio portal.</p>
-            <p class="landing-agencies-note landing-stack-sm">Disponible ahora en esta instancia. Pronto también en la nube, en 2post.app.</p>
-            <img class="landing-shot landing-reveal landing-stack-lg" src="{% static 'img/landing/idea-kanban.webp' %}" alt="Tablero kanban de ideas y workspaces por cliente en 2post" width="1440" height="900">
-        </div>
-    </section>
-
     <!-- pricing -->
     <section class="landing-pricing" id="precios">
         <div class="landing-container">
             <div class="landing-pricing-intro">
                 <p class="landing-eyebrow is-caps">Precios</p>
                 <h2 class="landing-display landing-display-lg">Sin sorpresas por asiento.</h2>
-                <p class="landing-body landing-stack-sm">Los planes hosted de 2post.app se cobran por workspace, no por persona. Puedes cambiar estos números cuando quieras; hoy son un punto de partida.</p>
+                <p class="landing-body landing-stack-sm">Los planes de 2post.app se cobran por workspace, no por persona. Sin cargos extra por cada usuario del equipo.</p>
             </div>
             <div class="landing-pricing-grid">
                 <article class="landing-plan">
