@@ -245,11 +245,6 @@
         .landing-hero-copy {
             max-width: 36rem;
         }
-        .landing-hero-mark {
-            width: 4.5rem;
-            height: auto;
-            margin-bottom: var(--space-5);
-        }
         .landing-hero-sub {
             margin-top: var(--space-4);
             max-width: 32rem;
@@ -283,7 +278,6 @@
             color: var(--text-tertiary);
         }
         @media (min-width: 768px) {
-            .landing-hero-mark { width: 6.5rem; }
             .landing-hero-shot { height: 16rem; }
         }
         @media (min-width: 1024px) {
@@ -744,24 +738,10 @@
             }
         }
         .landing-closing {
-            position: relative;
-            overflow: hidden;
             background: var(--landing-warm);
             padding: var(--space-8) 0;
         }
-        .landing-closing-mark {
-            position: absolute;
-            right: -4%;
-            top: 50%;
-            transform: translateY(-50%);
-            width: min(42vw, 28rem);
-            opacity: 0.07;
-            pointer-events: none;
-            user-select: none;
-        }
         .landing-closing-copy {
-            position: relative;
-            z-index: 1;
             max-width: 42rem;
         }
         .landing-closing-ctas {
@@ -903,7 +883,6 @@
     <section class="landing-hero">
         <div class="landing-container landing-hero-grid">
             <div class="landing-hero-copy landing-hero-anim-copy">
-                <img class="landing-hero-mark" src="{% static 'img/2post-mark.webp' %}" alt="" width="112" height="112">
                 <p class="landing-eyebrow is-caps">Gestión de redes sociales open source</p>
                 <h1 class="landing-display landing-display-xl">Programa y publica en todas tus redes sin alquilar tu stack.</h1>
                 <p class="landing-body landing-hero-sub">Organiza cuentas, contenido, aprobaciones y resultados en una instancia de 2post que tú controlas, sin licencias por asiento.</p>
@@ -1100,7 +1079,6 @@
 
     <!-- closing -->
     <section class="landing-closing">
-        <img class="landing-closing-mark" src="{% static 'img/2post-mark.webp' %}" alt="" width="420" height="420">
         <div class="landing-container landing-closing-copy">
             <h2 class="landing-display landing-display-lg">Haz que tu operación social te pertenezca.</h2>
             <p class="landing-body" style="margin-top:var(--space-4);">Instala 2post, conecta tus cuentas y administra tu contenido con tus propias reglas.</p>
