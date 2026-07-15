@@ -1,0 +1,14 @@
+---
+description: 2post product identity, stack, and core engineering constraints
+alwaysApply: true
+---
+
+# Project core
+
+2post is an open-source social media manager (Django templates + HTMX/Alpine, not a SPA). Jobs use `django-background-tasks` on PostgreSQL — do not add Celery/Redis unless asked.
+
+- Same codebase for hosted and self-hosted; no feature gating.
+- Platform integrations are first-party only (`providers/`). No aggregators. No X/Twitter.
+- Brand theme is Ember (`--brand-500: #EA580C`); product name is **2post** (not Brightbean).
+- Before new features, check `development_specs/` and existing `apps/` — prefer extending apps over new top-level packages.
+- Tooling: Python 3.12+, ruff, mypy, pytest. Use `make` targets from the Makefile.

@@ -1,0 +1,13 @@
+---
+description: Django templates, HTMX, Alpine.js, and Ember white-label tokens
+globs: templates/**/*.html,theme/**/*.{css,js},apps/**/templates/**/*.html
+alwaysApply: false
+---
+
+# Frontend (HTMX + Alpine)
+
+- Server-rendered HTML only. HTMX for partials, forms, and swaps. Alpine for local UI (dropdowns, modals, DnD) — post mutations with `hx-post` after client moves.
+- Reuse `trigger_response` / `toast_response` from `apps/common/htmx.py` for `HX-Trigger` toasts and refresh events.
+- Keep composer preview endpoints cheap (prefer no heavy DB work on debounce posts).
+- Theming: change **brand tokens** in `theme/static_src/src/styles.css` (`--brand-*`). Semantic/component tokens reference brand tokens. Do not hardcode Ember hex in many places; do not revive Brightbean branding.
+- Tailwind content scans templates under `templates/` and `apps/**/templates/`. No app JS bundler beyond Tailwind.

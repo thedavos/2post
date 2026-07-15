@@ -1,0 +1,13 @@
+---
+description: Multi-tenant isolation and secret handling for org/workspace data
+alwaysApply: true
+---
+
+# Security & tenancy
+
+- Scope every query with `Model.objects.for_org(org_id)` or `.for_workspace(workspace_id)` (`apps/common/managers.py`). Never trust client-supplied IDs without membership checks.
+- Client portal and public/magic-link routes must not expose other workspaces' data.
+- Store OAuth tokens and platform app credentials in encrypted fields (`EncryptedJSONField` / helpers in `apps/common/encryption.py`). Requires `ENCRYPTION_KEY_SALT`.
+- Never log access tokens, refresh tokens, API keys, or raw credential dicts.
+- Do not commit `.env`, real keys, or fixtures containing secrets. Update `.env.example` with names only.
+- Authz bypass, XSS/CSRF, and cross-tenant leaks are in SECURITY.md scope — treat them as blockers.

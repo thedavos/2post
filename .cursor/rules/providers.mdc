@@ -1,0 +1,14 @@
+---
+description: Social provider interface, registry, OAuth/PKCE, and analytics scopes
+globs: providers/**/*.py
+alwaysApply: false
+---
+
+# Providers
+
+- Implement `SocialProvider` in `providers/base.py`. Register in `PROVIDER_REGISTRY` (`providers/__init__.py`).
+- Add the platform to `PlatformCredential.Platform` and `REQUIRED_CREDENTIAL_KEYS` when app-level keys are required (`apps/credentials/models.py`).
+- Set `uses_pkce = True` when the platform requires PKCE. Put analytics-only OAuth scopes in `analytics_only_scopes` (omitted when analytics is disabled for that platform).
+- Resolve credentials per account with `resolve_platform_credentials` before `get_provider(platform, credentials=...)`.
+- No third-party unified social APIs. Session-auth platforms (e.g. Bluesky) still go through the provider interface.
+- Cover OAuth connect/reconnect, publish, and error mapping with tests under `apps/social_accounts/tests/` or provider-focused tests.
