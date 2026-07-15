@@ -1,0 +1,1023 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2post | Gestión de redes sociales open source</title>
+    <meta name="description" content="Administra, programa, aprueba y mide contenido en múltiples redes con 2post, la plataforma open source que puedes alojar tú mismo.">
+    <link rel="icon" href="{% static 'favicon/favicon.ico' %}" sizes="any">
+    <link rel="icon" type="image/svg+xml" href="{% static 'favicon/favicon.svg' %}">
+    <link rel="icon" type="image/png" sizes="96x96" href="{% static 'favicon/favicon-96x96.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'favicon/apple-touch-icon.png' %}">
+    <link rel="manifest" href="{% static 'favicon/site.webmanifest' %}">
+    <link rel="stylesheet" href="{% static 'css/dist/styles.css' %}">
+    <style>
+        .landing-page {
+            --landing-warm: #F7F6F2;
+            --landing-cream: #FFF7ED;
+            --landing-dark: #1C1917;
+            --landing-ease: cubic-bezier(0.16, 1, 0.3, 1);
+            background: var(--landing-warm);
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            overflow-x: clip;
+        }
+        .landing-page a { text-decoration: none; }
+        .landing-container {
+            width: min(100%, 1440px);
+            margin-inline: auto;
+            padding-inline: 1.5rem;
+        }
+        @media (min-width: 1024px) {
+            .landing-container { padding-inline: 3rem; }
+        }
+        .landing-eyebrow {
+            font-size: 0.75rem;
+            font-weight: 650;
+            letter-spacing: 0.07em;
+            color: var(--text-tertiary);
+            margin: 0 0 0.75rem;
+        }
+        .landing-eyebrow.is-caps { text-transform: uppercase; }
+        .landing-display {
+            font-family: var(--font-display);
+            font-weight: 400;
+            letter-spacing: -0.035em;
+            line-height: 1;
+            color: var(--text-primary);
+            margin: 0;
+        }
+        .landing-display-xl {
+            font-size: 2.75rem;
+        }
+        @media (min-width: 768px) {
+            .landing-display-xl { font-size: 3.5rem; }
+        }
+        @media (min-width: 1024px) {
+            .landing-display-xl { font-size: 4.5rem; }
+        }
+        .landing-display-lg {
+            font-size: 2.25rem;
+            letter-spacing: -0.025em;
+            line-height: 1.05;
+        }
+        @media (min-width: 1024px) {
+            .landing-display-lg { font-size: 3rem; }
+        }
+        .landing-body {
+            font-size: 1.125rem;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            max-width: 60ch;
+            margin: 0;
+        }
+        .landing-body-sm {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+        .landing-support {
+            font-size: 1.5rem;
+            font-weight: 650;
+            line-height: 1.25;
+            color: var(--text-primary);
+            margin: 0;
+        }
+        .landing-cta {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-family: var(--font-body);
+            font-weight: 600;
+            font-size: 0.875rem;
+            padding: 0.625rem 1.5rem;
+            border-radius: var(--radius-full);
+            border: none;
+            cursor: pointer;
+            letter-spacing: 0.005em;
+            transition: transform 200ms var(--landing-ease), box-shadow 200ms var(--landing-ease), background 200ms var(--landing-ease), color 200ms var(--landing-ease), border-color 200ms var(--landing-ease);
+        }
+        .landing-cta:active {
+            transform: translateY(0);
+            transition-duration: 150ms;
+        }
+        .landing-cta-primary {
+            background: var(--primary);
+            color: var(--text-inverse);
+            box-shadow: var(--shadow-primary);
+        }
+        .landing-cta-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(234, 88, 12, 0.35);
+        }
+        .landing-cta-secondary {
+            background: var(--surface-0);
+            color: var(--text-primary);
+            border: 1px solid var(--neutral-300);
+        }
+        .landing-cta-secondary:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+        .landing-cta-text {
+            background: transparent;
+            color: var(--text-secondary);
+            padding-inline: 0.25rem;
+        }
+        .landing-cta-text:hover {
+            color: var(--text-primary);
+            transform: translateY(-1px);
+        }
+        .landing-nav {
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            height: 4.25rem;
+            background: color-mix(in srgb, var(--landing-warm) 92%, transparent);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid transparent;
+        }
+        .landing-nav-inner {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+        .landing-nav-links {
+            display: none;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        .landing-nav-links a {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        .landing-nav-links a:hover { color: var(--text-primary); }
+        .landing-nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .landing-nav-signin {
+            display: none;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        .landing-nav-signin:hover { color: var(--text-primary); }
+        .landing-menu {
+            position: relative;
+        }
+        .landing-menu > summary {
+            list-style: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            border: 1px solid var(--neutral-300);
+            border-radius: var(--radius-lg);
+            background: transparent;
+            color: var(--text-primary);
+            cursor: pointer;
+        }
+        .landing-menu > summary::-webkit-details-marker { display: none; }
+        .landing-menu-panel {
+            position: absolute;
+            right: 0;
+            top: calc(100% + 0.5rem);
+            width: min(18rem, calc(100vw - 2rem));
+            display: grid;
+            gap: 0.75rem;
+            border: 1px solid var(--neutral-200);
+            border-radius: var(--radius-xl);
+            background: var(--landing-warm);
+            padding: 1rem 1.15rem;
+            box-shadow: var(--shadow-md);
+        }
+        .landing-menu-panel a {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            padding: 0.2rem 0;
+        }
+        @media (min-width: 1024px) {
+            .landing-nav { height: 4.5rem; }
+            .landing-nav-links { display: flex; }
+            .landing-nav-signin { display: inline-flex; }
+            .landing-menu { display: none; }
+        }
+        .landing-hero {
+            position: relative;
+            padding: 2rem 0 3rem;
+            background:
+                radial-gradient(ellipse 55% 45% at 12% 5%, rgba(234, 88, 12, 0.12), rgba(234, 88, 12, 0.05) 38%, transparent 68%),
+                radial-gradient(ellipse 50% 55% at 85% 60%, #FFF7ED, transparent 70%),
+                var(--landing-warm);
+        }
+        .landing-hero-grid {
+            display: grid;
+            gap: 2rem;
+            align-items: center;
+        }
+        .landing-hero-copy {
+            max-width: 36rem;
+        }
+        .landing-hero-mark {
+            width: 4.5rem;
+            height: auto;
+            margin-bottom: 1.25rem;
+        }
+        .landing-hero-sub {
+            margin-top: 1.25rem;
+            max-width: 32rem;
+        }
+        .landing-hero-ctas {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 1.75rem;
+        }
+        .landing-hero-ctas .landing-cta { width: 100%; }
+        .landing-hero-visual {
+            margin-inline: -1.5rem;
+            position: relative;
+        }
+        .landing-hero-shot {
+            display: block;
+            width: 100%;
+            height: 13.75rem;
+            object-fit: cover;
+            object-position: left top;
+            border: 1px solid var(--neutral-300);
+            border-right: none;
+            border-radius: 1rem 0 0 1rem;
+            box-shadow: 0 18px 40px rgba(28, 25, 23, 0.12);
+            background: var(--landing-cream);
+        }
+        .landing-hero-caption {
+            margin: 0.75rem 1.5rem 0;
+            font-size: 0.875rem;
+            color: var(--text-tertiary);
+        }
+        @media (min-width: 768px) {
+            .landing-hero-mark { width: 6.5rem; }
+            .landing-hero-shot { height: 16rem; }
+        }
+        @media (min-width: 1024px) {
+            .landing-hero {
+                padding: 3rem 0 5rem;
+                min-height: calc(100svh - 4.5rem);
+                display: flex;
+                align-items: center;
+            }
+            .landing-hero-grid {
+                grid-template-columns: repeat(12, minmax(0, 1fr));
+                gap: 0;
+                width: 100%;
+                align-items: center;
+            }
+            .landing-hero-copy {
+                grid-column: 1 / span 5;
+                position: relative;
+                z-index: 2;
+            }
+            .landing-hero-visual {
+                grid-column: 6 / span 7;
+                margin-inline: 0;
+                margin-right: calc(50% - 50vw);
+            }
+            .landing-hero-shot {
+                width: 58vw;
+                max-width: none;
+                height: auto;
+                object-fit: contain;
+                border-right: 1px solid var(--neutral-300);
+                border-radius: 1rem 0 0 1rem;
+            }
+            .landing-hero-caption {
+                margin-left: 0;
+                max-width: 28rem;
+            }
+            .landing-hero-ctas {
+                flex-direction: row;
+                flex-wrap: wrap;
+                align-items: center;
+            }
+            .landing-hero-ctas .landing-cta { width: auto; }
+        }
+        .landing-problem {
+            background: var(--surface-0);
+            padding: 4.5rem 0;
+        }
+        .landing-problem-grid {
+            display: grid;
+            gap: 3rem;
+        }
+        .landing-problem-block + .landing-promise-block {
+            border-top: 1px solid var(--neutral-200);
+            padding-top: 2rem;
+        }
+        @media (min-width: 1024px) {
+            .landing-problem { padding: 7rem 0; }
+            .landing-problem-grid {
+                grid-template-columns: repeat(12, minmax(0, 1fr));
+                gap: 2rem;
+            }
+            .landing-problem-block { grid-column: 2 / span 5; }
+            .landing-promise-block {
+                grid-column: 7 / span 5;
+                margin-top: 4rem;
+                border-top: none;
+                padding-top: 0;
+            }
+        }
+        .landing-tour-compose {
+            background: var(--landing-cream);
+            padding: 4.5rem 0;
+        }
+        .landing-tour-compose .landing-container > .landing-body {
+            margin-top: 1rem;
+        }
+        .landing-tour-compose .landing-shot {
+            margin-top: 2.5rem;
+            width: 100%;
+            min-width: 0;
+            border-radius: var(--radius-2xl);
+            border: 1px solid var(--neutral-300);
+            box-shadow: var(--shadow-lg);
+            display: block;
+        }
+        @media (min-width: 1024px) {
+            .landing-tour-compose { padding: 7.5rem 0; }
+            .landing-tour-compose .landing-shot { min-width: 960px; }
+        }
+        .landing-tour-approvals {
+            background: var(--landing-warm);
+            padding: 4.5rem 0;
+        }
+        .landing-approvals-grid {
+            display: grid;
+            gap: 2rem;
+            align-items: center;
+        }
+        .landing-portal {
+            border: 1px solid var(--neutral-300);
+            border-radius: var(--radius-2xl);
+            background: var(--surface-0);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+        .landing-portal-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--neutral-200);
+        }
+        .landing-portal-chip {
+            display: inline-flex;
+            align-items: center;
+            font-size: 0.75rem;
+            font-weight: 650;
+            color: var(--brand-700);
+            background: var(--brand-50);
+            border: 1px solid var(--brand-200);
+            border-radius: var(--radius-full);
+            padding: 0.25rem 0.75rem;
+        }
+        .landing-portal-status {
+            font-size: 0.8125rem;
+            color: var(--text-tertiary);
+        }
+        .landing-portal-title {
+            font-size: 1.125rem;
+            font-weight: 650;
+            margin: 0 0 0.5rem;
+            color: var(--text-primary);
+        }
+        .landing-portal-copy {
+            font-size: 0.9375rem;
+            line-height: 1.55;
+            color: var(--text-secondary);
+            margin: 0 0 1.25rem;
+        }
+        .landing-portal-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .landing-portal-btn {
+            font-size: 0.8125rem;
+            font-weight: 600;
+            padding: 0.5rem 0.9rem;
+            border-radius: var(--radius-full);
+            border: 1px solid var(--neutral-300);
+            background: var(--surface-0);
+            color: var(--text-primary);
+        }
+        .landing-portal-btn.is-primary {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: var(--text-inverse);
+        }
+        @media (min-width: 1024px) {
+            .landing-tour-approvals { padding: 7rem 0; }
+            .landing-approvals-grid {
+                grid-template-columns: 5fr 7fr;
+                gap: 3rem;
+            }
+        }
+        .landing-tour-results {
+            background: var(--surface-0);
+            padding: 4.5rem 0;
+        }
+        .landing-tour-results-copy {
+            max-width: 40rem;
+            margin: 0 auto 2.5rem;
+            text-align: center;
+        }
+        .landing-tour-results-copy .landing-body {
+            margin: 1rem auto 0;
+        }
+        .landing-tour-results .landing-shot {
+            display: block;
+            width: min(100%, 1200px);
+            margin-inline: auto;
+            border-radius: var(--radius-2xl);
+            border: 1px solid var(--neutral-300);
+            box-shadow: var(--shadow-lg);
+            aspect-ratio: 16 / 9;
+            object-fit: cover;
+        }
+        @media (min-width: 1024px) {
+            .landing-tour-results { padding: 7rem 0; }
+            .landing-tour-results .landing-shot {
+                width: calc(100% + 4rem);
+                margin-inline: -2rem;
+            }
+        }
+        .landing-platforms {
+            background: var(--landing-warm);
+            padding: 5rem 0;
+        }
+        .landing-platforms-list {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.75rem 1rem;
+            margin: 2rem 0 1.5rem;
+            padding: 0;
+            list-style: none;
+        }
+        .landing-platforms-list li {
+            font-size: 0.9375rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            padding: 0.65rem 0.85rem;
+            border: 1px solid var(--neutral-200);
+            border-radius: var(--radius-lg);
+            background: color-mix(in srgb, var(--surface-0) 70%, transparent);
+        }
+        @media (min-width: 768px) {
+            .landing-platforms-list {
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+            }
+        }
+        @media (min-width: 1024px) {
+            .landing-platforms { padding: 6rem 0; }
+            .landing-platforms-list {
+                grid-template-columns: repeat(6, minmax(0, 1fr));
+            }
+            .landing-platforms-list li:last-child {
+                grid-column: span 2;
+            }
+        }
+        .landing-platforms-cta {
+            display: inline-flex;
+            margin-top: 1rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--brand-600);
+        }
+        .landing-platforms-cta:hover { color: var(--brand-700); }
+        .landing-ownership {
+            background: var(--landing-dark);
+            color: #fff;
+            padding: 5rem 0;
+        }
+        .landing-ownership .landing-eyebrow { color: var(--neutral-400); }
+        .landing-ownership .landing-display,
+        .landing-ownership .landing-support { color: #fff; }
+        .landing-ownership .landing-body,
+        .landing-ownership .landing-body-sm { color: rgba(255, 255, 255, 0.86); }
+        .landing-ownership-grid {
+            display: grid;
+            gap: 2.5rem;
+        }
+        .landing-ownership-facts {
+            display: grid;
+            gap: 1.5rem;
+        }
+        .landing-ownership-ctas {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-top: 2rem;
+        }
+        .landing-ownership .landing-cta-secondary {
+            background: transparent;
+            color: #fff;
+            border-color: var(--neutral-600);
+        }
+        .landing-ownership .landing-cta-secondary:hover {
+            border-color: var(--neutral-400);
+            background: rgba(255, 255, 255, 0.04);
+        }
+        .landing-waitlist {
+            margin-top: 4rem;
+            padding-top: 2.5rem;
+            border-top: 1px solid var(--neutral-700);
+            max-width: 36rem;
+        }
+        .landing-waitlist-form {
+            display: grid;
+            gap: 0.75rem;
+            margin-top: 1.25rem;
+        }
+        .landing-waitlist label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #fff;
+        }
+        .landing-waitlist input[type="email"] {
+            width: 100%;
+            border: 1px solid var(--neutral-600);
+            border-radius: var(--radius-lg);
+            background: rgba(255, 255, 255, 0.04);
+            color: #fff;
+            padding: 0.75rem 0.9rem;
+            font-size: 1rem;
+        }
+        .landing-waitlist input[type="email"]::placeholder {
+            color: var(--neutral-400);
+        }
+        .landing-waitlist input[type="email"]:focus {
+            outline: none;
+            border-color: var(--brand-400);
+            box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.25);
+        }
+        .landing-waitlist .landing-cta-primary { width: 100%; }
+        .landing-waitlist-success {
+            display: none;
+            margin-top: 1.25rem;
+            font-size: 1rem;
+            line-height: 1.55;
+            color: #fff;
+        }
+        .landing-waitlist.is-done .landing-waitlist-form { display: none; }
+        .landing-waitlist.is-done .landing-waitlist-success { display: block; }
+        .landing-waitlist-disclaimer {
+            margin-top: 0.85rem;
+            font-size: 0.8125rem;
+            line-height: 1.5;
+            color: var(--neutral-300);
+        }
+        @media (min-width: 1024px) {
+            .landing-ownership { padding: 8rem 0; }
+            .landing-ownership-grid {
+                grid-template-columns: 2fr 1fr;
+                gap: 4rem;
+                align-items: start;
+            }
+            .landing-waitlist-form {
+                grid-template-columns: 1fr auto;
+                align-items: end;
+            }
+            .landing-waitlist .landing-cta-primary { width: auto; }
+            .landing-waitlist label { grid-column: 1 / -1; }
+        }
+        .landing-agencies {
+            background: var(--landing-cream);
+            padding: 5rem 0;
+        }
+        .landing-agencies-grid {
+            display: grid;
+            gap: 2rem;
+            margin-top: 2.5rem;
+            align-items: start;
+        }
+        .landing-agencies .landing-shot {
+            width: 100%;
+            border-radius: var(--radius-2xl);
+            border: 1px solid var(--neutral-300);
+            box-shadow: var(--shadow-md);
+            display: block;
+        }
+        .landing-agencies-side {
+            display: grid;
+            gap: 1rem;
+        }
+        .landing-agencies-note {
+            font-size: 0.875rem;
+            color: var(--text-tertiary);
+            margin: 0;
+        }
+        @media (min-width: 1024px) {
+            .landing-agencies { padding: 7rem 0; }
+            .landing-agencies-grid {
+                grid-template-columns: 1.6fr 0.8fr;
+                gap: 2.5rem;
+            }
+        }
+        .landing-closing {
+            position: relative;
+            overflow: hidden;
+            background: var(--landing-warm);
+            padding: 5rem 0;
+        }
+        .landing-closing-mark {
+            position: absolute;
+            right: -4%;
+            top: 50%;
+            transform: translateY(-50%);
+            width: min(42vw, 28rem);
+            opacity: 0.07;
+            pointer-events: none;
+            user-select: none;
+        }
+        .landing-closing-copy {
+            position: relative;
+            z-index: 1;
+            max-width: 42rem;
+        }
+        .landing-closing-ctas {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1.75rem;
+        }
+        .landing-closing-note {
+            margin-top: 1rem;
+            font-size: 0.875rem;
+            color: var(--text-tertiary);
+        }
+        @media (min-width: 1024px) {
+            .landing-closing { padding: 7rem 0; }
+            .landing-closing-copy { width: 58%; max-width: none; }
+        }
+        .landing-footer {
+            background: var(--surface-0);
+            border-top: 1px solid var(--neutral-200);
+            padding: 4rem 0;
+        }
+        .landing-footer-grid {
+            display: grid;
+            gap: 2rem;
+        }
+        .landing-footer-tagline {
+            margin-top: 0.85rem;
+            max-width: 28rem;
+            font-size: 0.875rem;
+            line-height: 1.55;
+            color: var(--text-secondary);
+        }
+        .landing-footer-links {
+            display: grid;
+            gap: 0.65rem;
+        }
+        .landing-footer-links a,
+        .landing-footer-links span {
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+        }
+        .landing-footer-links a:hover { color: var(--text-primary); }
+        .landing-footer-meta {
+            margin-top: 2rem;
+            font-size: 0.8125rem;
+            color: var(--text-tertiary);
+        }
+        @media (min-width: 1024px) {
+            .landing-footer { padding: 5rem 0; }
+            .landing-footer-grid {
+                grid-template-columns: 1.4fr 1fr;
+                justify-content: space-between;
+            }
+            .landing-footer-links {
+                justify-self: end;
+                text-align: right;
+            }
+        }
+        .landing-reveal {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        .landing-reveal.is-in {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 550ms var(--landing-ease), transform 550ms var(--landing-ease);
+        }
+        .landing-hero-anim-copy {
+            opacity: 0;
+            transform: translateY(12px);
+            animation: landingHeroCopy 500ms var(--landing-ease) forwards;
+        }
+        .landing-hero-anim-shot {
+            opacity: 0;
+            transform: translateX(20px);
+            animation: landingHeroShot 650ms var(--landing-ease) 100ms forwards;
+        }
+        @keyframes landingHeroCopy {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes landingHeroShot {
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .landing-hero-anim-copy,
+            .landing-hero-anim-shot,
+            .landing-reveal,
+            .landing-reveal.is-in,
+            .landing-cta {
+                animation: none !important;
+                transition: none !important;
+                opacity: 1 !important;
+                transform: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="landing-page">
+    <!-- nav -->
+    <header class="landing-nav">
+        <div class="landing-container landing-nav-inner">
+            <a href="/" aria-label="2post, inicio">
+                <img src="{% static 'img/2post-logo.webp' %}" alt="2post, inicio" width="116" height="28" style="width:116px;height:auto;display:block;">
+            </a>
+            <nav class="landing-nav-links" aria-label="Principal">
+                <a href="#funciones">Funciones</a>
+                <a href="#plataformas">Plataformas</a>
+                <a href="#self-host">Self-host</a>
+                <a href="#open-source">Open source</a>
+            </nav>
+            <div class="landing-nav-actions">
+                <a class="landing-nav-signin" href="{% url 'account_login' %}">Iniciar sesión</a>
+                <a class="landing-cta landing-cta-primary" href="{% url 'account_signup' %}" style="width:auto;">Crear cuenta</a>
+                <details class="landing-menu">
+                    <summary aria-label="Abrir menú">
+                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+                            <path d="M3 5h12M3 9h12M3 13h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                        </svg>
+                    </summary>
+                    <div class="landing-menu-panel">
+                        <a href="#funciones">Funciones</a>
+                        <a href="#plataformas">Plataformas</a>
+                        <a href="#self-host">Self-host</a>
+                        <a href="#open-source">Open source</a>
+                        <a href="{% url 'account_login' %}">Iniciar sesión</a>
+                    </div>
+                </details>
+            </div>
+        </div>
+    </header>
+
+    <!-- hero -->
+    <section class="landing-hero">
+        <div class="landing-container landing-hero-grid">
+            <div class="landing-hero-copy landing-hero-anim-copy">
+                <img class="landing-hero-mark" src="{% static 'img/2post-mark.webp' %}" alt="" width="112" height="112">
+                <p class="landing-eyebrow is-caps">Gestión de redes sociales open source</p>
+                <h1 class="landing-display landing-display-xl">Programa y publica en todas tus redes sin alquilar tu stack.</h1>
+                <p class="landing-body landing-hero-sub">Organiza cuentas, contenido, aprobaciones y resultados en una instancia de 2post que tú controlas, sin licencias por asiento.</p>
+                <div class="landing-hero-ctas">
+                    <a class="landing-cta landing-cta-primary" href="{% url 'account_signup' %}">Crear cuenta</a>
+                    <a class="landing-cta landing-cta-secondary" href="https://github.com/thedavos/2post" rel="noopener noreferrer">Ver en GitHub</a>
+                    <a class="landing-cta landing-cta-text" href="{% url 'account_login' %}">Iniciar sesión</a>
+                </div>
+            </div>
+            <div class="landing-hero-visual landing-hero-anim-shot">
+                <img class="landing-hero-shot" src="{% static 'img/landing/calendar.webp' %}" alt="Calendario de contenido y cuentas sociales dentro de 2post" width="1440" height="900">
+                <p class="landing-hero-caption">Calendario, colas de publicación y workspaces en un solo lugar.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- problem -->
+    <section class="landing-problem" id="funciones">
+        <div class="landing-container landing-problem-grid">
+            <div class="landing-problem-block">
+                <p class="landing-eyebrow">Demasiadas cuentas. Demasiadas pestañas.</p>
+                <h2 class="landing-display landing-display-lg">Tu operación social no debería crecer al ritmo de tu factura.</h2>
+                <p class="landing-body" style="margin-top:1.25rem;">Cada cliente suma cuentas, aprobaciones, permisos y conversaciones. En muchos SaaS, también suma asientos, canales y funciones bloqueadas por plan.</p>
+            </div>
+            <div class="landing-promise-block">
+                <h2 class="landing-display landing-display-lg">Un solo sistema para tu equipo, tus clientes y tus datos.</h2>
+                <p class="landing-body" style="margin-top:1.25rem;">Aloja 2post donde decidas, conecta tus propias apps de desarrollador y administra cada workspace con roles y permisos claros.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- tour compose -->
+    <section class="landing-tour-compose">
+        <div class="landing-container">
+            <p class="landing-eyebrow is-caps">Crear y programar</p>
+            <h2 class="landing-display landing-display-lg">Crea una vez. Ajusta cada red.</h2>
+            <p class="landing-body">Escribe el contenido base, adapta texto y medios por plataforma, y programa con el calendario o las colas de publicación.</p>
+            <img class="landing-shot landing-reveal" src="{% static 'img/landing/post-editor.webp' %}" alt="Editor de publicaciones con ajustes específicos por plataforma" width="1440" height="900">
+        </div>
+    </section>
+
+    <!-- tour approvals -->
+    <section class="landing-tour-approvals">
+        <div class="landing-container landing-approvals-grid">
+            <div>
+                <p class="landing-eyebrow">Aprobaciones</p>
+                <h2 class="landing-display landing-display-lg">Aprueba sin perseguir correos.</h2>
+                <p class="landing-body" style="margin-top:1rem;">Define revisiones internas y envía a cada cliente un enlace seguro para aprobar, rechazar o comentar sin crear una cuenta.</p>
+            </div>
+            <div class="landing-portal landing-reveal" role="img" aria-label="Flujo de aprobación y portal de cliente en 2post">
+                <div class="landing-portal-bar">
+                    <span class="landing-portal-chip">Enlace mágico</span>
+                    <span class="landing-portal-status">Sin cuenta requerida</span>
+                </div>
+                <h3 class="landing-portal-title">Portal de aprobación del cliente</h3>
+                <p class="landing-portal-copy">Revisa el borrador, deja un comentario o aprueba la publicación desde un enlace seguro.</p>
+                <div class="landing-portal-actions">
+                    <span class="landing-portal-btn is-primary">Aprobar</span>
+                    <span class="landing-portal-btn">Rechazar</span>
+                    <span class="landing-portal-btn">Comentar</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- tour results -->
+    <section class="landing-tour-results">
+        <div class="landing-container">
+            <div class="landing-tour-results-copy">
+                <p class="landing-eyebrow">Inbox y analítica</p>
+                <h2 class="landing-display landing-display-lg">Responde y mide desde el mismo lugar.</h2>
+                <p class="landing-body">Reúne conversaciones compatibles en un inbox y consulta métricas de publicaciones y canales obtenidas desde las APIs oficiales.</p>
+            </div>
+            <img class="landing-shot landing-reveal" src="{% static 'img/landing/analytics.webp' %}" alt="Inbox unificado y panel de analítica de 2post" width="1440" height="810">
+        </div>
+    </section>
+
+    <!-- platforms -->
+    <section class="landing-platforms" id="plataformas">
+        <div class="landing-container">
+            <p class="landing-eyebrow is-caps">Plataformas compatibles</p>
+            <h2 class="landing-display landing-display-lg">Publica en 11 plataformas desde un solo lugar.</h2>
+            <ul class="landing-platforms-list">
+                <li>Facebook</li>
+                <li>Instagram</li>
+                <li>LinkedIn</li>
+                <li>TikTok</li>
+                <li>YouTube</li>
+                <li>Pinterest</li>
+                <li>Threads</li>
+                <li>Bluesky</li>
+                <li>Google Business Profile</li>
+                <li>Mastodon</li>
+                <li>DEV.to</li>
+            </ul>
+            <p class="landing-body-sm">La disponibilidad de publicación, comentarios, mensajes y métricas varía según la plataforma y los permisos de su API oficial.</p>
+            <a class="landing-platforms-cta" href="https://github.com/thedavos/2post#readme" rel="noopener noreferrer">Consultar cobertura por plataforma</a>
+        </div>
+    </section>
+
+    <!-- ownership -->
+    <section class="landing-ownership" id="self-host">
+        <div class="landing-container">
+            <div class="landing-ownership-grid">
+                <div>
+                    <p class="landing-eyebrow" id="open-source">Tu stack social, bajo tu control</p>
+                    <h2 class="landing-display landing-display-lg">Ejecuta 2post donde tú decidas.</h2>
+                    <p class="landing-body" style="margin-top:1.25rem;">El código es open source y las integraciones se conectan directamente con las APIs oficiales mediante tus propias credenciales de desarrollador.</p>
+                    <div class="landing-ownership-facts" style="margin-top:2rem;">
+                        <div>
+                            <h3 class="landing-support">Sin licencias por asiento</h3>
+                            <p class="landing-body-sm" style="margin-top:0.5rem;">2post no limita asientos, canales, workspaces ni funciones dentro del software.</p>
+                        </div>
+                        <div>
+                            <h3 class="landing-support">Despliega a tu manera</h3>
+                            <p class="landing-body-sm" style="margin-top:0.5rem;">Usa Docker en tu servidor o despliega en Railway, Render o Heroku.</p>
+                            <p class="landing-body-sm" style="margin-top:0.75rem;color:var(--neutral-300);">El self-hosting requiere infraestructura y puede generar costos de servidor, almacenamiento, correo y servicios externos.</p>
+                        </div>
+                        <div>
+                            <h3 class="landing-support">Listo para automatizaciones y agentes</h3>
+                            <p class="landing-body-sm" style="margin-top:0.5rem;">Usa la API REST o el servidor MCP para consultar cuentas y analítica, administrar medios, y crear o programar publicaciones con permisos controlados.</p>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="landing-ownership-ctas" style="margin-top:0;">
+                        <a class="landing-cta landing-cta-primary" href="https://github.com/thedavos/2post" rel="noopener noreferrer">Explorar el código en GitHub</a>
+                        <a class="landing-cta landing-cta-secondary" href="https://github.com/thedavos/2post#readme" rel="noopener noreferrer">Ver guía de self-host</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="landing-waitlist" id="waitlist">
+                <p class="landing-eyebrow">2post.app</p>
+                <h3 class="landing-display landing-display-lg" style="font-size:2rem;">¿Prefieres que nos encarguemos del hosting?</h3>
+                <p class="landing-body" style="margin-top:1rem;">La versión alojada todavía no está disponible. Déjanos tu correo y te avisaremos cuando abra.</p>
+                <form class="landing-waitlist-form" id="landing-waitlist-form" action="#" method="post">
+                    <div>
+                        <label for="landing-waitlist-email">Correo electrónico</label>
+                        <input id="landing-waitlist-email" name="email" type="email" autocomplete="email" required placeholder="tu@correo.com">
+                    </div>
+                    <button class="landing-cta landing-cta-primary" type="submit">Avísame cuando esté listo</button>
+                </form>
+                <p class="landing-waitlist-success" id="landing-waitlist-success">Listo. Te avisaremos cuando la versión alojada de 2post esté disponible.</p>
+                <p class="landing-waitlist-disclaimer">La versión alojada de 2post aún no está activa. Este formulario solo registra tu interés; no crea una cuenta ni inicia una prueba.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- agencies -->
+    <section class="landing-agencies">
+        <div class="landing-container">
+            <p class="landing-eyebrow">Para agencias</p>
+            <h2 class="landing-display landing-display-lg">Un workspace por cliente. El equipo en orden.</h2>
+            <p class="landing-body" style="margin-top:1rem;">Separa marcas y cuentas, asigna permisos por rol y permite que cada cliente revise contenido desde su propio portal con enlace mágico.</p>
+            <div class="landing-agencies-grid">
+                <img class="landing-shot landing-reveal" src="{% static 'img/landing/idea-kanban.webp' %}" alt="" width="1440" height="900">
+                <div class="landing-agencies-side">
+                    <a class="landing-cta landing-cta-primary" href="{% url 'account_signup' %}" style="width:fit-content;">Crear cuenta</a>
+                    <p class="landing-agencies-note">Disponible en instalaciones self-host y locales de 2post.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- closing -->
+    <section class="landing-closing">
+        <img class="landing-closing-mark" src="{% static 'img/2post-mark.webp' %}" alt="" width="420" height="420">
+        <div class="landing-container landing-closing-copy">
+            <h2 class="landing-display landing-display-lg">Haz que tu operación social te pertenezca.</h2>
+            <p class="landing-body" style="margin-top:1rem;">Instala 2post, conecta tus cuentas y administra tu contenido con tus propias reglas.</p>
+            <div class="landing-closing-ctas">
+                <a class="landing-cta landing-cta-primary" href="{% url 'account_signup' %}">Crear cuenta</a>
+                <a class="landing-cta landing-cta-text" href="https://github.com/thedavos/2post" rel="noopener noreferrer">Ver en GitHub</a>
+            </div>
+            <p class="landing-closing-note">La cuenta se crea en la instancia de 2post que estés usando.</p>
+        </div>
+    </section>
+
+    <!-- footer -->
+    <footer class="landing-footer">
+        <div class="landing-container">
+            <div class="landing-footer-grid">
+                <div>
+                    <img src="{% static 'img/2post-logo.webp' %}" alt="2post" width="116" height="28" style="width:116px;height:auto;display:block;">
+                    <p class="landing-footer-tagline">Gestión de redes sociales open source para equipos que quieren controlar su stack.</p>
+                </div>
+                <div class="landing-footer-links">
+                    <a href="https://github.com/thedavos/2post" rel="noopener noreferrer">GitHub</a>
+                    <a href="https://github.com/thedavos/2post#readme" rel="noopener noreferrer">README y documentación</a>
+                    <a href="mailto:security@2post.app">Reportar una vulnerabilidad: security@2post.app</a>
+                    <span>Versión alojada en 2post.app: próximamente</span>
+                </div>
+            </div>
+            <p class="landing-footer-meta">Software open source con licencia AGPL-3.0.</p>
+        </div>
+    </footer>
+
+    <script nonce="{{ request.csp_nonce }}">
+        (function () {
+            var waitlist = document.getElementById("waitlist");
+            var form = document.getElementById("landing-waitlist-form");
+            if (waitlist && form) {
+                form.addEventListener("submit", function (event) {
+                    event.preventDefault();
+                    waitlist.classList.add("is-done");
+                });
+            }
+
+            var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+            var nodes = document.querySelectorAll(".landing-reveal");
+            if (reduce || !("IntersectionObserver" in window)) {
+                nodes.forEach(function (node) { node.classList.add("is-in"); });
+                return;
+            }
+            var observer = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
+                    if (!entry.isIntersecting) return;
+                    entry.target.classList.add("is-in");
+                    observer.unobserve(entry.target);
+                });
+            }, { threshold: 0.2 });
+            nodes.forEach(function (node) { observer.observe(node); });
+        })();
+    </script>
+</body>
+</html>
