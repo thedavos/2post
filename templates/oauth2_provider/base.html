@@ -5,8 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Authorize · 2post{% endblock title %}</title>
-    <link rel="icon" href="{% static 'favicon/favicon.ico' %}" sizes="any">
-    <link rel="icon" type="image/svg+xml" href="{% static 'favicon/favicon.svg' %}">
+    {% include "partials/_brand_head.html" with brand_og_title="Authorize · 2post" %}
 
     {% comment %}
       Self-contained styling only — no external CDN. The inline stylesheet below is
