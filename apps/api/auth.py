@@ -1,6 +1,6 @@
 """Django Ninja bearer-token auth class for the Agent API.
 
-Resolves an ``Authorization: Bearer bb_studio_…`` header to an active
+Resolves an ``Authorization: Bearer 2post_…`` header to an active
 ``ApiKey``, then duck-types a ``request.workspace_membership`` shim so the
 existing ``@require_permission`` decorator from
 ``apps.members.decorators`` works unchanged when called from within a
@@ -191,11 +191,11 @@ def _client_ip(request: HttpRequest) -> str | None:
 
 
 # ---------------------------------------------------------------------------
-# MCP auth — bb_studio_ API keys OR OAuth 2.1 access tokens
+# MCP auth — 2post_ API keys OR OAuth 2.1 access tokens
 # ---------------------------------------------------------------------------
 #
 # The /api/v1/mcp endpoint accepts a second credential type beyond the
-# bb_studio_ key: an OAuth 2.1 access token issued by the BrightBean Studio
+# 2post_ key: an OAuth 2.1 access token issued by the 2post
 # Authorization Server (apps.oauth_server), which is what Claude Desktop's
 # native connector flow obtains. OAuth authenticates a *person* rather than a
 # minted credential, so we map the token's user to their active workspace and
@@ -275,7 +275,7 @@ def _resolve_active_membership(user: Any):
 
 
 def _resolve_oauth_actor(token: str) -> OAuthMcpActor | None:
-    """Resolve a non-bb_studio_ bearer as a django-oauth-toolkit access token.
+    """Resolve a non-2post_ bearer as a django-oauth-toolkit access token.
 
     Looks the token up by its indexed ``token_checksum`` (the path DOT's own
     bearer validation uses; a plain ``token=`` filter scans an unindexed
@@ -328,11 +328,11 @@ def _resolve_oauth_actor(token: str) -> OAuthMcpActor | None:
 
 
 class McpAuth(ApiKeyAuth):
-    """Bearer auth for the MCP router: bb_studio_ keys OR OAuth 2.1 tokens.
+    """Bearer auth for the MCP router: 2post_ keys OR OAuth 2.1 tokens.
 
-    A ``bb_studio_`` token reuses the parent ``ApiKeyAuth`` path verbatim —
+    A ``2post_`` token reuses the parent ``ApiKeyAuth`` path verbatim —
     same IP throttle, HTTPS guard, permission intersection, and audit. Any
-    other bearer is resolved as an OAuth access token issued by the BrightBean
+    other bearer is resolved as an OAuth access token issued by the 2post
     Studio Authorization Server (apps.oauth_server) and mapped to the user's
     active workspace via an ``OAuthMcpActor`` shim.
     """

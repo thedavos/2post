@@ -79,7 +79,7 @@ class IntelligenceSubscription(models.Model):
     # would double-encrypt.
     intelligence_api_key = EncryptedTextField(blank=True, default="")
     # First 8 chars of the plaintext, kept unencrypted so we can show
-    # ``bb_xxxxxx...`` in the dashboard without a decrypt round-trip.
+    # ``key_xxxxxx...`` in the dashboard without a decrypt round-trip.
     intelligence_api_key_prefix = models.CharField(max_length=8, blank=True, default="")
 
     current_period_end = models.DateTimeField(null=True, blank=True)

@@ -225,8 +225,8 @@ class TestOAuthCallbackView:
         mock_provider.get_user_pages.return_value = [
             {
                 "id": "17841400000000000",
-                "name": "Brightbean",
-                "handle": "brightbean",
+                "name": "2post",
+                "handle": "2post",
                 "access_token": "page-token",
             }
         ]
@@ -280,8 +280,8 @@ class TestSelectAccountView:
             "pages": [
                 {
                     "id": "17841400000000000",
-                    "name": "Brightbean",
-                    "handle": "brightbean",
+                    "name": "2post",
+                    "handle": "2post",
                     "access_token": "",
                 }
             ],
@@ -312,7 +312,7 @@ class TestSelectAccountView:
             "pages": [
                 {
                     "id": "page-1",
-                    "name": "Brightbean Page",
+                    "name": "2post Page",
                     "access_token": "",
                 }
             ],

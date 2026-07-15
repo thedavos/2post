@@ -1,18 +1,18 @@
 {% extends "oauth2_provider/base.html" %}
 {% load i18n static %}
 
-{% block title %}Authorize {{ application.name|default:"an app" }} · BrightBean Studio{% endblock title %}
+{% block title %}Authorize {{ application.name|default:"an app" }} · 2post{% endblock title %}
 
 {% block content %}
-    <div class="bb-head">
-        <img src="{% static 'img/brightbean-studio-logo.webp' %}" alt="BrightBean Studio" class="bb-logo">
-        <span class="bb-eyebrow">BrightBean · Studio</span>
+    <div class="oauth-head">
+        <img src="{% static 'img/2post-logo.webp' %}" alt="2post" class="oauth-logo">
+        <span class="oauth-eyebrow">2post</span>
     </div>
 
-    <div class="bb-card">
+    <div class="oauth-card">
         {% if not error %}
             <h1>{% blocktrans with name=application.name|default:"This application" %}Authorize {{ name }}?{% endblocktrans %}</h1>
-            <p>{% blocktrans with name=application.name|default:"This application" %}{{ name }} wants to connect to your BrightBean Studio workspace with the following permissions:{% endblocktrans %}</p>
+            <p>{% blocktrans with name=application.name|default:"This application" %}{{ name }} wants to connect to your 2post workspace with the following permissions:{% endblocktrans %}</p>
 
             <form id="authorizationForm" method="post">
                 {% csrf_token %}
@@ -25,24 +25,24 @@
                     {% if field.is_hidden %}{{ field }}{% endif %}
                 {% endfor %}
 
-                <ul class="bb-scopes">
+                <ul class="oauth-scopes">
                     {% for scope in scopes_descriptions %}
                         <li>{{ scope }}</li>
                     {% endfor %}
                 </ul>
 
-                {% if form.errors %}<div class="bb-error">{{ form.errors }}</div>{% endif %}
-                {% if form.non_field_errors %}<div class="bb-error">{{ form.non_field_errors }}</div>{% endif %}
+                {% if form.errors %}<div class="oauth-error">{{ form.errors }}</div>{% endif %}
+                {% if form.non_field_errors %}<div class="oauth-error">{{ form.non_field_errors }}</div>{% endif %}
 
-                <div class="bb-actions">
+                <div class="oauth-actions">
                     {# Cancel must NOT carry name="allow" — its absence signals denial to DOT. #}
-                    <input type="submit" class="bb-btn bb-btn-ghost" value="{% trans 'Cancel' %}"/>
+                    <input type="submit" class="oauth-btn oauth-btn-ghost" value="{% trans 'Cancel' %}"/>
                     {# Authorize MUST keep name="allow" — DOT checks for it to detect approval. #}
-                    <input type="submit" class="bb-btn bb-btn-primary" name="allow" value="{% trans 'Authorize' %}"/>
+                    <input type="submit" class="oauth-btn oauth-btn-primary" name="allow" value="{% trans 'Authorize' %}"/>
                 </div>
             </form>
 
-            <p class="bb-foot">{% trans "You can revoke this access at any time from BrightBean Studio." %}</p>
+            <p class="oauth-foot">{% trans "You can revoke this access at any time from 2post." %}</p>
         {% else %}
             <h1>{% trans "Something went wrong" %}</h1>
             <p>{{ error.error }}</p>

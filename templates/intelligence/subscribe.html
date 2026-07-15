@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load intelligence_extras humanize %}
 
-{% block title %}Activate Intelligence - {{ organization.name }} - Brightbean{% endblock %}
+{% block title %}Activate Intelligence - {{ organization.name }} - 2post{% endblock %}
 
 {% block page_header %}
 <div class="flex items-start justify-between gap-4 mb-4 lg:mb-[25px]">
@@ -104,7 +104,7 @@
                            class="sr-only" required{% if forloop.counter == 2 %} checked{% endif %}>
                     {% if forloop.counter == 2 %}
                     <span class="absolute -top-2.5 right-4 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wide"
-                          style="background: var(--primary); color: white; box-shadow: 0 2px 6px rgba(249, 115, 22, 0.3);">
+                          style="background: var(--primary); color: white; box-shadow: 0 2px 6px rgba(234, 88, 12, 0.3);">
                         Most popular
                     </span>
                     {% endif %}
@@ -226,7 +226,7 @@
         display: block !important;
     }
     label.plan-card[data-popular="1"] {
-        box-shadow: 0 4px 16px rgba(249, 115, 22, 0.10);
+        box-shadow: 0 4px 16px rgba(234, 88, 12, 0.10);
     }
 </style>
 {% endblock %}

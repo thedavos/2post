@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
             field=models.CharField(
                 blank=True,
                 default="",
-                help_text='Credential type, e.g. "oauth". Empty for bb_studio_ keys.',
+                help_text='Credential type, e.g. "oauth". Empty for 2post_ keys.',
                 max_length=16,
             ),
         ),
@@ -39,7 +39,7 @@ class Migration(migrations.Migration):
             name="api_key",
             field=models.ForeignKey(
                 blank=True,
-                help_text="Set for bb_studio_ key requests; null for OAuth callers (see actor_user).",
+                help_text="Set for 2post_ key requests; null for OAuth callers (see actor_user).",
                 null=True,
                 on_delete=django.db.models.deletion.CASCADE,
                 related_name="audit_logs",

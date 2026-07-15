@@ -28,7 +28,7 @@ class ApiKey(models.Model):
 
     Token format (constructed in ``services.issue_api_key``):
 
-        bb_studio_<random32>_<lookup8>
+        2post_<random32>_<lookup8>
 
     Where:
       * ``random32`` — 32 url-safe bytes from ``secrets.token_urlsafe(32)``
@@ -125,7 +125,7 @@ class ApiKeyAuditLog(models.Model):
         related_name="audit_logs",
         null=True,
         blank=True,
-        help_text="Set for bb_studio_ key requests; null for OAuth callers (see actor_user).",
+        help_text="Set for 2post_ key requests; null for OAuth callers (see actor_user).",
     )
     # OAuth 2.1 MCP callers act as a *person*, not a minted key — there is no
     # ApiKey row to point at, so attribute the request to the user instead.
@@ -141,7 +141,7 @@ class ApiKeyAuditLog(models.Model):
         max_length=16,
         blank=True,
         default="",
-        help_text='Credential type, e.g. "oauth". Empty for bb_studio_ keys.',
+        help_text='Credential type, e.g. "oauth". Empty for 2post_ keys.',
     )
     action = models.CharField(
         max_length=64,

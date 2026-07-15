@@ -22,7 +22,7 @@ from apps.organizations.models import Organization
 from apps.social_accounts.models import SocialAccount
 from apps.workspaces.models import Workspace
 
-TEMP_MEDIA_ROOT = tempfile.mkdtemp(prefix="bb-test-media-")
+TEMP_MEDIA_ROOT = tempfile.mkdtemp(prefix="2post-test-media-")
 
 
 def tearDownModule():

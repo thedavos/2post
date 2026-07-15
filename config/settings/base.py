@@ -140,7 +140,7 @@ else:
 
 # Database
 DATABASES = {
-    "default": env.db("DATABASE_URL", default="postgres://postgres:postgres@localhost:5432/brightbean"),
+    "default": env.db("DATABASE_URL", default="postgres://postgres:postgres@localhost:5432/2post"),
 }
 
 # Custom user model
@@ -457,7 +457,7 @@ RATELIMIT_USE_CACHE = "default"
 # (e.g. Claude Desktop) registers itself via Dynamic Client Registration,
 # then runs an authorization-code + PKCE flow against /oauth/authorize/ and
 # /oauth/token/. Issued access tokens resolve to a User and act with that
-# user's current workspace permissions. Existing bb_studio_ API keys keep
+# user's current workspace permissions. Existing 2post_ API keys keep
 # working unchanged (Claude Code injects them as a static header).
 #
 # Studio serves the app, the API, and the OAuth server on ONE host, so both
@@ -469,7 +469,7 @@ MCP_PUBLIC_BASE_URL = env("MCP_PUBLIC_BASE_URL", default=APP_URL).rstrip("/")
 MCP_OAUTH_ISSUER_URL = env("MCP_OAUTH_ISSUER_URL", default=APP_URL).rstrip("/")
 
 OAUTH2_PROVIDER = {
-    "SCOPES": {"mcp": "Call BrightBean Studio MCP tools on your behalf"},
+    "SCOPES": {"mcp": "Call 2post MCP tools on your behalf"},
     "DEFAULT_SCOPES": ["mcp"],
     "PKCE_REQUIRED": True,
     # Restrict ``code_challenge_method`` to ``S256``. django-oauth-toolkit

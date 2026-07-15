@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Publish - {{ workspace.name }} - Brightbean{% endblock %}
+{% block title %}Publish - {{ workspace.name }} - 2post{% endblock %}
 
 {% block page_header %}
 <div class="flex flex-wrap items-center justify-between gap-3 mb-4 lg:mb-[25px]">
@@ -65,7 +65,7 @@
     }
     .cal-day.past .day-num { color: #78716C; }
     .cal-day.today .day-num {
-        background: #F97316; color: white;
+        background: #EA580C; color: white;
     }
 
     .post-chip {
@@ -84,7 +84,7 @@
     .status-draft      { background: #F5F5F4; color: #57534E; border: 1px solid #E7E5E4; }
     .status-draft .chip-dot { background: #A8A29E; }
     .status-pending_review, .status-pending_client { background: #FFF7ED; color: #C2410C; border: 1px solid #FED7AA; }
-    .status-pending_review .chip-dot, .status-pending_client .chip-dot { background: #F97316; }
+    .status-pending_review .chip-dot, .status-pending_client .chip-dot { background: #EA580C; }
     .status-scheduled  { background: #EFF6FF; color: #1D4ED8; border: 1px solid #BFDBFE; }
     .status-scheduled .chip-dot { background: #3B82F6; }
     .status-published  { background: #F0FDF4; color: #15803D; border: 1px solid #BBF7D0; }
@@ -92,7 +92,7 @@
     .status-approved   { background: #F0FDFA; color: #0F766E; border: 1px solid #99F6E4; }
     .status-approved .chip-dot { background: #14B8A6; }
     .status-changes_requested { background: #FFF7ED; color: #C2410C; border: 1px solid #FED7AA; }
-    .status-changes_requested .chip-dot { background: #F97316; }
+    .status-changes_requested .chip-dot { background: #EA580C; }
     .status-rejected   { background: #FEF2F2; color: #B91C1C; border: 1px solid #FECACA; }
     .status-rejected .chip-dot { background: #EF4444; }
     .status-publishing { background: #EEF2FF; color: #4338CA; border: 1px solid #C7D2FE; }
@@ -142,7 +142,7 @@
         margin-bottom: -1px;
     }
     .publish-tab:hover { color: #1C1917; border-bottom-color: #D6D3D1; }
-    .publish-tab.active { color: #C2410C; border-bottom-color: #F97316; }
+    .publish-tab.active { color: #C2410C; border-bottom-color: #EA580C; }
 
     /* Hide scrollbar on filter containers */
     .cal-filters-scroll::-webkit-scrollbar { display: none; }
@@ -167,7 +167,7 @@
     .publish-filter-select:hover,
     .cal-filter-select:hover { border-color: #D6D3D1; }
     .publish-filter-select:focus,
-    .cal-filter-select:focus { outline: none; border-color: #F97316; box-shadow: 0 0 0 2px rgba(249,115,22,0.15); }
+    .cal-filter-select:focus { outline: none; border-color: #EA580C; box-shadow: 0 0 0 2px rgba(234,88,12,0.15); }
     .publish-filter-icon,
     .cal-filter-icon {
         position: absolute; left: 9px; top: 50%; transform: translateY(-50%);
@@ -193,10 +193,10 @@
         display: none;
         position: absolute; top: 6px; right: 6px;
         width: 22px; height: 22px; border-radius: 50%;
-        background: #F97316; color: white; border: none;
+        background: #EA580C; color: white; border: none;
         align-items: center; justify-content: center;
         cursor: pointer; font-size: 14px; line-height: 1;
-        box-shadow: 0 2px 6px rgba(249,115,22,0.35);
+        box-shadow: 0 2px 6px rgba(234,88,12,0.35);
         transition: transform 100ms ease, background 100ms ease;
         z-index: 5;
     }
@@ -209,8 +209,8 @@
         top: 50%; left: 50%; right: auto;
         transform: translate(-50%, -50%);
         width: 32px; height: 32px;
-        background: #F97316; color: white;
-        box-shadow: 0 2px 6px rgba(249,115,22,0.35);
+        background: #EA580C; color: white;
+        box-shadow: 0 2px 6px rgba(234,88,12,0.35);
         border: none;
     }
     .cal-add-cell:not(.has-posts) .cal-add-btn svg { width: 16px; height: 16px; }
@@ -220,7 +220,7 @@
     .cal-add-cell:not(.has-posts) .cal-add-btn:hover {
         background: #EA580C;
         transform: translate(-50%, -50%) scale(1.1);
-        box-shadow: 0 6px 20px rgba(249,115,22,0.35);
+        box-shadow: 0 6px 20px rgba(234,88,12,0.35);
     }
 
     /* Day/week grids (non-month cells): hide add button entirely when cell has posts */

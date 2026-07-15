@@ -2,7 +2,7 @@
 
 Token shape::
 
-    bb_studio_<random32>_<lookup8>
+    2post_<random32>_<lookup8>
     \\_______/ \\_______/ \\_____/
      prefix     secret     lookup
 
@@ -31,7 +31,7 @@ from django.utils import timezone
 
 from apps.api_keys.models import ApiKey
 
-TOKEN_PREFIX = "bb_studio_"
+TOKEN_PREFIX = "2post_"
 LOOKUP_LEN = 8
 REVOCATION_CACHE_TTL = 30  # seconds
 
@@ -61,7 +61,7 @@ def _derive_hmac_pepper() -> bytes:
         algorithm=SHA256(),
         length=32,
         salt=salt,
-        info=b"brightbean-api-key-hmac",
+        info=b"2post-api-key-hmac",
     ).derive(secret)
 
 

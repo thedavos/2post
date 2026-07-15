@@ -649,7 +649,7 @@ class TestFailedAuthThrottle:
 
         monkeypatch.setattr(auth_module, "verify_token", counting_verify)
 
-        c = _SecureClient(HTTP_AUTHORIZATION="Bearer bb_studio_fake-token-aaaaaaaaaaaaaaaaa_00000000")
+        c = _SecureClient(HTTP_AUTHORIZATION="Bearer 2post_fake-token-aaaaaaaaaaaaaaaaa_00000000")
 
         # The first _AUTH_FAIL_LIMIT attempts increment the counter and
         # call verify_token; the (limit+1)-th must short-circuit BEFORE

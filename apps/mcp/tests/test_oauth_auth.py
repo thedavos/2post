@@ -1,12 +1,12 @@
 """OAuth 2.1 authentication for the MCP transport (Claude Desktop connector).
 
-Covers the second credential path ``McpAuth`` adds on top of bb_studio_ keys:
+Covers the second credential path ``McpAuth`` adds on top of 2post_ keys:
 a django-oauth-toolkit access token resolves to a user, maps to their active
 workspace, and runs the same tools with that user's permissions. Also asserts
 the unauthenticated 401 carries the ``WWW-Authenticate`` challenge that starts
 Claude Desktop's OAuth handshake.
 
-The bb_studio_ key path is unchanged and stays covered by ``test_transport``.
+The 2post_ key path is unchanged and stays covered by ``test_transport``.
 """
 
 from __future__ import annotations

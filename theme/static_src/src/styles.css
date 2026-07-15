@@ -13,19 +13,20 @@
    ═══════════════════════════════════════════════════════════════ */
 
 :root {
-  /* Brand Tokens - BrightBean Orange */
+  /* Brand Tokens - Ember (warm orange) */
   --brand-50:  #FFF7ED;
   --brand-100: #FFEDD5;
   --brand-200: #FED7AA;
   --brand-300: #FDBA74;
   --brand-400: #FB923C;
-  --brand-500: #F97316;
-  --brand-600: #EA580C;
-  --brand-700: #C2410C;
-  --brand-800: #9A3412;
+  --brand-500: #EA580C;
+  --brand-600: #C2410C;
+  --brand-700: #9A3412;
+  --brand-800: #7C2D12;
   --brand-900: #7C2D12;
+  --primary-rgb: 234, 88, 12;
 
-  /* Brand Tokens - BrightBean Green (the bean in the logo) — used for
+  /* Brand Tokens - 2post Green — used for
      selection controls (checkboxes, toggle switches) */
   --brand-green-100: #EFF2DC;
   --brand-green-200: #DDE4B9;
@@ -99,7 +100,7 @@
   --shadow-md:  0 4px 6px rgba(23,20,18,0.06), 0 2px 4px rgba(23,20,18,0.04);
   --shadow-lg:  0 10px 15px rgba(23,20,18,0.08), 0 4px 6px rgba(23,20,18,0.04);
   --shadow-xl:  0 20px 25px rgba(23,20,18,0.08), 0 8px 10px rgba(23,20,18,0.04);
-  --shadow-primary: 0 4px 14px rgba(249,115,22,0.28);
+  --shadow-primary: 0 4px 14px rgba(234,88,12,0.28);
 
   /* Radii */
   --radius-sm:   0.25rem;
@@ -132,7 +133,7 @@ body {
 .auth-bg {
   background-color: var(--surface-1);
   background-image:
-    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(249,115,22,0.08), transparent),
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(234,88,12,0.08), transparent),
     radial-gradient(ellipse 60% 40% at 100% 100%, rgba(20,184,166,0.04), transparent);
 }
 
@@ -272,7 +273,7 @@ img.sidebar-logo-mark {
 .btn-primary-lift:hover {
   background: var(--primary-hover) !important;
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(249,115,22,0.35);
+  box-shadow: 0 6px 20px rgba(234,88,12,0.35);
 }
 
 .card-hover-lift {
@@ -342,7 +343,7 @@ img.sidebar-logo-mark {
   transition: background var(--dur-fast) ease;
 }
 .btn-primary-tint:hover {
-  background: rgba(var(--primary-rgb, 249, 115, 22), 0.2) !important;
+  background: rgba(var(--primary-rgb, 234, 88, 12), 0.2) !important;
 }
 
 .input-focus {
@@ -424,7 +425,7 @@ img.sidebar-logo-mark {
 .btn-brand:hover {
   background: var(--primary-hover);
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(249,115,22,0.35);
+  box-shadow: 0 6px 20px rgba(234,88,12,0.35);
 }
 .btn-brand:active {
   transform: translateY(0);
@@ -724,22 +725,22 @@ span.flatpickr-weekday {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   FORM SELECTION CONTROLS — bean-green accents
+   FORM SELECTION CONTROLS — brand-green accents
    Native checkboxes pick up the brand green via accent-color (the
    Tailwind forms plugin isn't installed, so text-* utilities don't
    restyle them and browsers fall back to their default blue).
    ═══════════════════════════════════════════════════════════════ */
-.bb-checkbox {
+.ui-checkbox {
   accent-color: var(--brand-green-500);
 }
-.bb-checkbox:focus-visible {
+.ui-checkbox:focus-visible {
   outline: 2px solid var(--brand-green-200);
   outline-offset: 1px;
 }
 
 /* Select with a custom chevron inset from the edge (the native arrow hugs
    the right border). Pair with the usual border/padding utility classes. */
-.bb-select {
+.ui-select {
   appearance: none;
   -webkit-appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%2378716C' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
@@ -750,8 +751,8 @@ span.flatpickr-weekday {
 }
 
 /* Toggle switch:
-   <label class="bb-toggle"><input type="checkbox" …><span class="bb-toggle-track"></span></label> */
-.bb-toggle {
+   <label class="ui-toggle"><input type="checkbox" …><span class="ui-toggle-track"></span></label> */
+.ui-toggle {
   position: relative;
   display: inline-flex;
   flex-shrink: 0;
@@ -759,20 +760,20 @@ span.flatpickr-weekday {
   height: 20px;
   cursor: pointer;
 }
-.bb-toggle input {
+.ui-toggle input {
   position: absolute;
   opacity: 0;
   width: 0;
   height: 0;
 }
-.bb-toggle-track {
+.ui-toggle-track {
   position: absolute;
   inset: 0;
   border-radius: 9999px;
   background: var(--neutral-300);
   transition: background 0.15s ease;
 }
-.bb-toggle-track::after {
+.ui-toggle-track::after {
   content: "";
   position: absolute;
   top: 2px;
@@ -784,17 +785,17 @@ span.flatpickr-weekday {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
   transition: transform 0.15s ease;
 }
-.bb-toggle input:checked + .bb-toggle-track {
+.ui-toggle input:checked + .ui-toggle-track {
   background: var(--brand-green-500);
 }
-.bb-toggle input:checked + .bb-toggle-track::after {
+.ui-toggle input:checked + .ui-toggle-track::after {
   transform: translateX(16px);
 }
-.bb-toggle input:focus-visible + .bb-toggle-track {
+.ui-toggle input:focus-visible + .ui-toggle-track {
   outline: 2px solid var(--brand-green-200);
   outline-offset: 1px;
 }
-.bb-toggle input:disabled + .bb-toggle-track {
+.ui-toggle input:disabled + .ui-toggle-track {
   opacity: 0.5;
   cursor: not-allowed;
 }

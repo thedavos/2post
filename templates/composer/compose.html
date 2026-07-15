@@ -2,7 +2,7 @@
 {% load static %}
 {% load common_extras %}
 
-{% block title %}{% if is_edit %}Edit Post{% else %}New Post{% endif %} - {{ workspace.name }} - Brightbean{% endblock %}
+{% block title %}{% if is_edit %}Edit Post{% else %}New Post{% endif %} - {{ workspace.name }} - 2post{% endblock %}
 
 {% comment %}Header is rendered inside the content block to avoid overlap with the -m-6 layout{% endcomment %}
 
@@ -56,8 +56,8 @@
     }
     .acct-pill:hover { border-color: #D6D3D1; background: #FAFAF9; }
     .acct-pill.selected {
-        border-color: #F97316; background: #FFF7ED;
-        box-shadow: 0 0 0 3px rgba(249,115,22,0.08);
+        border-color: #EA580C; background: #FFF7ED;
+        box-shadow: 0 0 0 3px rgba(234,88,12,0.08);
     }
     .acct-pill .checkmark {
         width: 16px; height: 16px; border-radius: 4px;
@@ -66,7 +66,7 @@
         transition: all 150ms ease;
     }
     .acct-pill.selected .checkmark {
-        background: #F97316; border-color: #F97316;
+        background: #EA580C; border-color: #EA580C;
     }
     .acct-pill.selected .checkmark svg { display: block; }
     .acct-pill .checkmark svg { display: none; }
@@ -112,8 +112,8 @@
     }
     .caption-wrap:hover { border-color: #D6D3D1; }
     .caption-wrap:focus-within {
-        border-color: #F97316;
-        box-shadow: 0 0 0 3px rgba(249,115,22,0.1);
+        border-color: #EA580C;
+        box-shadow: 0 0 0 3px rgba(234,88,12,0.1);
     }
     .caption-editor {
         font-family: system-ui, -apple-system, sans-serif;
@@ -145,8 +145,8 @@
     .comment-editor::placeholder { color: #A8A29E; }
     .comment-editor:hover { border-color: #D6D3D1; }
     .comment-editor:focus {
-        border-color: #F97316;
-        box-shadow: 0 0 0 3px rgba(249,115,22,0.1);
+        border-color: #EA580C;
+        box-shadow: 0 0 0 3px rgba(234,88,12,0.1);
     }
 
     /* Media dropzone - square tile, first in the media row */
@@ -164,7 +164,7 @@
     }
     .media-dropzone-inline:hover,
     .media-dropzone-inline.dragover {
-        border-color: #F97316;
+        border-color: #EA580C;
         background: #FFF7ED;
     }
 
@@ -724,7 +724,7 @@
                         <div>
                             <label class="block text-[11px] font-semibold text-stone-400 uppercase tracking-wider mb-1">Visibility</label>
                             <select :name="'yt_privacy_status_' + accId"
-                                    class="bb-select w-full text-sm px-3 py-2 rounded-lg border border-stone-200 bg-white outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100 transition-all">
+                                    class="ui-select w-full text-sm px-3 py-2 rounded-lg border border-stone-200 bg-white outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100 transition-all">
                                 <option value="public" :selected="(platformExtras[accId]?.privacy_status || 'public') === 'public'">Public</option>
                                 <option value="unlisted" :selected="platformExtras[accId]?.privacy_status === 'unlisted'">Unlisted</option>
                                 <option value="private" :selected="platformExtras[accId]?.privacy_status === 'private'">Private</option>
@@ -972,19 +972,19 @@
                                 <label class="flex items-center gap-2" :class="tt?.comment_disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'">
                                     <input type="checkbox" :name="'tiktok_allow_comment_' + accId" value="true"
                                            x-model="ttAllowComment" :disabled="!!tt?.comment_disabled"
-                                           class="bb-checkbox w-4 h-4 rounded border-stone-300">
+                                           class="ui-checkbox w-4 h-4 rounded border-stone-300">
                                     <span class="text-sm text-stone-700">Comment</span>
                                 </label>
                                 <label class="flex items-center gap-2" :class="tt?.duet_disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'">
                                     <input type="checkbox" :name="'tiktok_allow_duet_' + accId" value="true"
                                            x-model="ttAllowDuet" :disabled="!!tt?.duet_disabled"
-                                           class="bb-checkbox w-4 h-4 rounded border-stone-300">
+                                           class="ui-checkbox w-4 h-4 rounded border-stone-300">
                                     <span class="text-sm text-stone-700">Duet</span>
                                 </label>
                                 <label class="flex items-center gap-2" :class="tt?.stitch_disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'">
                                     <input type="checkbox" :name="'tiktok_allow_stitch_' + accId" value="true"
                                            x-model="ttAllowStitch" :disabled="!!tt?.stitch_disabled"
-                                           class="bb-checkbox w-4 h-4 rounded border-stone-300">
+                                           class="ui-checkbox w-4 h-4 rounded border-stone-300">
                                     <span class="text-sm text-stone-700">Stitch</span>
                                 </label>
                             </div>
@@ -996,17 +996,17 @@
                                     Disclose post content
                                     <span class="block text-[11px] text-stone-400 font-normal">Let others know this post promotes a brand, product or service.</span>
                                 </span>
-                                <label class="bb-toggle mt-0.5">
+                                <label class="ui-toggle mt-0.5">
                                     <input type="checkbox" x-model="ttDisclose"
                                            @change="if (!ttDisclose) { ttBrandOrganic = false; ttBrandContent = false; }">
-                                    <span class="bb-toggle-track"></span>
+                                    <span class="ui-toggle-track"></span>
                                 </label>
                             </div>
                             <div x-show="ttDisclose" x-transition class="mt-2 space-y-2">
                                 <label class="flex items-start gap-2 cursor-pointer">
                                     <input type="checkbox" :name="'tiktok_brand_organic_' + accId" value="true"
                                            x-model="ttBrandOrganic"
-                                           class="bb-checkbox w-4 h-4 mt-0.5 rounded border-stone-300">
+                                           class="ui-checkbox w-4 h-4 mt-0.5 rounded border-stone-300">
                                     <span class="text-sm text-stone-700">
                                         Your brand
                                         <span class="block text-[11px] text-stone-400 font-normal">You are promoting yourself or your own business.</span>
@@ -1017,7 +1017,7 @@
                                     <input type="checkbox" :name="'tiktok_brand_content_' + accId" value="true"
                                            x-model="ttBrandContent"
                                            :disabled="ttBrandingBlocked"
-                                           class="bb-checkbox w-4 h-4 mt-0.5 rounded border-stone-300">
+                                           class="ui-checkbox w-4 h-4 mt-0.5 rounded border-stone-300">
                                     <span class="text-sm text-stone-700">
                                         Branded content
                                         <span class="block text-[11px] text-stone-400 font-normal">You are promoting another brand or a third party.</span>
@@ -1051,10 +1051,10 @@
                                     AI-generated content
                                     <span class="block text-[11px] text-stone-400 font-normal">Add TikTok's AI-generated label if the post contains AI-generated content.</span>
                                 </span>
-                                <label class="bb-toggle mt-0.5">
+                                <label class="ui-toggle mt-0.5">
                                     <input type="checkbox" :name="'tiktok_is_aigc_' + accId" value="true"
                                            x-model="ttAigc">
-                                    <span class="bb-toggle-track"></span>
+                                    <span class="ui-toggle-track"></span>
                                 </label>
                             </div>
                         </div>

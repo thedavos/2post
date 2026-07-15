@@ -30,13 +30,13 @@ class IntelligenceSubscriptionTests(TestCase):
         org = Organization.objects.create(name="Acme")
         sub = IntelligenceSubscription.objects.create(
             organization=org,
-            intelligence_api_key="bb_secret_plaintext",
-            intelligence_api_key_prefix="bb_secre",
+            intelligence_api_key="tp_secret_plaintext",
+            intelligence_api_key_prefix="tp_secre",
         )
         sub.refresh_from_db()
         # Reads back as plaintext via from_db_value.
-        self.assertEqual(sub.intelligence_api_key, "bb_secret_plaintext")
-        self.assertEqual(sub.intelligence_api_key_prefix, "bb_secre")
+        self.assertEqual(sub.intelligence_api_key, "tp_secret_plaintext")
+        self.assertEqual(sub.intelligence_api_key_prefix, "tp_secre")
 
     def test_default_status_is_provisioning(self):
         org = Organization.objects.create(name="Acme")

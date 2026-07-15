@@ -8,7 +8,7 @@ nonce so a captured request cannot be replayed across endpoints,
 methods, or deployments.
 
 ``IntelligenceAPIClient`` talks to Intelligence's public /v1/ tool
-endpoints using a per-org bearer ``bb_`` key. This is the layer Studio
+endpoints using a per-org bearer API key. This is the layer 2post
 view code calls to score packaging, benchmark channels, etc.
 """
 
@@ -442,7 +442,7 @@ class InternalClient:
 
 class IntelligenceAPIClient:
     """Calls Intelligence's public /v1/ tool endpoints using a per-org
-    ``bb_`` bearer key (decrypted from ``IntelligenceSubscription``)."""
+    bearer API key (decrypted from ``IntelligenceSubscription``)."""
 
     def __init__(self, api_key: str, *, base_url: str | None = None, timeout: float = 30.0):
         if not api_key:

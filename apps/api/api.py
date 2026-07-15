@@ -35,12 +35,12 @@ class NoncedSwagger(Swagger):
 
 
 api = NinjaAPI(
-    title="Brightbean Agent API",
+    title="2post Agent API",
     version="1.0.0",
     description=(
         "Programmatic access for external AI agents. Authentication is via "
         "scoped bearer tokens; create one from the Organization → API Keys "
-        "page in the Brightbean Studio settings.\n\n"
+        "page in the 2post settings.\n\n"
         "**Rate limits.** Per-key write rate is 120/min, read 300/min, "
         "with a 1000/min aggregate cap per workspace. Limits are enforced "
         "as HTTP 429 with a JSON body that includes `tier`, `limit`, "
@@ -77,7 +77,7 @@ api.add_router("/posts", posts_router)
 api.add_router("/media", media_router)
 api.add_router("/analytics", analytics_router)
 # MCP Streamable HTTP transport. Same audit + rate limits as REST, but a
-# wider auth class: ``McpAuth`` accepts both bb_studio_ keys AND OAuth 2.1
+# wider auth class: ``McpAuth`` accepts both 2post_ keys AND OAuth 2.1
 # access tokens (Claude Desktop's native connector flow). Mounted last so
 # its path prefix can't shadow another router.
 api.add_router("/mcp", mcp_router, auth=McpAuth())
@@ -119,7 +119,7 @@ _MCP_RESOURCE_METADATA_PATH = "/.well-known/oauth-protected-resource/api/v1/mcp"
 def _authentication_error_handler(request: HttpRequest, exc: AuthenticationError) -> HttpResponse:
     """Uniform 401 envelope; on the MCP endpoint, advertise the OAuth challenge.
 
-    A bare 401 is enough for the bb_studio_ key path (Claude Code injects a
+    A bare 401 is enough for the 2post_ key path (Claude Code injects a
     static header). Claude Desktop's native connector, however, only begins
     its OAuth login when the 401 carries a ``WWW-Authenticate: Bearer
     resource_metadata="..."`` header pointing at the RFC 9728 protected-

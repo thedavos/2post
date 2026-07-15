@@ -8,11 +8,11 @@
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability in Brightbean, please report it responsibly.
+If you discover a security vulnerability in 2post, please report it responsibly.
 
 **Do not open a public GitHub issue for security vulnerabilities.**
 
-Instead, please email **security@brightbean.xyz** with:
+Instead, please email **security@2post.app** with:
 
 - A description of the vulnerability
 - Steps to reproduce
