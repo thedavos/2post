@@ -3,7 +3,7 @@ name: publish-engine
 description: >-
   Explains and modifies 2post's publishing loop (PlatformPost status, retries,
   credentials, rate limits, worker). Use when debugging failed publishes,
-  changing publisher/engine.py, schedule/queue publish behavior, or first-comment delays.
+  changing apps/publisher/engine.py, schedule/queue publish behavior, or first-comment delays.
 ---
 
 # Publish engine
