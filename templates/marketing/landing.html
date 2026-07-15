@@ -17,7 +17,21 @@
             --landing-warm: #F7F6F2;
             --landing-cream: #FFF7ED;
             --landing-dark: #1C1917;
+            /* Bluesky brand blue, the single cool supporting accent */
+            --landing-cool: #1185FE;
             --landing-ease: cubic-bezier(0.16, 1, 0.3, 1);
+            --space-1: 4px;
+            --space-2: 8px;
+            --space-3: 12px;
+            --space-4: 16px;
+            --space-5: 24px;
+            --space-6: 32px;
+            --space-7: 48px;
+            --space-8: 64px;
+            --space-9: 96px;
+            --landing-radius-sm: 8px;
+            --landing-radius-md: 10px;
+            --landing-radius-lg: 12px;
             background: var(--landing-warm);
             color: var(--text-primary);
             font-family: var(--font-body);
@@ -27,17 +41,17 @@
         .landing-container {
             width: min(100%, 1440px);
             margin-inline: auto;
-            padding-inline: 1.5rem;
+            padding-inline: var(--space-5);
         }
         @media (min-width: 1024px) {
-            .landing-container { padding-inline: 3rem; }
+            .landing-container { padding-inline: var(--space-7); }
         }
         .landing-eyebrow {
             font-size: 0.75rem;
-            font-weight: 650;
+            font-weight: 500;
             letter-spacing: 0.07em;
             color: var(--text-tertiary);
-            margin: 0 0 0.75rem;
+            margin: 0 0 var(--space-3);
         }
         .landing-eyebrow.is-caps { text-transform: uppercase; }
         .landing-display {
@@ -80,7 +94,7 @@
         }
         .landing-support {
             font-size: 1.5rem;
-            font-weight: 650;
+            font-weight: 500;
             line-height: 1.25;
             color: var(--text-primary);
             margin: 0;
@@ -89,12 +103,13 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem;
+            gap: var(--space-2);
             font-family: var(--font-body);
-            font-weight: 600;
+            font-weight: 500;
             font-size: 0.875rem;
-            padding: 0.625rem 1.5rem;
-            border-radius: var(--radius-full);
+            min-height: 44px;
+            padding: var(--space-3) var(--space-5);
+            border-radius: var(--landing-radius-md);
             border: none;
             cursor: pointer;
             letter-spacing: 0.005em;
@@ -126,7 +141,7 @@
         .landing-cta-text {
             background: transparent;
             color: var(--text-secondary);
-            padding-inline: 0.25rem;
+            padding-inline: var(--space-1);
         }
         .landing-cta-text:hover {
             color: var(--text-primary);
@@ -146,28 +161,28 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 1rem;
+            gap: var(--space-4);
         }
         .landing-nav-links {
             display: none;
             align-items: center;
-            gap: 1.5rem;
+            gap: var(--space-5);
         }
         .landing-nav-links a {
             font-size: 0.875rem;
-            font-weight: 600;
+            font-weight: 500;
             color: var(--text-secondary);
         }
         .landing-nav-links a:hover { color: var(--text-primary); }
         .landing-nav-actions {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: var(--space-3);
         }
         .landing-nav-signin {
             display: none;
             font-size: 0.875rem;
-            font-weight: 600;
+            font-weight: 500;
             color: var(--text-secondary);
         }
         .landing-nav-signin:hover { color: var(--text-primary); }
@@ -179,10 +194,10 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 2.5rem;
-            height: 2.5rem;
+            width: 2.75rem;
+            height: 2.75rem;
             border: 1px solid var(--neutral-300);
-            border-radius: var(--radius-lg);
+            border-radius: var(--landing-radius-sm);
             background: transparent;
             color: var(--text-primary);
             cursor: pointer;
@@ -191,21 +206,22 @@
         .landing-menu-panel {
             position: absolute;
             right: 0;
-            top: calc(100% + 0.5rem);
-            width: min(18rem, calc(100vw - 2rem));
+            top: calc(100% + var(--space-2));
+            width: min(18rem, calc(100vw - var(--space-6)));
             display: grid;
-            gap: 0.75rem;
             border: 1px solid var(--neutral-200);
-            border-radius: var(--radius-xl);
+            border-radius: var(--landing-radius-lg);
             background: var(--landing-warm);
-            padding: 1rem 1.15rem;
+            padding: var(--space-2) var(--space-4);
             box-shadow: var(--shadow-md);
         }
         .landing-menu-panel a {
+            display: flex;
+            align-items: center;
+            min-height: 44px;
             font-size: 0.875rem;
-            font-weight: 600;
+            font-weight: 500;
             color: var(--text-secondary);
-            padding: 0.2rem 0;
         }
         @media (min-width: 1024px) {
             .landing-nav { height: 4.5rem; }
@@ -215,7 +231,7 @@
         }
         .landing-hero {
             position: relative;
-            padding: 2rem 0 3rem;
+            padding: var(--space-6) 0 var(--space-7);
             background:
                 radial-gradient(ellipse 55% 45% at 12% 5%, rgba(234, 88, 12, 0.12), rgba(234, 88, 12, 0.05) 38%, transparent 68%),
                 radial-gradient(ellipse 50% 55% at 85% 60%, #FFF7ED, transparent 70%),
@@ -223,7 +239,7 @@
         }
         .landing-hero-grid {
             display: grid;
-            gap: 2rem;
+            gap: var(--space-6);
             align-items: center;
         }
         .landing-hero-copy {
@@ -232,21 +248,21 @@
         .landing-hero-mark {
             width: 4.5rem;
             height: auto;
-            margin-bottom: 1.25rem;
+            margin-bottom: var(--space-5);
         }
         .landing-hero-sub {
-            margin-top: 1.25rem;
+            margin-top: var(--space-4);
             max-width: 32rem;
         }
         .landing-hero-ctas {
             display: flex;
             flex-direction: column;
-            gap: 0.75rem;
-            margin-top: 1.75rem;
+            gap: var(--space-3);
+            margin-top: var(--space-6);
         }
         .landing-hero-ctas .landing-cta { width: 100%; }
         .landing-hero-visual {
-            margin-inline: -1.5rem;
+            margin-inline: calc(-1 * var(--space-5));
             position: relative;
         }
         .landing-hero-shot {
@@ -257,12 +273,12 @@
             object-position: left top;
             border: 1px solid var(--neutral-300);
             border-right: none;
-            border-radius: 1rem 0 0 1rem;
+            border-radius: var(--landing-radius-lg) 0 0 var(--landing-radius-lg);
             box-shadow: 0 18px 40px rgba(28, 25, 23, 0.12);
             background: var(--landing-cream);
         }
         .landing-hero-caption {
-            margin: 0.75rem 1.5rem 0;
+            margin: var(--space-3) var(--space-5) 0;
             font-size: 0.875rem;
             color: var(--text-tertiary);
         }
@@ -272,7 +288,7 @@
         }
         @media (min-width: 1024px) {
             .landing-hero {
-                padding: 3rem 0 5rem;
+                padding: var(--space-7) 0 var(--space-8);
                 min-height: calc(100svh - 4.5rem);
                 display: flex;
                 align-items: center;
@@ -299,7 +315,7 @@
                 height: auto;
                 object-fit: contain;
                 border-right: 1px solid var(--neutral-300);
-                border-radius: 1rem 0 0 1rem;
+                border-radius: var(--landing-radius-lg) 0 0 var(--landing-radius-lg);
             }
             .landing-hero-caption {
                 margin-left: 0;
@@ -314,85 +330,173 @@
         }
         .landing-problem {
             background: var(--surface-0);
-            padding: 4.5rem 0;
+            padding: var(--space-8) 0;
         }
         .landing-problem-grid {
             display: grid;
-            gap: 3rem;
-        }
-        .landing-problem-block + .landing-promise-block {
-            border-top: 1px solid var(--neutral-200);
-            padding-top: 2rem;
+            gap: var(--space-7);
         }
         @media (min-width: 1024px) {
-            .landing-problem { padding: 7rem 0; }
+            .landing-problem { padding: var(--space-9) 0; }
             .landing-problem-grid {
                 grid-template-columns: repeat(12, minmax(0, 1fr));
-                gap: 2rem;
+                gap: var(--space-6);
             }
             .landing-problem-block { grid-column: 2 / span 5; }
             .landing-promise-block {
                 grid-column: 7 / span 5;
-                margin-top: 4rem;
-                border-top: none;
-                padding-top: 0;
+                margin-top: var(--space-8);
             }
+        }
+        .landing-steps {
+            display: grid;
+            gap: var(--space-6);
+            max-width: 64rem;
+            margin-top: var(--space-8);
+        }
+        .landing-step-canvas {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            gap: var(--space-2);
+            min-height: 10rem;
+            padding: var(--space-5);
+            border-radius: var(--landing-radius-lg);
+        }
+        .landing-step-canvas > :nth-child(2) { margin-left: var(--space-5); }
+        .landing-step-canvas > :nth-child(3) { margin-left: var(--space-7); }
+        .landing-step-canvas.is-connect {
+            background: radial-gradient(120% 90% at 18% 0%, var(--landing-cream), transparent 62%), #F5F5F4;
+        }
+        .landing-step-canvas.is-approve {
+            background: radial-gradient(120% 100% at 82% 8%, rgba(234, 88, 12, 0.16), transparent 65%), var(--landing-cream);
+        }
+        .landing-step-canvas.is-publish {
+            background: radial-gradient(130% 100% at 18% 100%, rgba(17, 133, 254, 0.13), transparent 62%), #F5F5F4;
+        }
+        .landing-step-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+            width: max-content;
+            background: var(--surface-0);
+            border: 1px solid var(--neutral-200);
+            border-radius: var(--landing-radius-sm);
+            padding: var(--space-2) var(--space-3);
+            font-size: 0.8125rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            box-shadow: var(--shadow-sm);
+        }
+        .landing-step-chip.is-action {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: var(--text-inverse);
+        }
+        .landing-step-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        .landing-step-dot.is-ember { background: var(--brand-400); }
+        .landing-step-dot.is-cool { background: var(--landing-cool); }
+        .landing-step-queue {
+            display: grid;
+            gap: var(--space-1);
+            width: max-content;
+            background: var(--surface-0);
+            border: 1px solid var(--neutral-200);
+            border-radius: var(--landing-radius-sm);
+            padding: var(--space-3);
+            box-shadow: var(--shadow-sm);
+        }
+        .landing-step-queue i {
+            display: block;
+            width: 5.5rem;
+            height: 4px;
+            background: var(--neutral-200);
+        }
+        .landing-step-queue i:first-child {
+            width: 4rem;
+            background: var(--brand-400);
+        }
+        .landing-step-title {
+            margin: var(--space-4) 0 0;
+            font-size: 0.9375rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        .landing-step-desc {
+            margin: var(--space-1) 0 0;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            color: var(--text-tertiary);
+            max-width: 22rem;
+        }
+        @media (min-width: 768px) {
+            .landing-steps { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+            .landing-step:nth-child(2) { margin-top: var(--space-5); }
+            .landing-step:nth-child(3) { margin-top: var(--space-7); }
+        }
+        @media (min-width: 1024px) {
+            .landing-steps { margin-top: var(--space-9); }
         }
         .landing-tour-compose {
             background: var(--landing-cream);
-            padding: 4.5rem 0;
+            padding: var(--space-8) 0;
         }
         .landing-tour-compose .landing-container > .landing-body {
-            margin-top: 1rem;
+            margin-top: var(--space-4);
         }
         .landing-tour-compose .landing-shot {
-            margin-top: 2.5rem;
+            margin-top: var(--space-7);
             width: 100%;
             min-width: 0;
-            border-radius: var(--radius-2xl);
+            border-radius: var(--landing-radius-lg);
             border: 1px solid var(--neutral-300);
             box-shadow: var(--shadow-lg);
             display: block;
         }
         @media (min-width: 1024px) {
-            .landing-tour-compose { padding: 7.5rem 0; }
+            .landing-tour-compose { padding: var(--space-9) 0; }
             .landing-tour-compose .landing-shot { min-width: 960px; }
         }
         .landing-tour-approvals {
             background: var(--landing-warm);
-            padding: 4.5rem 0;
+            padding: var(--space-8) 0;
         }
         .landing-approvals-grid {
             display: grid;
-            gap: 2rem;
+            gap: var(--space-6);
             align-items: center;
         }
         .landing-portal {
             border: 1px solid var(--neutral-300);
-            border-radius: var(--radius-2xl);
+            border-radius: var(--landing-radius-lg);
             background: var(--surface-0);
-            padding: 1.5rem;
+            padding: var(--space-5);
             box-shadow: var(--shadow-sm);
         }
         .landing-portal-bar {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 1rem;
-            margin-bottom: 1.25rem;
-            padding-bottom: 1rem;
+            gap: var(--space-4);
+            margin-bottom: var(--space-4);
+            padding-bottom: var(--space-4);
             border-bottom: 1px solid var(--neutral-200);
         }
         .landing-portal-chip {
             display: inline-flex;
             align-items: center;
             font-size: 0.75rem;
-            font-weight: 650;
+            font-weight: 500;
             color: var(--brand-700);
             background: var(--brand-50);
             border: 1px solid var(--brand-200);
-            border-radius: var(--radius-full);
-            padding: 0.25rem 0.75rem;
+            border-radius: var(--landing-radius-sm);
+            padding: var(--space-1) var(--space-3);
         }
         .landing-portal-status {
             font-size: 0.8125rem;
@@ -400,26 +504,26 @@
         }
         .landing-portal-title {
             font-size: 1.125rem;
-            font-weight: 650;
-            margin: 0 0 0.5rem;
+            font-weight: 500;
+            margin: 0 0 var(--space-2);
             color: var(--text-primary);
         }
         .landing-portal-copy {
             font-size: 0.9375rem;
             line-height: 1.55;
             color: var(--text-secondary);
-            margin: 0 0 1.25rem;
+            margin: 0 0 var(--space-4);
         }
         .landing-portal-actions {
             display: flex;
             flex-wrap: wrap;
-            gap: 0.5rem;
+            gap: var(--space-2);
         }
         .landing-portal-btn {
             font-size: 0.8125rem;
-            font-weight: 600;
-            padding: 0.5rem 0.9rem;
-            border-radius: var(--radius-full);
+            font-weight: 500;
+            padding: var(--space-2) var(--space-3);
+            border-radius: var(--landing-radius-sm);
             border: 1px solid var(--neutral-300);
             background: var(--surface-0);
             color: var(--text-primary);
@@ -430,60 +534,60 @@
             color: var(--text-inverse);
         }
         @media (min-width: 1024px) {
-            .landing-tour-approvals { padding: 7rem 0; }
+            .landing-tour-approvals { padding: var(--space-9) 0; }
             .landing-approvals-grid {
                 grid-template-columns: 5fr 7fr;
-                gap: 3rem;
+                gap: var(--space-7);
             }
         }
         .landing-tour-results {
             background: var(--surface-0);
-            padding: 4.5rem 0;
+            padding: var(--space-8) 0;
         }
         .landing-tour-results-copy {
             max-width: 40rem;
-            margin: 0 auto 2.5rem;
+            margin: 0 auto var(--space-7);
             text-align: center;
         }
         .landing-tour-results-copy .landing-body {
-            margin: 1rem auto 0;
+            margin: var(--space-4) auto 0;
         }
         .landing-tour-results .landing-shot {
             display: block;
             width: min(100%, 1200px);
             margin-inline: auto;
-            border-radius: var(--radius-2xl);
+            border-radius: var(--landing-radius-lg);
             border: 1px solid var(--neutral-300);
             box-shadow: var(--shadow-lg);
             aspect-ratio: 16 / 9;
             object-fit: cover;
         }
         @media (min-width: 1024px) {
-            .landing-tour-results { padding: 7rem 0; }
+            .landing-tour-results { padding: var(--space-9) 0; }
             .landing-tour-results .landing-shot {
-                width: calc(100% + 4rem);
-                margin-inline: -2rem;
+                width: calc(100% + var(--space-8));
+                margin-inline: calc(-1 * var(--space-6));
             }
         }
         .landing-platforms {
             background: var(--landing-warm);
-            padding: 5rem 0;
+            padding: var(--space-8) 0;
         }
         .landing-platforms-list {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 0.75rem 1rem;
-            margin: 2rem 0 1.5rem;
+            gap: var(--space-3) var(--space-4);
+            margin: var(--space-6) 0 var(--space-5);
             padding: 0;
             list-style: none;
         }
         .landing-platforms-list li {
             font-size: 0.9375rem;
-            font-weight: 600;
+            font-weight: 500;
             color: var(--text-primary);
-            padding: 0.65rem 0.85rem;
+            padding: var(--space-3) var(--space-4);
             border: 1px solid var(--neutral-200);
-            border-radius: var(--radius-lg);
+            border-radius: var(--landing-radius-sm);
             background: color-mix(in srgb, var(--surface-0) 70%, transparent);
         }
         @media (min-width: 768px) {
@@ -492,7 +596,7 @@
             }
         }
         @media (min-width: 1024px) {
-            .landing-platforms { padding: 6rem 0; }
+            .landing-platforms { padding: var(--space-9) 0; }
             .landing-platforms-list {
                 grid-template-columns: repeat(6, minmax(0, 1fr));
             }
@@ -502,16 +606,16 @@
         }
         .landing-platforms-cta {
             display: inline-flex;
-            margin-top: 1rem;
+            margin-top: var(--space-4);
             font-size: 0.875rem;
-            font-weight: 600;
+            font-weight: 500;
             color: var(--brand-600);
         }
         .landing-platforms-cta:hover { color: var(--brand-700); }
         .landing-ownership {
             background: var(--landing-dark);
             color: #fff;
-            padding: 5rem 0;
+            padding: var(--space-8) 0;
         }
         .landing-ownership .landing-eyebrow { color: var(--neutral-400); }
         .landing-ownership .landing-display,
@@ -520,17 +624,17 @@
         .landing-ownership .landing-body-sm { color: rgba(255, 255, 255, 0.86); }
         .landing-ownership-grid {
             display: grid;
-            gap: 2.5rem;
+            gap: var(--space-6);
         }
         .landing-ownership-facts {
             display: grid;
-            gap: 1.5rem;
+            gap: var(--space-5);
         }
         .landing-ownership-ctas {
             display: flex;
             flex-wrap: wrap;
-            gap: 0.75rem;
-            margin-top: 2rem;
+            gap: var(--space-3);
+            margin-top: var(--space-6);
         }
         .landing-ownership .landing-cta-secondary {
             background: transparent;
@@ -542,28 +646,31 @@
             background: rgba(255, 255, 255, 0.04);
         }
         .landing-waitlist {
-            margin-top: 4rem;
-            padding-top: 2.5rem;
+            margin-top: var(--space-8);
+            padding-top: var(--space-7);
             border-top: 1px solid var(--neutral-700);
             max-width: 36rem;
         }
         .landing-waitlist-form {
             display: grid;
-            gap: 0.75rem;
-            margin-top: 1.25rem;
+            gap: var(--space-3);
+            margin-top: var(--space-5);
         }
         .landing-waitlist label {
+            display: block;
             font-size: 0.875rem;
-            font-weight: 600;
+            font-weight: 500;
             color: #fff;
+            margin-bottom: var(--space-1);
         }
         .landing-waitlist input[type="email"] {
             width: 100%;
+            min-height: 44px;
             border: 1px solid var(--neutral-600);
-            border-radius: var(--radius-lg);
+            border-radius: var(--landing-radius-md);
             background: rgba(255, 255, 255, 0.04);
             color: #fff;
-            padding: 0.75rem 0.9rem;
+            padding: var(--space-3) var(--space-4);
             font-size: 1rem;
         }
         .landing-waitlist input[type="email"]::placeholder {
@@ -577,7 +684,7 @@
         .landing-waitlist .landing-cta-primary { width: 100%; }
         .landing-waitlist-success {
             display: none;
-            margin-top: 1.25rem;
+            margin-top: var(--space-5);
             font-size: 1rem;
             line-height: 1.55;
             color: #fff;
@@ -585,16 +692,16 @@
         .landing-waitlist.is-done .landing-waitlist-form { display: none; }
         .landing-waitlist.is-done .landing-waitlist-success { display: block; }
         .landing-waitlist-disclaimer {
-            margin-top: 0.85rem;
+            margin-top: var(--space-3);
             font-size: 0.8125rem;
             line-height: 1.5;
             color: var(--neutral-300);
         }
         @media (min-width: 1024px) {
-            .landing-ownership { padding: 8rem 0; }
+            .landing-ownership { padding: var(--space-9) 0; }
             .landing-ownership-grid {
                 grid-template-columns: 2fr 1fr;
-                gap: 4rem;
+                gap: var(--space-8);
                 align-items: start;
             }
             .landing-waitlist-form {
@@ -602,28 +709,27 @@
                 align-items: end;
             }
             .landing-waitlist .landing-cta-primary { width: auto; }
-            .landing-waitlist label { grid-column: 1 / -1; }
         }
         .landing-agencies {
             background: var(--landing-cream);
-            padding: 5rem 0;
+            padding: var(--space-8) 0;
         }
         .landing-agencies-grid {
             display: grid;
-            gap: 2rem;
-            margin-top: 2.5rem;
+            gap: var(--space-6);
+            margin-top: var(--space-7);
             align-items: start;
         }
         .landing-agencies .landing-shot {
             width: 100%;
-            border-radius: var(--radius-2xl);
+            border-radius: var(--landing-radius-lg);
             border: 1px solid var(--neutral-300);
             box-shadow: var(--shadow-md);
             display: block;
         }
         .landing-agencies-side {
             display: grid;
-            gap: 1rem;
+            gap: var(--space-4);
         }
         .landing-agencies-note {
             font-size: 0.875rem;
@@ -631,17 +737,17 @@
             margin: 0;
         }
         @media (min-width: 1024px) {
-            .landing-agencies { padding: 7rem 0; }
+            .landing-agencies { padding: var(--space-9) 0; }
             .landing-agencies-grid {
                 grid-template-columns: 1.6fr 0.8fr;
-                gap: 2.5rem;
+                gap: var(--space-6);
             }
         }
         .landing-closing {
             position: relative;
             overflow: hidden;
             background: var(--landing-warm);
-            padding: 5rem 0;
+            padding: var(--space-8) 0;
         }
         .landing-closing-mark {
             position: absolute;
@@ -662,29 +768,29 @@
             display: flex;
             flex-wrap: wrap;
             align-items: center;
-            gap: 1rem;
-            margin-top: 1.75rem;
+            gap: var(--space-4);
+            margin-top: var(--space-6);
         }
         .landing-closing-note {
-            margin-top: 1rem;
+            margin-top: var(--space-4);
             font-size: 0.875rem;
             color: var(--text-tertiary);
         }
         @media (min-width: 1024px) {
-            .landing-closing { padding: 7rem 0; }
+            .landing-closing { padding: var(--space-9) 0; }
             .landing-closing-copy { width: 58%; max-width: none; }
         }
         .landing-footer {
             background: var(--surface-0);
             border-top: 1px solid var(--neutral-200);
-            padding: 4rem 0;
+            padding: var(--space-8) 0;
         }
         .landing-footer-grid {
             display: grid;
-            gap: 2rem;
+            gap: var(--space-6);
         }
         .landing-footer-tagline {
-            margin-top: 0.85rem;
+            margin-top: var(--space-3);
             max-width: 28rem;
             font-size: 0.875rem;
             line-height: 1.55;
@@ -692,28 +798,32 @@
         }
         .landing-footer-links {
             display: grid;
-            gap: 0.65rem;
         }
         .landing-footer-links a,
         .landing-footer-links span {
+            display: flex;
+            align-items: center;
+            min-height: 44px;
             font-size: 0.8125rem;
             color: var(--text-secondary);
         }
         .landing-footer-links a:hover { color: var(--text-primary); }
         .landing-footer-meta {
-            margin-top: 2rem;
+            margin-top: var(--space-6);
             font-size: 0.8125rem;
             color: var(--text-tertiary);
         }
         @media (min-width: 1024px) {
-            .landing-footer { padding: 5rem 0; }
             .landing-footer-grid {
                 grid-template-columns: 1.4fr 1fr;
                 justify-content: space-between;
             }
             .landing-footer-links {
                 justify-self: end;
-                text-align: right;
+            }
+            .landing-footer-links a,
+            .landing-footer-links span {
+                justify-content: flex-end;
             }
         }
         .landing-reveal {
@@ -812,15 +922,44 @@
 
     <!-- problem -->
     <section class="landing-problem" id="funciones">
-        <div class="landing-container landing-problem-grid">
-            <div class="landing-problem-block">
-                <p class="landing-eyebrow">Demasiadas cuentas. Demasiadas pestañas.</p>
-                <h2 class="landing-display landing-display-lg">Tu operación social no debería crecer al ritmo de tu factura.</h2>
-                <p class="landing-body" style="margin-top:1.25rem;">Cada cliente suma cuentas, aprobaciones, permisos y conversaciones. En muchos SaaS, también suma asientos, canales y funciones bloqueadas por plan.</p>
+        <div class="landing-container">
+            <div class="landing-problem-grid">
+                <div class="landing-problem-block">
+                    <p class="landing-eyebrow">Demasiadas cuentas. Demasiadas pestañas.</p>
+                    <h2 class="landing-display landing-display-lg">Tu operación social no debería crecer al ritmo de tu factura.</h2>
+                    <p class="landing-body" style="margin-top:var(--space-4);">Cada cliente suma cuentas, aprobaciones, permisos y conversaciones. En muchos SaaS, también suma asientos, canales y funciones bloqueadas por plan.</p>
+                </div>
+                <div class="landing-promise-block">
+                    <h2 class="landing-display landing-display-lg">Un solo sistema para tu equipo, tus clientes y tus datos.</h2>
+                    <p class="landing-body" style="margin-top:var(--space-4);">Aloja 2post donde decidas, conecta tus propias apps de desarrollador y administra cada workspace con roles y permisos claros.</p>
+                </div>
             </div>
-            <div class="landing-promise-block">
-                <h2 class="landing-display landing-display-lg">Un solo sistema para tu equipo, tus clientes y tus datos.</h2>
-                <p class="landing-body" style="margin-top:1.25rem;">Aloja 2post donde decidas, conecta tus propias apps de desarrollador y administra cada workspace con roles y permisos claros.</p>
+            <div class="landing-steps landing-reveal">
+                <div class="landing-step">
+                    <div class="landing-step-canvas is-connect" aria-hidden="true">
+                        <span class="landing-step-chip">Instagram</span>
+                        <span class="landing-step-chip">LinkedIn</span>
+                        <span class="landing-step-chip">TikTok</span>
+                    </div>
+                    <p class="landing-step-title">Conecta</p>
+                    <p class="landing-step-desc">Enlaza tus cuentas con tus propias credenciales de desarrollador.</p>
+                </div>
+                <div class="landing-step">
+                    <div class="landing-step-canvas is-approve" aria-hidden="true">
+                        <span class="landing-step-chip"><i class="landing-step-dot is-ember"></i>Aprobación enviada</span>
+                        <span class="landing-step-chip is-action">Aprobar</span>
+                    </div>
+                    <p class="landing-step-title">Aprueba</p>
+                    <p class="landing-step-desc">Cada cliente revisa desde un enlace seguro, sin crear una cuenta.</p>
+                </div>
+                <div class="landing-step">
+                    <div class="landing-step-canvas is-publish" aria-hidden="true">
+                        <span class="landing-step-queue"><i></i><i></i><i></i></span>
+                        <span class="landing-step-chip"><i class="landing-step-dot is-cool"></i>Listo para publicar</span>
+                    </div>
+                    <p class="landing-step-title">Publica</p>
+                    <p class="landing-step-desc">Programa con el calendario o deja que la cola publique por ti.</p>
+                </div>
             </div>
         </div>
     </section>
@@ -841,7 +980,7 @@
             <div>
                 <p class="landing-eyebrow">Aprobaciones</p>
                 <h2 class="landing-display landing-display-lg">Aprueba sin perseguir correos.</h2>
-                <p class="landing-body" style="margin-top:1rem;">Define revisiones internas y envía a cada cliente un enlace seguro para aprobar, rechazar o comentar sin crear una cuenta.</p>
+                <p class="landing-body" style="margin-top:var(--space-4);">Define revisiones internas y envía a cada cliente un enlace seguro para aprobar, rechazar o comentar sin crear una cuenta.</p>
             </div>
             <div class="landing-portal landing-reveal" role="img" aria-label="Flujo de aprobación y portal de cliente en 2post">
                 <div class="landing-portal-bar">
@@ -901,20 +1040,20 @@
                 <div>
                     <p class="landing-eyebrow" id="open-source">Tu stack social, bajo tu control</p>
                     <h2 class="landing-display landing-display-lg">Ejecuta 2post donde tú decidas.</h2>
-                    <p class="landing-body" style="margin-top:1.25rem;">El código es open source y las integraciones se conectan directamente con las APIs oficiales mediante tus propias credenciales de desarrollador.</p>
-                    <div class="landing-ownership-facts" style="margin-top:2rem;">
+                    <p class="landing-body" style="margin-top:var(--space-4);">El código es open source y las integraciones se conectan directamente con las APIs oficiales mediante tus propias credenciales de desarrollador.</p>
+                    <div class="landing-ownership-facts" style="margin-top:var(--space-6);">
                         <div>
                             <h3 class="landing-support">Sin licencias por asiento</h3>
-                            <p class="landing-body-sm" style="margin-top:0.5rem;">2post no limita asientos, canales, workspaces ni funciones dentro del software.</p>
+                            <p class="landing-body-sm" style="margin-top:var(--space-2);">2post no limita asientos, canales, workspaces ni funciones dentro del software.</p>
                         </div>
                         <div>
                             <h3 class="landing-support">Despliega a tu manera</h3>
-                            <p class="landing-body-sm" style="margin-top:0.5rem;">Usa Docker en tu servidor o despliega en Railway, Render o Heroku.</p>
-                            <p class="landing-body-sm" style="margin-top:0.75rem;color:var(--neutral-300);">El self-hosting requiere infraestructura y puede generar costos de servidor, almacenamiento, correo y servicios externos.</p>
+                            <p class="landing-body-sm" style="margin-top:var(--space-2);">Usa Docker en tu servidor o despliega en Railway, Render o Heroku.</p>
+                            <p class="landing-body-sm" style="margin-top:var(--space-3);color:var(--neutral-300);">El self-hosting requiere infraestructura y puede generar costos de servidor, almacenamiento, correo y servicios externos.</p>
                         </div>
                         <div>
                             <h3 class="landing-support">Listo para automatizaciones y agentes</h3>
-                            <p class="landing-body-sm" style="margin-top:0.5rem;">Usa la API REST o el servidor MCP para consultar cuentas y analítica, administrar medios, y crear o programar publicaciones con permisos controlados.</p>
+                            <p class="landing-body-sm" style="margin-top:var(--space-2);">Usa la API REST o el servidor MCP para consultar cuentas y analítica, administrar medios, y crear o programar publicaciones con permisos controlados.</p>
                         </div>
                     </div>
                 </div>
@@ -929,7 +1068,7 @@
             <div class="landing-waitlist" id="waitlist">
                 <p class="landing-eyebrow">2post.app</p>
                 <h3 class="landing-display landing-display-lg" style="font-size:2rem;">¿Prefieres que nos encarguemos del hosting?</h3>
-                <p class="landing-body" style="margin-top:1rem;">La versión alojada todavía no está disponible. Déjanos tu correo y te avisaremos cuando abra.</p>
+                <p class="landing-body" style="margin-top:var(--space-4);">La versión alojada todavía no está disponible. Déjanos tu correo y te avisaremos cuando abra.</p>
                 <form class="landing-waitlist-form" id="landing-waitlist-form" action="#" method="post">
                     <div>
                         <label for="landing-waitlist-email">Correo electrónico</label>
@@ -948,7 +1087,7 @@
         <div class="landing-container">
             <p class="landing-eyebrow">Para agencias</p>
             <h2 class="landing-display landing-display-lg">Un workspace por cliente. El equipo en orden.</h2>
-            <p class="landing-body" style="margin-top:1rem;">Separa marcas y cuentas, asigna permisos por rol y permite que cada cliente revise contenido desde su propio portal con enlace mágico.</p>
+            <p class="landing-body" style="margin-top:var(--space-4);">Separa marcas y cuentas, asigna permisos por rol y permite que cada cliente revise contenido desde su propio portal con enlace mágico.</p>
             <div class="landing-agencies-grid">
                 <img class="landing-shot landing-reveal" src="{% static 'img/landing/idea-kanban.webp' %}" alt="" width="1440" height="900">
                 <div class="landing-agencies-side">
@@ -964,7 +1103,7 @@
         <img class="landing-closing-mark" src="{% static 'img/2post-mark.webp' %}" alt="" width="420" height="420">
         <div class="landing-container landing-closing-copy">
             <h2 class="landing-display landing-display-lg">Haz que tu operación social te pertenezca.</h2>
-            <p class="landing-body" style="margin-top:1rem;">Instala 2post, conecta tus cuentas y administra tu contenido con tus propias reglas.</p>
+            <p class="landing-body" style="margin-top:var(--space-4);">Instala 2post, conecta tus cuentas y administra tu contenido con tus propias reglas.</p>
             <div class="landing-closing-ctas">
                 <a class="landing-cta landing-cta-primary" href="{% url 'account_signup' %}">Crear cuenta</a>
                 <a class="landing-cta landing-cta-text" href="https://github.com/thedavos/2post" rel="noopener noreferrer">Ver en GitHub</a>
