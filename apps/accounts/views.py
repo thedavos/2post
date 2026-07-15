@@ -13,9 +13,11 @@ def health_check(request):
     return JsonResponse({"status": "ok"})
 
 
-@login_required
 def dashboard(request):
     """Main dashboard - redirects to last used workspace or shows org overview."""
+    if not request.user.is_authenticated:
+        return render(request, "marketing/landing.html")
+
     from apps.members.models import WorkspaceMembership
 
     user = request.user
