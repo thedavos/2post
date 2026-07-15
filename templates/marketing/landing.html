@@ -187,6 +187,11 @@
             backdrop-filter: blur(10px);
             box-shadow: 0 1px 0 var(--landing-hairline);
         }
+        .landing-nav-brand img {
+            display: block;
+            width: 5rem;
+            height: auto;
+        }
         .landing-nav-inner {
             height: 100%;
             display: flex;
@@ -361,19 +366,16 @@
             background: var(--surface-0);
             padding: var(--space-8) 0;
         }
-        .landing-problem-grid {
-            display: grid;
-            gap: var(--space-7);
+        .landing-problem-stack {
+            max-width: 42rem;
+        }
+        .landing-promise-panel {
+            padding-top: var(--space-6);
+            box-shadow: inset 0 1px 0 var(--landing-hairline);
         }
         @media (min-width: 1024px) {
             .landing-problem { padding: var(--space-9) 0; }
-            .landing-problem-grid {
-                grid-template-columns: repeat(12, minmax(0, 1fr));
-                gap: var(--space-8);
-                align-items: start;
-            }
-            .landing-problem-block { grid-column: 2 / span 5; }
-            .landing-promise-block { grid-column: 7 / span 5; }
+            .landing-problem-stack { max-width: 48rem; }
         }
         .landing-steps {
             display: grid;
@@ -602,30 +604,54 @@
             padding: var(--space-7) 0;
         }
         .landing-platforms-list {
-            display: flex;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: var(--space-4);
-            margin: var(--space-5) 0 0;
+            margin: var(--space-6) 0 0;
             padding: 0;
             list-style: none;
         }
         .landing-platforms-list li {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            min-height: 2.75rem;
             font-size: 0.875rem;
             font-weight: 500;
-            color: var(--text-secondary);
-            padding: 0;
-            border: none;
-            background: none;
+            color: var(--text-primary);
+            padding: var(--space-3) var(--space-4);
+            border-radius: var(--landing-radius-sm);
+            background: color-mix(in srgb, var(--surface-0) 80%, transparent);
+            box-shadow: 0 0 0 1px var(--landing-hairline);
+        }
+        .landing-platform-icon {
+            display: inline-flex;
+            flex: 0 0 auto;
+            color: var(--text-primary);
+        }
+        .landing-platform-icon svg {
+            width: 1.25rem;
+            height: 1.25rem;
+            display: block;
         }
         .landing-platforms-note {
-            margin-top: var(--space-4);
+            margin-top: var(--space-5);
             font-size: 0.875rem;
             line-height: 1.5;
             color: var(--text-tertiary);
             max-width: 60ch;
         }
+        @media (min-width: 768px) {
+            .landing-platforms-list {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
         @media (min-width: 1024px) {
             .landing-platforms { padding: var(--space-8) 0; }
+            .landing-platforms-list {
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+                gap: var(--space-4);
+            }
         }
         .landing-pricing {
             background: var(--surface-0);
@@ -757,6 +783,12 @@
             box-shadow: 0 0 0 1px var(--neutral-400);
             background: var(--landing-on-dark-subtle);
         }
+        .landing-ownership .landing-cta-text {
+            color: var(--neutral-300);
+        }
+        .landing-ownership .landing-cta-text:hover {
+            color: var(--landing-on-dark);
+        }
         @media (min-width: 1024px) {
             .landing-ownership { padding: var(--space-9) 0; }
             .landing-ownership-grid {
@@ -767,19 +799,28 @@
         }
         .landing-waitlist {
             margin-top: var(--space-8);
+            margin-inline: auto;
             padding: var(--space-7);
             border-radius: var(--landing-radius-lg);
             background: var(--landing-dark);
             color: var(--landing-on-dark);
             max-width: 40rem;
+            text-align: center;
         }
         .landing-waitlist .landing-eyebrow { color: var(--neutral-300); }
-        .landing-waitlist .landing-display { color: var(--landing-on-dark); }
-        .landing-waitlist .landing-body { color: var(--landing-on-dark-body); }
+        .landing-waitlist .landing-display {
+            color: var(--landing-on-dark);
+            margin-inline: auto;
+        }
+        .landing-waitlist .landing-body {
+            color: var(--landing-on-dark-body);
+            margin-inline: auto;
+        }
         .landing-waitlist-form {
             display: grid;
             gap: var(--space-3);
             margin-top: var(--space-5);
+            text-align: start;
         }
         .landing-waitlist label {
             display: block;
@@ -833,10 +874,10 @@
             background: var(--landing-cream);
             padding: var(--space-8) 0;
         }
-        .landing-agencies-actions {
-            display: grid;
-            gap: var(--space-4);
-            width: fit-content;
+        .landing-agencies-note {
+            font-size: 0.875rem;
+            color: var(--text-tertiary);
+            margin: 0;
         }
         .landing-agencies .landing-shot {
             width: 100%;
@@ -846,11 +887,6 @@
             border: none;
             box-shadow: var(--shadow-md);
             display: block;
-        }
-        .landing-agencies-note {
-            font-size: 0.875rem;
-            color: var(--text-tertiary);
-            margin: 0;
         }
         @media (min-width: 1024px) {
             .landing-agencies { padding: var(--space-9) 0; }
@@ -966,8 +1002,8 @@
     <!-- nav -->
     <header class="landing-nav">
         <div class="landing-container landing-nav-inner">
-            <a href="/" aria-label="2post, inicio">
-                <img src="{% static 'img/2post-logo.webp' %}" alt="2post, inicio" width="116" height="28" style="width:116px;height:auto;display:block;">
+            <a class="landing-nav-brand" href="/" aria-label="2post, inicio">
+                <img src="{% static 'img/2post-logo.webp' %}" alt="2post, inicio" width="80" height="20">
             </a>
             <nav class="landing-nav-links" aria-label="Principal">
                 <a href="#producto">Producto</a>
@@ -1000,7 +1036,6 @@
     <section class="landing-hero">
         <div class="landing-container landing-hero-grid">
             <div class="landing-hero-copy landing-hero-anim-copy">
-                <p class="landing-eyebrow is-caps">Gestión de redes para equipos que publican en serio</p>
                 <h1 class="landing-display landing-display-xl">Publica en todas tus redes sin pagar por asiento.</h1>
                 <p class="landing-body landing-hero-sub">Programa, aprueba y mide contenido para varias marcas desde un solo workspace. Sin límites artificiales de usuarios, canales o workspaces.</p>
                 <div class="landing-hero-ctas">
@@ -1019,13 +1054,11 @@
     <!-- problem -->
     <section class="landing-problem">
         <div class="landing-container">
-            <div class="landing-problem-grid">
-                <div class="landing-problem-block">
-                    <p class="landing-eyebrow">Demasiadas pestañas. Demasiados hilos.</p>
-                    <h2 class="landing-display landing-display-lg">Tu operación social no debería vivir en WhatsApp, sheets y tres herramientas.</h2>
-                    <p class="landing-body landing-stack-sm">Cada cliente suma cuentas, aprobaciones y permisos. Sin un sistema claro, el equipo improvisa y el contenido se atrasa.</p>
-                </div>
-                <div class="landing-promise-block">
+            <div class="landing-problem-stack">
+                <p class="landing-eyebrow">Demasiadas pestañas. Demasiados hilos.</p>
+                <h2 class="landing-display landing-display-lg">Tu operación social no debería vivir en WhatsApp, sheets y tres herramientas.</h2>
+                <p class="landing-body landing-stack-sm">Cada cliente suma cuentas, aprobaciones y permisos. Sin un sistema claro, el equipo improvisa y el contenido se atrasa.</p>
+                <div class="landing-promise-panel landing-stack-lg">
                     <h3 class="landing-support">Un flujo completo para tu equipo y tus clientes.</h3>
                     <p class="landing-body landing-stack-sm">Escribe una vez, adapta por red, pide aprobación y publica. Todo en 2post, con roles claros y datos bajo tu control.</p>
                 </div>
@@ -1112,17 +1145,50 @@
             <p class="landing-eyebrow is-caps">Plataformas</p>
             <h2 class="landing-display landing-display-lg">Facebook, Instagram, LinkedIn, TikTok y más.</h2>
             <ul class="landing-platforms-list">
-                <li>Facebook</li>
-                <li>Instagram</li>
-                <li>LinkedIn</li>
-                <li>TikTok</li>
-                <li>YouTube</li>
-                <li>Pinterest</li>
-                <li>Threads</li>
-                <li>Bluesky</li>
-                <li>Google Business</li>
-                <li>Mastodon</li>
-                <li>DEV.to</li>
+                <li>
+                    <span class="landing-platform-icon" aria-hidden="true">{% include "social_accounts/partials/_platform_icon.html" with platform="facebook" size="5" %}</span>
+                    <span>Facebook</span>
+                </li>
+                <li>
+                    <span class="landing-platform-icon" aria-hidden="true">{% include "social_accounts/partials/_platform_icon.html" with platform="instagram" size="5" %}</span>
+                    <span>Instagram</span>
+                </li>
+                <li>
+                    <span class="landing-platform-icon" aria-hidden="true">{% include "social_accounts/partials/_platform_icon.html" with platform="linkedin" size="5" %}</span>
+                    <span>LinkedIn</span>
+                </li>
+                <li>
+                    <span class="landing-platform-icon" aria-hidden="true">{% include "social_accounts/partials/_platform_icon.html" with platform="tiktok" size="5" %}</span>
+                    <span>TikTok</span>
+                </li>
+                <li>
+                    <span class="landing-platform-icon" aria-hidden="true">{% include "social_accounts/partials/_platform_icon.html" with platform="youtube" size="5" %}</span>
+                    <span>YouTube</span>
+                </li>
+                <li>
+                    <span class="landing-platform-icon" aria-hidden="true">{% include "social_accounts/partials/_platform_icon.html" with platform="pinterest" size="5" %}</span>
+                    <span>Pinterest</span>
+                </li>
+                <li>
+                    <span class="landing-platform-icon" aria-hidden="true">{% include "social_accounts/partials/_platform_icon.html" with platform="threads" size="5" %}</span>
+                    <span>Threads</span>
+                </li>
+                <li>
+                    <span class="landing-platform-icon" aria-hidden="true">{% include "social_accounts/partials/_platform_icon.html" with platform="bluesky" size="5" %}</span>
+                    <span>Bluesky</span>
+                </li>
+                <li>
+                    <span class="landing-platform-icon" aria-hidden="true">{% include "social_accounts/partials/_platform_icon.html" with platform="google_business" size="5" %}</span>
+                    <span>Google Business</span>
+                </li>
+                <li>
+                    <span class="landing-platform-icon" aria-hidden="true">{% include "social_accounts/partials/_platform_icon.html" with platform="mastodon" size="5" %}</span>
+                    <span>Mastodon</span>
+                </li>
+                <li>
+                    <span class="landing-platform-icon" aria-hidden="true">{% include "social_accounts/partials/_platform_icon.html" with platform="devto" size="5" %}</span>
+                    <span>DEV.to</span>
+                </li>
             </ul>
             <p class="landing-platforms-note">La cobertura de publicación, comentarios, mensajes y métricas varía según cada API oficial.</p>
         </div>
@@ -1134,10 +1200,7 @@
             <p class="landing-eyebrow">Para agencias</p>
             <h2 class="landing-display landing-display-lg">Un workspace por cliente. El equipo en orden.</h2>
             <p class="landing-body landing-stack-sm">Separa marcas y cuentas, asigna permisos por rol y deja que cada cliente revise desde su propio portal.</p>
-            <div class="landing-agencies-actions landing-stack-md">
-                <a class="landing-cta landing-cta-primary" href="{% url 'account_signup' %}" style="width:fit-content;">Crear cuenta</a>
-                <p class="landing-agencies-note">Disponible ahora en esta instancia. Hosted en 2post.app, próximamente.</p>
-            </div>
+            <p class="landing-agencies-note landing-stack-sm">Disponible ahora en esta instancia. Pronto también en la nube, en 2post.app.</p>
             <img class="landing-shot landing-reveal landing-stack-lg" src="{% static 'img/landing/idea-kanban.webp' %}" alt="Tablero kanban de ideas y workspaces por cliente en 2post" width="1440" height="900">
         </div>
     </section>
@@ -1178,12 +1241,12 @@
                     <a class="landing-cta landing-cta-primary" href="#waitlist">Avísame cuando abra</a>
                 </article>
             </div>
-            <p class="landing-pricing-note">Precios en USD, pensados para 2post.app. La versión alojada aún no está activa. Mientras tanto puedes crear una cuenta en esta instancia o self-hostear el código.</p>
+            <p class="landing-pricing-note">Precios en USD para cuando 2post.app esté disponible. Por ahora puedes crear una cuenta aquí o instalar 2post en tu propio servidor.</p>
 
             <div class="landing-waitlist landing-stack-xl" id="waitlist">
                 <p class="landing-eyebrow">Lista de espera · 2post.app</p>
-                <h3 class="landing-display landing-display-md">¿Quieres hosted sin montar servidores?</h3>
-                <p class="landing-body landing-stack-sm">Déjanos tu correo y te avisamos cuando 2post.app abra con estos planes.</p>
+                <h3 class="landing-display landing-display-md">Te avisamos cuando 2post esté listo en la nube</h3>
+                <p class="landing-body landing-stack-sm">Sin instalar nada en tu servidor. Deja tu correo y te escribimos cuando puedas entrar a 2post.app con estos planes.</p>
                 <form class="landing-waitlist-form" id="landing-waitlist-form" action="#" method="post">
                     <div>
                         <label for="landing-waitlist-email">Correo electrónico</label>
@@ -1191,8 +1254,8 @@
                     </div>
                     <button class="landing-cta landing-cta-primary" type="submit">Avísame cuando esté listo</button>
                 </form>
-                <p class="landing-waitlist-success" id="landing-waitlist-success">Listo. Te avisaremos cuando la versión alojada de 2post esté disponible.</p>
-                <p class="landing-waitlist-disclaimer">La versión alojada de 2post aún no está activa. Este formulario solo registra tu interés; no crea una cuenta ni inicia una prueba.</p>
+                <p class="landing-waitlist-success" id="landing-waitlist-success">Listo. Te avisaremos cuando puedas usar 2post en la nube.</p>
+                <p class="landing-waitlist-disclaimer">2post.app todavía no está abierto. Este formulario solo guarda tu interés; no crea una cuenta ni inicia una prueba.</p>
             </div>
         </div>
     </section>
@@ -1222,8 +1285,8 @@
                 </div>
                 <div>
                     <div class="landing-ownership-ctas is-flush">
-                        <a class="landing-cta landing-cta-primary" href="{% url 'account_signup' %}">Crear cuenta</a>
                         <a class="landing-cta landing-cta-secondary" href="https://github.com/thedavos/2post" rel="noopener noreferrer">Ver en GitHub</a>
+                        <a class="landing-cta landing-cta-text" href="https://github.com/thedavos/2post#readme" rel="noopener noreferrer">Guía de instalación</a>
                     </div>
                 </div>
             </div>
@@ -1234,12 +1297,12 @@
     <section class="landing-closing">
         <div class="landing-container landing-closing-copy">
             <h2 class="landing-display landing-display-lg">Empieza a publicar con tu equipo, hoy.</h2>
-            <p class="landing-body landing-stack-sm">Crea tu cuenta en esta instancia o únete a la lista de 2post.app.</p>
+            <p class="landing-body landing-stack-sm">Abre tu cuenta ahora, o deja tu correo para enterarte cuando 2post.app esté disponible.</p>
             <div class="landing-closing-ctas">
                 <a class="landing-cta landing-cta-primary" href="{% url 'account_signup' %}">Crear cuenta</a>
-                <a class="landing-cta landing-cta-text" href="#waitlist">Avísame del hosted</a>
+                <a class="landing-cta landing-cta-text" href="#waitlist">Avisarme de 2post.app</a>
             </div>
-            <p class="landing-closing-note">La cuenta se crea en la instancia de 2post que estés usando.</p>
+            <p class="landing-closing-note">La cuenta se abre en esta instancia de 2post.</p>
         </div>
     </section>
 
