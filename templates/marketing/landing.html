@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2post | Gestión de redes sociales para equipos y agencias</title>
-    <meta name="description" content="Programa, aprueba y mide contenido en múltiples redes desde un solo workspace. Sin pagar por cada persona. Open source, self-host o hosted próximamente.">
+    <title>2post | Gestión de redes sociales para creadores, equipos y agencias</title>
+    <meta name="description" content="Publica en todas tus redes desde un workspace: para tu marca, tu producto o tus clientes. Sin pagar por cada persona. Open source, self-host o hosted próximamente.">
     <link rel="icon" href="{% static 'favicon/favicon.ico' %}" sizes="any">
     <link rel="icon" type="image/svg+xml" href="{% static 'favicon/favicon.svg' %}">
     <link rel="icon" type="image/png" sizes="96x96" href="{% static 'favicon/favicon-96x96.png' %}">
@@ -361,6 +361,73 @@
                 align-items: center;
             }
             .landing-hero-ctas .landing-cta { width: auto; }
+        }
+        /* Para quién */
+        .landing-audience {
+            background: var(--landing-cream);
+            padding: var(--space-8) 0;
+        }
+        .landing-audience-intro {
+            max-width: 42rem;
+            margin-inline: auto;
+            text-align: center;
+        }
+        .landing-audience-intro .landing-body {
+            margin-inline: auto;
+        }
+        .landing-audience-grid {
+            display: grid;
+            gap: var(--space-7);
+            margin: var(--space-7) 0 0;
+            padding: 0;
+            list-style: none;
+        }
+        .landing-audience-card {
+            display: grid;
+            gap: var(--space-4);
+            text-align: center;
+            justify-items: center;
+        }
+        .landing-audience-card.landing-reveal:nth-child(2) { transition-delay: 100ms; }
+        .landing-audience-card.landing-reveal:nth-child(3) { transition-delay: 200ms; }
+        .landing-audience-card img {
+            width: 100%;
+            max-width: 16rem;
+            height: auto;
+            aspect-ratio: 1 / 1;
+            object-fit: contain;
+            display: block;
+            border-radius: var(--landing-radius-lg);
+            outline: 1px solid var(--landing-outline);
+            outline-offset: -1px;
+            border: none;
+            box-shadow: var(--shadow-md);
+            background: var(--landing-cream);
+        }
+        .landing-audience-card h3 {
+            margin: 0;
+            font-size: 1.0625rem;
+            font-weight: 500;
+            line-height: 1.25;
+            color: var(--text-primary);
+            text-wrap: balance;
+        }
+        .landing-audience-card p {
+            margin: var(--space-2) 0 0;
+            font-size: 1rem;
+            line-height: 1.55;
+            color: var(--text-secondary);
+            max-width: 28ch;
+            text-wrap: pretty;
+        }
+        @media (min-width: 768px) {
+            .landing-audience-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: var(--space-6);
+            }
+        }
+        @media (min-width: 1024px) {
+            .landing-audience { padding: var(--space-9) 0; }
         }
         /* How it works */
         .landing-ops {
@@ -933,8 +1000,11 @@
         @media (min-width: 1024px) {
             .landing-ownership { padding: var(--space-9) 0; }
         }
+        .landing-waitlist-section {
+            background: var(--landing-cream);
+            padding: var(--space-8) 0;
+        }
         .landing-waitlist {
-            margin-top: var(--space-8);
             margin-inline: auto;
             padding: var(--space-7);
             border-radius: var(--landing-radius-lg);
@@ -991,8 +1061,8 @@
             line-height: 1.55;
             color: var(--landing-on-dark);
         }
-        .landing-waitlist.is-done .landing-waitlist-form { display: none; }
-        .landing-waitlist.is-done .landing-waitlist-success { display: block; }
+        .landing-waitlist-section.is-done .landing-waitlist-form { display: none; }
+        .landing-waitlist-section.is-done .landing-waitlist-success { display: block; }
         .landing-waitlist-disclaimer {
             margin-top: var(--space-3);
             font-size: 0.875rem;
@@ -1000,6 +1070,7 @@
             color: var(--neutral-300);
         }
         @media (min-width: 1024px) {
+            .landing-waitlist-section { padding: var(--space-9) 0; }
             .landing-waitlist-form {
                 grid-template-columns: 1fr auto;
                 align-items: end;
@@ -1052,6 +1123,8 @@
         }
         .landing-agencies .landing-shot {
             width: 100%;
+            height: auto;
+            object-fit: contain;
             border-radius: var(--landing-radius-lg);
             outline: 1px solid var(--landing-outline);
             outline-offset: -1px;
@@ -1247,7 +1320,7 @@
                 <img src="{% static 'img/2post-logo.webp' %}" alt="" width="40" height="40">
             </a>
             <nav class="landing-nav-links" aria-label="Principal">
-                <a href="#producto">Cómo funciona</a>
+                <a href="#como-funciona">Cómo funciona</a>
                 <a href="#agencias">Agencias</a>
                 <a href="#precios">Precios</a>
                 <a href="#open-source">Open source</a>
@@ -1262,7 +1335,7 @@
                         </svg>
                     </summary>
                     <div class="landing-menu-panel">
-                        <a href="#producto">Cómo funciona</a>
+                        <a href="#como-funciona">Cómo funciona</a>
                         <a href="#agencias">Agencias</a>
                         <a href="#precios">Precios</a>
                         <a href="#open-source">Open source</a>
@@ -1277,8 +1350,8 @@
     <section class="landing-hero">
         <div class="landing-container landing-hero-grid">
             <div class="landing-hero-copy landing-hero-anim-copy">
-                <h1 class="landing-display landing-display-xl">Publica en todas tus redes con todo tu equipo.</h1>
-                <p class="landing-body landing-hero-sub">Programa, aprueba y mide contenido para tu marca o tus clientes desde un workspace. Sin pagar por cada persona.</p>
+                <h1 class="landing-display landing-display-xl">Publica en todas tus redes desde un solo lugar.</h1>
+                <p class="landing-body landing-hero-sub">Programa, aprueba y mide contenido para tu marca, tu producto o tus clientes. Un workspace; sin pagar por cada persona.</p>
                 <div class="landing-hero-ctas">
                     <a class="landing-cta landing-cta-primary" href="{% url 'account_signup' %}">Crear cuenta</a>
                     <a class="landing-cta landing-cta-text" href="{% url 'account_login' %}">Iniciar sesión</a>
@@ -1291,13 +1364,47 @@
         </div>
     </section>
 
+    <!-- para quién -->
+    <section class="landing-audience" id="para-quien">
+        <div class="landing-container">
+            <div class="landing-audience-intro">
+                <p class="landing-eyebrow">Para quién</p>
+                <h2 class="landing-display landing-display-lg">Mismo flujo. Distinto alcance.</h2>
+                <p class="landing-body">Ya publiques tú solo, con un equipo de producto o para varios clientes: 2post organiza cuentas, contenido y publicación en un workspace.</p>
+            </div>
+            <ul class="landing-audience-grid">
+                <li class="landing-audience-card landing-reveal">
+                    <img src="{% static 'img/landing/audience-creator.webp' %}" alt="Ilustración de calendario y redes para un creador o marca propia" width="720" height="720">
+                    <div>
+                        <h3>Creador o marca propia</h3>
+                        <p>Tus redes, tu ritmo, un calendario.</p>
+                    </div>
+                </li>
+                <li class="landing-audience-card landing-reveal">
+                    <img src="{% static 'img/landing/audience-company.webp' %}" alt="Ilustración de roles y revisiones para un equipo de producto" width="720" height="720">
+                    <div>
+                        <h3>Producto o empresa</h3>
+                        <p>Roles, revisiones y métricas oficiales.</p>
+                    </div>
+                </li>
+                <li class="landing-audience-card landing-reveal">
+                    <img src="{% static 'img/landing/audience-agency.webp' %}" alt="Ilustración de varios workspaces y portal de cliente para agencias" width="720" height="720">
+                    <div>
+                        <h3>Agencia</h3>
+                        <p>Un workspace por cliente y portal de aprobación.</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </section>
+
     <!-- how it works -->
     <section class="landing-ops" id="como-funciona" aria-labelledby="landing-ops-heading">
         <div class="landing-container">
             <div class="landing-ops-block">
                 <p class="landing-eyebrow">Cómo funciona</p>
-                <h2 id="landing-ops-heading" class="landing-display landing-display-lg">Un workspace donde el relevo sí termina.</h2>
-                <p class="landing-body">2post concentra cuentas, composición, aprobaciones y publicación. Roles por workspace, overrides por red, portal de cliente por enlace mágico y APIs first-party — sin un agregador en el medio.</p>
+                <h2 id="landing-ops-heading" class="landing-display landing-display-lg">De la idea a la publicación, en un workspace.</h2>
+                <p class="landing-body">Conecta cuentas, escribe, pide revisión (tuya, de un colega o del cliente) y publica con calendario o colas. Roles claros y APIs oficiales, sin un agregador en el medio.</p>
             </div>
 
             <figure class="landing-ops-visual landing-reveal">
@@ -1323,7 +1430,7 @@
                     <div class="landing-ops-spine-index" aria-hidden="true"><span>03</span></div>
                     <div class="landing-ops-spine-copy">
                         <h3>Aprueba</h3>
-                        <p>El cliente o revisor entra al portal con un magic link, sin crear cuenta.</p>
+                        <p>Tú, un revisor o el cliente entran al portal con un enlace mágico, sin crear cuenta.</p>
                     </div>
                 </li>
                 <li class="landing-ops-spine-item landing-reveal">
@@ -1342,7 +1449,7 @@
         <div class="landing-container">
             <p class="landing-eyebrow is-caps">Crear y programar</p>
             <h2 class="landing-display landing-display-lg">Crea una vez. Ajusta cada red.</h2>
-            <p class="landing-body">Escribe el contenido base, adapta texto y medios por plataforma, y programa con el calendario o las colas de publicación.</p>
+            <p class="landing-body">Escribe el contenido base, adapta texto y medios por plataforma, y programa con el calendario o las colas, solo o con tu equipo.</p>
             <ul class="landing-compose-grid">
                 <li class="landing-compose-card landing-reveal">
                     <img src="{% static 'img/landing/compose-draft.webp' %}" alt="Ilustración del borrador de una publicación en 2post" width="720" height="720">
@@ -1382,14 +1489,14 @@
             <div>
                 <p class="landing-eyebrow">Aprobaciones</p>
                 <h2 class="landing-display landing-display-lg">Aprueba sin perseguir correos.</h2>
-                <p class="landing-body">Define revisiones internas. Los clientes aprueban, rechazan o comentan desde su portal.</p>
+                <p class="landing-body">Tú, un colega o el cliente aprueban, rechazan o comentan desde un enlace seguro, sin cuenta nueva.</p>
             </div>
             <div class="landing-portal landing-reveal" role="img" aria-label="Flujo de aprobación y portal de cliente en 2post">
                 <div class="landing-portal-bar">
                     <span class="landing-portal-chip">Enlace mágico</span>
                     <span class="landing-portal-status">Sin cuenta requerida</span>
                 </div>
-                <h3 class="landing-portal-title">Portal de aprobación del cliente</h3>
+                <h3 class="landing-portal-title">Portal de aprobación</h3>
                 <p class="landing-portal-copy">Revisa el borrador, deja un comentario o aprueba la publicación desde un enlace seguro.</p>
                 <div class="landing-portal-actions">
                     <span class="landing-portal-btn is-primary">Aprobar</span>
@@ -1406,7 +1513,7 @@
             <div class="landing-analytics-intro">
                 <p class="landing-eyebrow">Analítica</p>
                 <h2 class="landing-display landing-display-lg">Mide lo que publicas en cada canal.</h2>
-                <p class="landing-body">Métricas reales desde las APIs oficiales de cada red — por canal, en el tiempo y por publicación. Sin un agregador de por medio.</p>
+                <p class="landing-body">Métricas reales desde las APIs oficiales: para tu marca o para reportar a un cliente. Por canal, en el tiempo y por publicación.</p>
             </div>
             <ul class="landing-analytics-grid">
                 <li class="landing-analytics-card landing-reveal">
@@ -1462,7 +1569,7 @@
                     </li>
                 </ul>
                 <div>
-                    <img class="landing-shot landing-reveal" src="{% static 'img/landing/idea-kanban.webp' %}" alt="Tablero kanban de ideas y workspaces por cliente en 2post" width="1440" height="900">
+                    <img class="landing-shot landing-reveal" src="{% static 'img/landing/agencies-workspaces.webp' %}" alt="Varios workspaces de cliente en 2post: selector de marca, permisos del equipo y portal de aprobación con enlace mágico" width="1536" height="1024">
                     <p class="landing-agencies-note landing-stack-sm">Disponible ahora en esta instancia. Pronto también en la nube, en 2post.app.</p>
                 </div>
             </div>
@@ -1536,7 +1643,7 @@
                 <article class="landing-plan">
                     <p class="landing-plan-name">Equipo</p>
                     <p class="landing-plan-price">$39 <span>/ mes</span></p>
-                    <p class="landing-plan-desc">Para marcas y equipos que publican desde un solo workspace.</p>
+                    <p class="landing-plan-desc">Para creadores, marcas y equipos que publican desde un solo workspace, también si publicas tú solo.</p>
                     <ul class="landing-plan-list">
                         <li>1 workspace</li>
                         <li>Usuarios ilimitados</li>
@@ -1561,10 +1668,15 @@
                 </article>
             </div>
             <p class="landing-pricing-note">Precios en USD para cuando 2post.app esté disponible. Por ahora puedes crear una cuenta aquí o instalar 2post en tu propio servidor.</p>
+        </div>
+    </section>
 
-            <div class="landing-waitlist landing-stack-xl" id="waitlist">
+    <!-- waitlist -->
+    <section class="landing-waitlist-section" id="waitlist" aria-labelledby="landing-waitlist-heading">
+        <div class="landing-container">
+            <div class="landing-waitlist">
                 <p class="landing-eyebrow">Lista de espera · 2post.app</p>
-                <h3 class="landing-display landing-display-md">Te avisamos cuando 2post esté listo en la nube</h3>
+                <h2 class="landing-display landing-display-md" id="landing-waitlist-heading">Te avisamos cuando 2post esté listo en la nube</h2>
                 <p class="landing-body">Sin instalar nada en tu servidor. Deja tu correo y te escribimos cuando puedas entrar a 2post.app con estos planes.</p>
                 <form class="landing-waitlist-form" id="landing-waitlist-form" action="#" method="post">
                     <div>
@@ -1585,7 +1697,7 @@
             <div class="landing-ownership-intro">
                 <p class="landing-eyebrow">Confianza</p>
                 <h2 class="landing-display landing-display-lg">Tus APIs. Tus datos. Código que puedes auditar.</h2>
-                <p class="landing-body">2post se conecta a cada red con tus propias apps de desarrollador. No hay un agregador en el medio. El código es open source (AGPL-3.0): puedes revisarlo, desplegarlo o esperar la versión alojada.</p>
+                <p class="landing-body">2post se conecta a cada red con tus propias apps de desarrollador: tus credenciales, tus datos. El código es open source (AGPL-3.0): audítalo, self-hostéalo con Docker, Railway, Render o Heroku, o espera la versión alojada.</p>
             </div>
             <div class="landing-ownership-facts">
                 <div class="landing-ownership-fact">
@@ -1599,7 +1711,7 @@
                     <img src="{% static 'img/landing/trust-opensource.webp' %}" alt="Ilustración de código open source y self-host" width="720" height="720">
                     <div>
                         <h3>Open source y self-host</h3>
-                        <p>Audita el código o instálalo con Docker, Railway, Render o Heroku si lo necesitas en tu infraestructura.</p>
+                        <p>Ideal si quieres controlar la infraestructura: audita el código o instálalo en tu servidor.</p>
                     </div>
                 </div>
                 <div class="landing-ownership-fact">
@@ -1620,7 +1732,7 @@
     <!-- closing -->
     <section class="landing-closing">
         <div class="landing-container landing-closing-copy">
-            <h2 class="landing-display landing-display-lg">Empieza a publicar con tu equipo, hoy.</h2>
+            <h2 class="landing-display landing-display-lg">Empieza a publicar hoy, solo o con tu equipo.</h2>
             <p class="landing-body">Abre tu cuenta ahora, o deja tu correo para enterarte cuando 2post.app esté disponible.</p>
             <div class="landing-closing-ctas">
                 <a class="landing-cta landing-cta-primary" href="{% url 'account_signup' %}">Crear cuenta</a>
@@ -1638,12 +1750,13 @@
                     <a class="landing-footer-brand-link" href="/" aria-label="2post, inicio">
                         <img src="{% static 'img/2post-logo.webp' %}" alt="" width="40" height="40">
                     </a>
-                    <p class="landing-footer-tagline">Gestión de redes sociales para equipos y agencias. Sin pagar por cada persona.</p>
+                    <p class="landing-footer-tagline">Para creadores, equipos y agencias. Sin pagar por cada persona.</p>
                 </div>
                 <nav class="landing-footer-cols" aria-label="Pie de página">
                     <div class="landing-footer-col">
                         <p class="landing-footer-col-title">Producto</p>
-                        <a href="#producto">Producto</a>
+                        <a href="#como-funciona">Cómo funciona</a>
+                        <a href="#para-quien">Para quién</a>
                         <a href="#agencias">Agencias</a>
                         <a href="#precios">Precios</a>
                         <a href="#open-source">Open source</a>
