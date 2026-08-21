@@ -16,7 +16,10 @@ export default tseslint.config(
   {
     rules: {
       "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
-      "@typescript-eslint/consistent-type-imports": "error",
+      // Disabled: with SWC + NestJS DI, converting class imports to
+      // `import type` erases design:paramtypes metadata and breaks
+      // constructor injection at runtime (see CryptoService incident).
+      "@typescript-eslint/consistent-type-imports": "off",
     },
   },
 );

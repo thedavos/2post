@@ -1,11 +1,8 @@
 import "reflect-metadata";
 
+import { type NestFastifyApplication, FastifyAdapter } from "@nestjs/platform-fastify";
 import { NestFactory } from "@nestjs/core";
-import type {
-  NestFastifyApplication} from "@nestjs/platform-fastify";
-import {
-  FastifyAdapter
-} from "@nestjs/platform-fastify";
+import cookie from "@fastify/cookie";
 
 import { AppModule } from "./app.module";
 
@@ -18,13 +15,15 @@ async function bootstrap() {
     new FastifyAdapter({
       trustProxy: true,
       logger: false,
-      ignoreTrailingSlash: true,
+      routerOptions: { ignoreTrailingSlash: true },
     }),
   );
 
+  await app.register(cookie);
   app.enableShutdownHooks();
 
   await app.listen(PORT, HOST);
 }
 
 void bootstrap();
+

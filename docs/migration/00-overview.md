@@ -46,7 +46,7 @@ The current stack (Django 5 + server-rendered templates + HTMX + Alpine.js) has 
 ## 4. Strategy: parallel build + single cutover
 
 1. **Phase 0 — Foundations** (this branch): monorepo scaffold, CI, Prisma schema, docs. **Status: done** — workspaces bootable (`apps/web`, `apps/api`, `apps/worker`), Prisma baseline (identity + tenancy), StyleX pipeline verified, CI workflow `ci-new-stack.yml`.
-2. **Phase 1 — Backend core**: NestJS modules mirroring Django apps; auth; orgs/workspaces/members RBAC. Parity-tested against a snapshot of production data restored into a staging DB.
+2. **Phase 1 — Backend core**: NestJS modules mirroring Django apps; auth; orgs/workspaces/members RBAC. Parity-tested against a snapshot of production data restored into a staging DB. **Status: done** — AuthModule (bcrypt login + JWT httpOnly cookies + rotating 30-day sessions), Organizations/Workspaces/Members modules, RBAC hierarchy ported and tested against `test_role_hierarchy.py` expectations, CryptoService byte-compatible with legacy encryption (verified with Python-generated fixture).
 3. **Phase 2 — Domain services**: composer, calendar/scheduling, publisher, approvals, social accounts/OAuth, media library, inbox, analytics, notifications, client portal, MCP/API-keys/oauth-server.
 4. **Phase 3 — Frontend**: route-by-route rebuild in TanStack Start consuming only NestJS endpoints, styled with StyleX following the token system ported from `tailwind.config.js`.
 5. **Phase 4 — Data migration**: one-shot ETL script (Django schema → Prisma schema), idempotent, dry-run mode, verified row-by-row against staging.

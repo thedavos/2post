@@ -13,19 +13,22 @@ datasource db {
 }
 
 model User {
-  id           String    @id @default(uuid()) @db.Uuid
-  email        String    @unique
-  passwordHash String?
-  displayName  String?
-  isActive     Boolean   @default(true)
-  isSuperuser  Boolean   @default(false)
-  lastLoginAt  DateTime? @db.Timestamptz(6)
-  createdAt    DateTime  @default(now()) @db.Timestamptz(6)
-  updatedAt    DateTime  @default(now()) @updatedAt @db.Timestamptz(6)
+  id            String    @id @default(uuid()) @db.Uuid
+  email         String    @unique
+  passwordHash  String?
+  displayName   String?
+  isActive      Boolean   @default(true)
+  isSuperuser   Boolean   @default(false)
+  /// Terms-of-service acceptance (parity with legacy accounts.User).
+  tosAcceptedAt DateTime? @db.Timestamptz(6)
+  lastLoginAt   DateTime? @db.Timestamptz(6)
+  createdAt     DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt     DateTime  @default(now()) @updatedAt @db.Timestamptz(6)
 
-  sessions     Session[]
-  memberships  Membership[]
-  auditActions AuditLog[]
+  sessions            Session[]
+  orgMemberships      OrgMembership[]
+  workspaceMemberships WorkspaceMembership[]
+  auditActions        AuditLog[]
 
   @@map("users")
 }
@@ -58,9 +61,8 @@ model Organization {
   createdAt           DateTime  @default(now()) @db.Timestamptz(6)
   updatedAt           DateTime  @default(now()) @updatedAt @db.Timestamptz(6)
 
-  workspaces Workspace[]
-  memberships Membership[]
-  roles      Role[]
+  workspaces  Workspace[]
+  orgMemberships OrgMembership[]
   invitations Invitation[]
   auditLogs  AuditLog[]
 
@@ -78,57 +80,68 @@ model Workspace {
   updatedAt      DateTime @default(now()) @updatedAt @db.Timestamptz(6)
 
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  memberships WorkspaceMembership[]
 
   @@unique([organizationId, slug])
   @@index([organizationId])
   @@map("workspaces")
 }
 
-enum MembershipStatus {
-  INVITED
-  ACTIVE
-  SUSPENDED
+enum OrgRole {
+  OWNER
+  ADMIN
+  MEMBER
 }
 
-model Role {
-  id             String   @id @default(uuid()) @db.Uuid
-  organizationId String   @db.Uuid
-  name           String
-  /// Permission keys identical to legacy strings ("create_posts", …).
-  permissions    String[]
-  isSystem       Boolean  @default(false)
+/// Parity with legacy members.OrgMembership.
+model OrgMembership {
+  id             String  @id @default(uuid()) @db.Uuid
+  userId         String  @db.Uuid
+  organizationId String  @db.Uuid
+  orgRole        OrgRole @default(MEMBER)
   createdAt      DateTime @default(now()) @db.Timestamptz(6)
-
-  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  memberships  Membership[]
-  invitations  Invitation[]
-
-  @@unique([organizationId, name])
-  @@map("roles")
-}
-
-model Membership {
-  id             String          @id @default(uuid()) @db.Uuid
-  userId         String          @db.Uuid
-  organizationId String          @db.Uuid
-  roleId         String          @db.Uuid
-  status         MembershipStatus @default(ACTIVE)
-  createdAt      DateTime        @default(now()) @db.Timestamptz(6)
 
   user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  role         Role         @relation(fields: [roleId], references: [id])
 
   @@unique([userId, organizationId])
   @@index([organizationId])
-  @@map("memberships")
+  @@map("org_memberships")
+}
+
+enum WorkspaceRole {
+  OWNER
+  MANAGER
+  EDITOR
+  CONTRIBUTOR
+  CLIENT
+  VIEWER
+}
+
+/// Parity with legacy members.WorkspaceMembership. Custom roles extend
+/// this via a permissions override column in a later phase if needed.
+model WorkspaceMembership {
+  id            String        @id @default(uuid()) @db.Uuid
+  userId        String        @db.Uuid
+  workspaceId   String        @db.Uuid
+  workspaceRole WorkspaceRole @default(VIEWER)
+  createdAt     DateTime      @default(now()) @db.Timestamptz(6)
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, workspaceId])
+  @@index([workspaceId])
+  @@map("workspace_memberships")
 }
 
 model Invitation {
   id             String    @id @default(uuid()) @db.Uuid
   organizationId String    @db.Uuid
-  roleId         String    @db.Uuid
   email          String
+  orgRole        OrgRole   @default(MEMBER)
+  /// JSON: { [workspaceId]: WorkspaceRole } — parity with legacy invite form.
+  workspaceRoles Json      @default("{}")
   tokenHash      String    @unique
   invitedById    String?   @db.Uuid
   expiresAt      DateTime  @db.Timestamptz(6)
@@ -136,7 +149,6 @@ model Invitation {
   createdAt      DateTime  @default(now()) @db.Timestamptz(6)
 
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  role         Role         @relation(fields: [roleId], references: [id])
 
   @@index([organizationId])
   @@map("invitations")
