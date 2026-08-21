@@ -1,0 +1,13 @@
+---
+description: Stack migration context — read before any work in this repo
+globs:
+alwaysApply: true
+---
+
+This repository is migrating from Django 5 + HTMX/Alpine + Tailwind to TanStack Start + React (frontend), NestJS + Fastify (API), StyleX (CSS), Prisma + pg-boss (data/jobs). Read `docs/migration/00-overview.md` and `AGENTS.md` first.
+
+- The Django app (`apps/`, `providers/`, `templates/`, `config/`) is the LIVE product. Never break it.
+- New-stack code lives in `apps/web` (TanStack Start), `apps/api` (NestJS), `apps/worker` (pg-boss), `packages/shared`.
+- Never mix legacy-feature work and migration work in the same commit.
+- External contracts are frozen: `/api/v1/*`, `/webhooks/*`, `/oauth/*`, `.well-known/*`, `/social-accounts/callback/{platform}/`. Do not change paths or payload shapes without human approval.
+- Encryption-at-rest must stay byte-compatible with `apps/common/encryption.py` (HKDF-SHA256 from SECRET_KEY + ENCRYPTION_KEY_SALT, AES-256-GCM, base64(nonce||ct)).
