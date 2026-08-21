@@ -55,6 +55,8 @@ Notes:
 
 The web dev server proxies `/api/*` to `localhost:4000` so cookies work same-origin.
 
+> Phase 0 note: `@stylexjs/vite-plugin` does not exist — the official bundler integration is `@stylexjs/unplugin` (`stylex.vite(...)` in `vite.config.ts`). TanStack Start's router entry must export `getRouter()` from `src/router.tsx`. Prisma connects lazily, so the API boots without a live DB and queries fail fast until `DATABASE_URL` is set.
+
 **Production**
 
 - `web`: Node server (Nitro) behind Caddy, or static prerender where possible.

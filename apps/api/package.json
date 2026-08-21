@@ -1,0 +1,38 @@
+{
+  "name": "@brightbean/api",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "nest build -b swc",
+    "start:dev": "nest start -b swc --watch",
+    "start:prod": "node dist/main.js",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "prisma:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy",
+    "db:seed": "tsx prisma/seed.ts"
+  },
+  "dependencies": {
+    "@brightbean/shared": "workspace:*",
+    "@nestjs/common": "^11.0.0",
+    "@nestjs/core": "^11.0.0",
+    "@nestjs/platform-fastify": "^11.0.0",
+    "@prisma/client": "^6.2.0",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.1"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^11.0.0",
+    "@nestjs/testing": "^11.0.0",
+    "@swc/cli": "^0.6.0",
+    "@swc/core": "^1.10.0",
+    "prisma": "^6.2.0",
+    "supertest": "^7.0.0",
+    "tsx": "^4.19.2",
+    "vitest": "^3.0.0"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  }
+}

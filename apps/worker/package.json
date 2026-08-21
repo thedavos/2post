@@ -1,0 +1,21 @@
+{
+  "name": "@brightbean/worker",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start:dev": "tsx watch src/main.ts",
+    "start:prod": "node dist/main.js",
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc --noEmit",
+    "test": "echo \"no tests yet\""
+  },
+  "dependencies": {
+    "@brightbean/shared": "workspace:*",
+    "pg-boss": "^10.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}

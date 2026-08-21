@@ -1,0 +1,161 @@
+// Phase 0 baseline: identity + tenancy core.
+// Domain models (composer, calendar, inbox, analytics, …) are added
+// module-by-module in later phases — see docs/migration/02-database.md.
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String    @id @default(uuid()) @db.Uuid
+  email        String    @unique
+  passwordHash String?
+  displayName  String?
+  isActive     Boolean   @default(true)
+  isSuperuser  Boolean   @default(false)
+  lastLoginAt  DateTime? @db.Timestamptz(6)
+  createdAt    DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt    DateTime  @default(now()) @updatedAt @db.Timestamptz(6)
+
+  sessions     Session[]
+  memberships  Membership[]
+  auditActions AuditLog[]
+
+  @@map("users")
+}
+
+/// Server-side session backing the refresh token cookie (30-day sliding).
+model Session {
+  id               String   @id @default(uuid()) @db.Uuid
+  userId           String   @db.Uuid
+  refreshTokenHash String   @unique
+  userAgent        String?
+  ip               String?
+  expiresAt        DateTime @db.Timestamptz(6)
+  lastUsedAt       DateTime @default(now()) @db.Timestamptz(6)
+  revokedAt        DateTime? @db.Timestamptz(6)
+  createdAt        DateTime @default(now()) @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model Organization {
+  id                  String    @id @default(uuid()) @db.Uuid
+  name                String
+  slug                String    @unique
+  settings            Json      @default("{}")
+  /// Soft-delete grace period (14 days reversible), parity with legacy.
+  deletionScheduledAt DateTime? @db.Timestamptz(6)
+  createdAt           DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt           DateTime  @default(now()) @updatedAt @db.Timestamptz(6)
+
+  workspaces Workspace[]
+  memberships Membership[]
+  roles      Role[]
+  invitations Invitation[]
+  auditLogs  AuditLog[]
+
+  @@map("organizations")
+}
+
+model Workspace {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @db.Uuid
+  name           String
+  slug           String
+  branding       Json     @default("{}")
+  defaults       Json     @default("{}")
+  createdAt      DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt      DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, slug])
+  @@index([organizationId])
+  @@map("workspaces")
+}
+
+enum MembershipStatus {
+  INVITED
+  ACTIVE
+  SUSPENDED
+}
+
+model Role {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @db.Uuid
+  name           String
+  /// Permission keys identical to legacy strings ("create_posts", …).
+  permissions    String[]
+  isSystem       Boolean  @default(false)
+  createdAt      DateTime @default(now()) @db.Timestamptz(6)
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  memberships  Membership[]
+  invitations  Invitation[]
+
+  @@unique([organizationId, name])
+  @@map("roles")
+}
+
+model Membership {
+  id             String          @id @default(uuid()) @db.Uuid
+  userId         String          @db.Uuid
+  organizationId String          @db.Uuid
+  roleId         String          @db.Uuid
+  status         MembershipStatus @default(ACTIVE)
+  createdAt      DateTime        @default(now()) @db.Timestamptz(6)
+
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  role         Role         @relation(fields: [roleId], references: [id])
+
+  @@unique([userId, organizationId])
+  @@index([organizationId])
+  @@map("memberships")
+}
+
+model Invitation {
+  id             String    @id @default(uuid()) @db.Uuid
+  organizationId String    @db.Uuid
+  roleId         String    @db.Uuid
+  email          String
+  tokenHash      String    @unique
+  invitedById    String?   @db.Uuid
+  expiresAt      DateTime  @db.Timestamptz(6)
+  acceptedAt     DateTime? @db.Timestamptz(6)
+  createdAt      DateTime  @default(now()) @db.Timestamptz(6)
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  role         Role         @relation(fields: [roleId], references: [id])
+
+  @@index([organizationId])
+  @@map("invitations")
+}
+
+/// Append-only audit log for destructive actions (1-year retention).
+model AuditLog {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String?  @db.Uuid
+  actorUserId    String?  @db.Uuid
+  action         String
+  targetType     String?
+  targetId       String?  @db.Uuid
+  metadata       Json     @default("{}")
+  createdAt      DateTime @default(now()) @db.Timestamptz(6)
+
+  organization Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  actor        User?         @relation(fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, createdAt])
+  @@map("audit_log")
+}
