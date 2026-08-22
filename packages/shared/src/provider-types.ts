@@ -135,7 +135,8 @@ export interface SocialProvider {
   ): Promise<AccountMetrics>;
 }
 
-/** Per-call context (e.g. Facebook page_id for page-scoped operations). */
+/** Per-call context (e.g. Facebook page_id / Instagram user id). */
 export interface ProviderCallOptions {
   pageId?: string;
+  igUserId?: string;
 }

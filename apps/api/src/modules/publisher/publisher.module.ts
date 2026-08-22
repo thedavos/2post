@@ -7,6 +7,7 @@ import { DevtoProvider } from "./providers/devto.provider";
 import { BlueskyProvider } from "./providers/bluesky.provider";
 import { MastodonProvider } from "./providers/mastodon.provider";
 import { FacebookProvider } from "./providers/facebook.provider";
+import { InstagramProvider } from "./providers/instagram.provider";
 import { PublisherEngine } from "./publisher.engine";
 import { ProviderRegistry } from "./provider.registry";
 
@@ -19,23 +20,31 @@ export const PUBLISH_QUEUE = "publish-due-posts";
     BlueskyProvider,
     MastodonProvider,
     FacebookProvider,
+    InstagramProvider,
     {
       provide: ProviderRegistry,
-      // Remaining in 2b: instagram, instagram_login, threads,
-      // linkedin_personal/company, tiktok, youtube, google_business, pinterest.
+      // Remaining in 2b: instagram_login, threads, linkedin_personal/company,
+      // tiktok, youtube, google_business, pinterest.
       useFactory: (
         devto: DevtoProvider,
         bluesky: BlueskyProvider,
         mastodon: MastodonProvider,
         facebook: FacebookProvider,
+        instagram: InstagramProvider,
       ) => {
         const registry = new ProviderRegistry();
-        for (const provider of [devto, bluesky, mastodon, facebook]) {
+        for (const provider of [devto, bluesky, mastodon, facebook, instagram]) {
           registry.register(provider);
         }
         return registry;
       },
-      inject: [DevtoProvider, BlueskyProvider, MastodonProvider, FacebookProvider],
+      inject: [
+        DevtoProvider,
+        BlueskyProvider,
+        MastodonProvider,
+        FacebookProvider,
+        InstagramProvider,
+      ],
     },
     PublisherEngine,
   ],
