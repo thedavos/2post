@@ -4,6 +4,8 @@ import { APP_FILTER } from "@nestjs/core";
 import { CryptoModule } from "./common/crypto/crypto.module";
 import { ZodExceptionFilter } from "./common/filters/zod-exception.filter";
 import { TenancyModule } from "./common/tenancy/tenancy.module";
+import { CalendarModule } from "./modules/calendar/calendar.module";
+import { ComposerModule } from "./modules/composer/composer.module";
 import { AuthModule } from "./modules/auth/auth.module";
 import { HealthModule } from "./modules/health/health.module";
 import { MembersModule } from "./modules/members/members.module";
@@ -21,6 +23,8 @@ import { PrismaModule } from "./prisma/prisma.module";
     OrganizationsModule,
     WorkspacesModule,
     MembersModule,
+    ComposerModule,
+    CalendarModule,
   ],
   providers: [{ provide: APP_FILTER, useClass: ZodExceptionFilter }],
 })

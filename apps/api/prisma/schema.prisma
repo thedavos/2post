@@ -81,6 +81,13 @@ model Workspace {
 
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   memberships WorkspaceMembership[]
+  socialAccounts SocialAccount[]
+  posts Post[]
+  contentCategories ContentCategory[]
+  tags Tag[]
+  ideaGroups IdeaGroup[]
+  ideas Idea[]
+  queues Queue[]
 
   @@unique([organizationId, slug])
   @@index([organizationId])
@@ -170,4 +177,288 @@ model AuditLog {
 
   @@index([organizationId, createdAt])
   @@map("audit_log")
+}
+
+// ---------------------------------------------------------------------------
+// Phase 2a: social accounts (minimal), composer, calendar, publisher
+// ---------------------------------------------------------------------------
+
+enum ConnectionStatus {
+  CONNECTED
+  TOKEN_EXPIRING
+  DISCONNECTED
+  ERROR
+}
+
+/// Parity with legacy social_accounts.SocialAccount. Token fields store the
+/// same base64 AES-256-GCM ciphertext written by the Django EncryptedTextField.
+model SocialAccount {
+  id              String   @id @default(uuid()) @db.Uuid
+  workspaceId     String   @db.Uuid
+  platform        String
+  /// Native account ID on the platform (dedup/webhook matching key).
+  accountPlatformId String @map("account_platform_id")
+  accountName     String   @map("account_name")
+  accountHandle   String   @default("") @map("account_handle")
+  avatarUrl       String   @default("") @map("avatar_url")
+  followerCount   Int      @default(0) @map("follower_count")
+
+  oauthAccessToken  String? @map("oauth_access_token")
+  oauthRefreshToken String? @map("oauth_refresh_token")
+  tokenExpiresAt    DateTime? @map("token_expires_at") @db.Timestamptz(6)
+  instanceUrl       String  @default("") @map("instance_url")
+
+  connectionStatus  ConnectionStatus @default(CONNECTED) @map("connection_status")
+  lastHealthCheckAt DateTime? @map("last_health_check_at") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  platformPosts PlatformPost[]
+  postingSlots PostingSlot[]
+  rateLimitStates RateLimitState[]
+
+  @@unique([workspaceId, platform, accountPlatformId])
+  @@index([platform])
+  @@map("social_accounts")
+}
+
+model ContentCategory {
+  id          String @id @default(uuid()) @db.Uuid
+  workspaceId String @db.Uuid
+  name        String
+  color       String
+  position    Int    @default(0)
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  posts     Post[]
+
+  @@unique([workspaceId, name])
+  @@map("content_categories")
+}
+
+model Tag {
+  id          String @id @default(uuid()) @db.Uuid
+  workspaceId String @db.Uuid
+  name        String
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, name])
+  @@map("tags")
+}
+
+enum IdeaStatus {
+  NEW
+  IN_PROGRESS
+  READY
+  CONVERTED
+  ARCHIVED
+}
+
+model IdeaGroup {
+  id          String @id @default(uuid()) @db.Uuid
+  workspaceId String @db.Uuid
+  name        String
+  position    Int    @default(0)
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  ideas     Idea[]
+
+  @@map("idea_groups")
+}
+
+model Idea {
+  id          String  @id @default(uuid()) @db.Uuid
+  workspaceId String  @db.Uuid
+  authorId    String? @db.Uuid
+  title       String
+  description String  @default("")
+  tags        Json    @default("[]")
+  status      IdeaStatus @default(NEW)
+  groupId     String? @db.Uuid
+  position    Int     @default(0)
+  /// Set when the idea is converted into a Post.
+  postId      String? @unique @db.Uuid
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  workspace Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  group     IdeaGroup? @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  post      Post?      @relation(fields: [postId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId, status])
+  @@map("ideas")
+}
+
+/// Aggregate post: shared content; per-platform state lives on PlatformPost.
+model Post {
+  id               String   @id @default(uuid()) @db.Uuid
+  workspaceId      String   @db.Uuid
+  authorId         String?  @db.Uuid
+  title            String   @default("")
+  caption          String   @default("")
+  firstComment     String   @default("") @map("first_comment")
+  internalNotes    String   @default("") @map("internal_notes")
+  tags             Json     @default("[]")
+  categoryId       String?  @db.Uuid
+
+  scheduledAt      DateTime? @map("scheduled_at") @db.Timestamptz(6)
+  publishedAt      DateTime? @map("published_at") @db.Timestamptz(6)
+  proposedPublishAt DateTime? @map("proposed_publish_at") @db.Timestamptz(6)
+
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  workspace     Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  category      ContentCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  platformPosts PlatformPost[]
+  queueEntries  QueueEntry[]
+  idea          Idea?
+
+  @@index([workspaceId, scheduledAt])
+  @@index([workspaceId, createdAt])
+  @@map("posts")
+}
+
+enum PlatformPostStatus {
+  DRAFT
+  PENDING_REVIEW
+  PENDING_CLIENT
+  APPROVED
+  CHANGES_REQUESTED
+  REJECTED
+  SCHEDULED
+  PUBLISHING
+  PUBLISHED
+  FAILED
+  ON_HOLD
+}
+
+/// Per-platform variant with its own editorial status and overrides.
+/// Parity with legacy composer.PlatformPost incl. the state machine.
+model PlatformPost {
+  id             String @id @default(uuid()) @db.Uuid
+  postId         String @db.Uuid
+  socialAccountId String @db.Uuid
+
+  platformSpecificTitle       String? @map("platform_specific_title")
+  platformSpecificCaption     String? @map("platform_specific_caption")
+  platformSpecificMedia       Json?   @map("platform_specific_media")
+  platformSpecificFirstComment String? @map("platform_specific_first_comment")
+  platformExtra               Json    @default("{}") @map("platform_extra")
+
+  status         PlatformPostStatus @default(DRAFT)
+  platformPostId String  @default("") @map("platform_post_id")
+  publishError   String  @default("") @map("publish_error")
+  publishedAt    DateTime? @map("published_at") @db.Timestamptz(6)
+  /// Falls back to Post.scheduledAt when NULL.
+  scheduledAt    DateTime? @map("scheduled_at") @db.Timestamptz(6)
+  retryCount     Int     @default(0) @map("retry_count")
+  nextRetryAt    DateTime? @map("next_retry_at") @db.Timestamptz(6)
+
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  post          Post          @relation(fields: [postId], references: [id], onDelete: Cascade)
+  socialAccount SocialAccount @relation(fields: [socialAccountId], references: [id], onDelete: Cascade)
+  publishLogs   PublishLog[]
+
+  @@unique([postId, socialAccountId])
+  @@index([status, scheduledAt])
+  @@map("platform_posts")
+}
+
+model PublishLog {
+  id             String @id @default(uuid()) @db.Uuid
+  platformPostId String @db.Uuid
+  attemptNumber  Int    @default(1) @map("attempt_number")
+  statusCode     Int?   @map("status_code")
+  responseBody   String @default("") @map("response_body")
+  errorMessage   String @default("") @map("error_message")
+  durationMs     Int    @default(0) @map("duration_ms")
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  platformPost PlatformPost @relation(fields: [platformPostId], references: [id], onDelete: Cascade)
+
+  @@index([platformPostId, createdAt])
+  @@map("publish_logs")
+}
+
+/// Rate-limit tracking from API response headers (-1 = unknown).
+model RateLimitState {
+  id                String @id @default(uuid()) @db.Uuid
+  socialAccountId   String @db.Uuid
+  platform          String
+  requestsRemaining Int    @default(-1) @map("requests_remaining")
+  windowResetsAt    DateTime? @map("window_resets_at") @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  socialAccount SocialAccount @relation(fields: [socialAccountId], references: [id], onDelete: Cascade)
+
+  @@unique([socialAccountId, platform])
+  @@map("rate_limit_states")
+}
+
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+/// Recurring weekly posting slot for an account (workspace timezone).
+model PostingSlot {
+  id              String    @id @default(uuid()) @db.Uuid
+  socialAccountId String    @db.Uuid
+  dayOfWeek       DayOfWeek @map("day_of_week")
+  time            String
+  isActive        Boolean   @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  socialAccount SocialAccount @relation(fields: [socialAccountId], references: [id], onDelete: Cascade)
+
+  @@index([socialAccountId, dayOfWeek])
+  @@map("posting_slots")
+}
+
+model Queue {
+  id          String  @id @default(uuid()) @db.Uuid
+  workspaceId String  @db.Uuid
+  name        String
+  categoryId  String? @db.Uuid
+  accountId   String? @db.Uuid
+  isActive    Boolean @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  entries   QueueEntry[]
+
+  @@map("queues")
+}
+
+/// Posts queued in order; auto-assigned to the next free recurring slot.
+model QueueEntry {
+  id                   String   @id @default(uuid()) @db.Uuid
+  queueId              String   @db.Uuid
+  postId               String   @unique @db.Uuid
+  position             Int      @default(0)
+  assignedSlotDatetime DateTime? @map("assigned_slot_datetime") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  queue Queue @relation(fields: [queueId], references: [id], onDelete: Cascade)
+  post  Post  @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([queueId, position])
+  @@map("queue_entries")
 }

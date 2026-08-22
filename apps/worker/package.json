@@ -4,14 +4,15 @@
   "private": true,
   "scripts": {
     "start:dev": "tsx watch src/main.ts",
-    "start:prod": "node dist/main.js",
-    "build": "tsc -p tsconfig.json",
+    "start:prod": "tsx src/main.ts",
+    "build": "tsc --noEmit",
     "typecheck": "tsc --noEmit",
     "test": "echo \"no tests yet\""
   },
   "dependencies": {
     "@brightbean/shared": "workspace:*",
-    "pg-boss": "^10.2.0"
+    "pg-boss": "^10.2.0",
+    "@brightbean/api": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",

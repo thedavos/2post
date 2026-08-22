@@ -3,9 +3,18 @@
   "compilerOptions": {
     "module": "commonjs",
     "moduleResolution": "node",
-    "outDir": "dist",
-    "rootDir": "src",
-    "types": ["node"]
+    "types": [
+      "node"
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@brightbean/api": [
+        "../api/src/index.ts"
+      ]
+    },
+    "noEmit": true
   },
-  "include": ["src"]
+  "include": [
+    "src"
+  ]
 }

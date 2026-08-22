@@ -59,6 +59,9 @@ importers:
       fastify:
         specifier: ^5.12.0
         version: 5.12.0
+      pg-boss:
+        specifier: ^10.4.2
+        version: 10.4.2
       reflect-metadata:
         specifier: ^0.2.2
         version: 0.2.2
@@ -139,6 +142,9 @@ importers:
 
   apps/worker:
     dependencies:
+      '@brightbean/api':
+        specifier: workspace:*
+        version: link:../api
       '@brightbean/shared':
         specifier: workspace:*
         version: link:../../packages/shared
@@ -161,6 +167,10 @@ importers:
       zod:
         specifier: ^3.24.1
         version: 3.25.76
+    devDependencies:
+      vitest:
+        specifier: ^3.2.7
+        version: 3.2.7(@types/node@22.20.1)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.50.0)(tsx@4.23.12)
 
 packages:
 

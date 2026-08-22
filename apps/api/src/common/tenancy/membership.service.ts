@@ -41,4 +41,21 @@ export class MembershipService {
     }
     return role;
   }
+
+  /// Resolves the workspace's org and checks membership in one step.
+  async requireWorkspace(
+    userId: string,
+    workspaceId: string,
+  ): Promise<{ organizationId: string; orgRole: OrgRole }> {
+    const workspace = await this.prisma.workspace.findUnique({
+      where: { id: workspaceId },
+      select: { id: true, organizationId: true },
+    });
+    if (!workspace) {
+      throw new NotFoundException("Workspace not found");
+    }
+
+    const orgRole = await this.requireOrgRole(userId, workspace.organizationId);
+    return { organizationId: workspace.organizationId, orgRole };
+  }
 }
