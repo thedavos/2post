@@ -14,6 +14,9 @@ import { Route as AppRouteImport } from './routes/_app'
 import { Route as AppOnboardingRouteImport } from './routes/_app.onboarding'
 import { Route as AppWorkspacesRouteImport } from './routes/_app.workspaces'
 import { Route as AccountsLoginRouteImport } from './routes/accounts.login'
+import { Route as AccountsSignupRouteImport } from './routes/accounts.signup'
+import { Route as PortalTokenRouteImport } from './routes/portal.$token'
+import { Route as AppOrganizationsOrgIdApiKeysRouteImport } from './routes/_app.organizations.$orgId.api-keys'
 import { Route as AppOrganizationsOrgIdWorkspacesRouteImport } from './routes/_app.organizations.$orgId.workspaces'
 import { Route as AppWorkspaceWorkspaceIdAnalyticsRouteImport } from './routes/_app.workspace.$workspaceId.analytics'
 import { Route as AppWorkspaceWorkspaceIdCalendarRouteImport } from './routes/_app.workspace.$workspaceId.calendar'
@@ -21,6 +24,7 @@ import { Route as AppWorkspaceWorkspaceIdComposerRouteImport } from './routes/_a
 import { Route as AppWorkspaceWorkspaceIdInboxRouteImport } from './routes/_app.workspace.$workspaceId.inbox'
 import { Route as AppWorkspaceWorkspaceIdMediaRouteImport } from './routes/_app.workspace.$workspaceId.media'
 import { Route as AppWorkspaceWorkspaceIdSocialAccountsRouteImport } from './routes/_app.workspace.$workspaceId.social-accounts'
+import { Route as AppWorkspaceWorkspaceIdSettingsClientsRouteImport } from './routes/_app.workspace.$workspaceId.settings.clients'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -46,6 +50,22 @@ const AccountsLoginRoute = AccountsLoginRouteImport.update({
   path: '/accounts/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AccountsSignupRoute = AccountsSignupRouteImport.update({
+  id: '/accounts/signup',
+  path: '/accounts/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortalTokenRoute = PortalTokenRouteImport.update({
+  id: '/portal/$token',
+  path: '/portal/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppOrganizationsOrgIdApiKeysRoute =
+  AppOrganizationsOrgIdApiKeysRouteImport.update({
+    id: '/organizations/$orgId/api-keys',
+    path: '/organizations/$orgId/api-keys',
+    getParentRoute: () => AppRoute,
+  } as any)
 const AppOrganizationsOrgIdWorkspacesRoute =
   AppOrganizationsOrgIdWorkspacesRouteImport.update({
     id: '/organizations/$orgId/workspaces',
@@ -88,12 +108,21 @@ const AppWorkspaceWorkspaceIdSocialAccountsRoute =
     path: '/workspace/$workspaceId/social-accounts',
     getParentRoute: () => AppRoute,
   } as any)
+const AppWorkspaceWorkspaceIdSettingsClientsRoute =
+  AppWorkspaceWorkspaceIdSettingsClientsRouteImport.update({
+    id: '/workspace/$workspaceId/settings/clients',
+    path: '/workspace/$workspaceId/settings/clients',
+    getParentRoute: () => AppRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/onboarding': typeof AppOnboardingRoute
   '/workspaces': typeof AppWorkspacesRoute
   '/accounts/login': typeof AccountsLoginRoute
+  '/accounts/signup': typeof AccountsSignupRoute
+  '/portal/$token': typeof PortalTokenRoute
+  '/organizations/$orgId/api-keys': typeof AppOrganizationsOrgIdApiKeysRoute
   '/organizations/$orgId/workspaces': typeof AppOrganizationsOrgIdWorkspacesRoute
   '/workspace/$workspaceId/analytics': typeof AppWorkspaceWorkspaceIdAnalyticsRoute
   '/workspace/$workspaceId/calendar': typeof AppWorkspaceWorkspaceIdCalendarRoute
@@ -101,12 +130,16 @@ export interface FileRoutesByFullPath {
   '/workspace/$workspaceId/inbox': typeof AppWorkspaceWorkspaceIdInboxRoute
   '/workspace/$workspaceId/media': typeof AppWorkspaceWorkspaceIdMediaRoute
   '/workspace/$workspaceId/social-accounts': typeof AppWorkspaceWorkspaceIdSocialAccountsRoute
+  '/workspace/$workspaceId/settings/clients': typeof AppWorkspaceWorkspaceIdSettingsClientsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/onboarding': typeof AppOnboardingRoute
   '/workspaces': typeof AppWorkspacesRoute
   '/accounts/login': typeof AccountsLoginRoute
+  '/accounts/signup': typeof AccountsSignupRoute
+  '/portal/$token': typeof PortalTokenRoute
+  '/organizations/$orgId/api-keys': typeof AppOrganizationsOrgIdApiKeysRoute
   '/organizations/$orgId/workspaces': typeof AppOrganizationsOrgIdWorkspacesRoute
   '/workspace/$workspaceId/analytics': typeof AppWorkspaceWorkspaceIdAnalyticsRoute
   '/workspace/$workspaceId/calendar': typeof AppWorkspaceWorkspaceIdCalendarRoute
@@ -114,6 +147,7 @@ export interface FileRoutesByTo {
   '/workspace/$workspaceId/inbox': typeof AppWorkspaceWorkspaceIdInboxRoute
   '/workspace/$workspaceId/media': typeof AppWorkspaceWorkspaceIdMediaRoute
   '/workspace/$workspaceId/social-accounts': typeof AppWorkspaceWorkspaceIdSocialAccountsRoute
+  '/workspace/$workspaceId/settings/clients': typeof AppWorkspaceWorkspaceIdSettingsClientsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -122,6 +156,9 @@ export interface FileRoutesById {
   '/_app/onboarding': typeof AppOnboardingRoute
   '/_app/workspaces': typeof AppWorkspacesRoute
   '/accounts/login': typeof AccountsLoginRoute
+  '/accounts/signup': typeof AccountsSignupRoute
+  '/portal/$token': typeof PortalTokenRoute
+  '/_app/organizations/$orgId/api-keys': typeof AppOrganizationsOrgIdApiKeysRoute
   '/_app/organizations/$orgId/workspaces': typeof AppOrganizationsOrgIdWorkspacesRoute
   '/_app/workspace/$workspaceId/analytics': typeof AppWorkspaceWorkspaceIdAnalyticsRoute
   '/_app/workspace/$workspaceId/calendar': typeof AppWorkspaceWorkspaceIdCalendarRoute
@@ -129,6 +166,7 @@ export interface FileRoutesById {
   '/_app/workspace/$workspaceId/inbox': typeof AppWorkspaceWorkspaceIdInboxRoute
   '/_app/workspace/$workspaceId/media': typeof AppWorkspaceWorkspaceIdMediaRoute
   '/_app/workspace/$workspaceId/social-accounts': typeof AppWorkspaceWorkspaceIdSocialAccountsRoute
+  '/_app/workspace/$workspaceId/settings/clients': typeof AppWorkspaceWorkspaceIdSettingsClientsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -137,6 +175,9 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/workspaces'
     | '/accounts/login'
+    | '/accounts/signup'
+    | '/portal/$token'
+    | '/organizations/$orgId/api-keys'
     | '/organizations/$orgId/workspaces'
     | '/workspace/$workspaceId/analytics'
     | '/workspace/$workspaceId/calendar'
@@ -144,12 +185,16 @@ export interface FileRouteTypes {
     | '/workspace/$workspaceId/inbox'
     | '/workspace/$workspaceId/media'
     | '/workspace/$workspaceId/social-accounts'
+    | '/workspace/$workspaceId/settings/clients'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/onboarding'
     | '/workspaces'
     | '/accounts/login'
+    | '/accounts/signup'
+    | '/portal/$token'
+    | '/organizations/$orgId/api-keys'
     | '/organizations/$orgId/workspaces'
     | '/workspace/$workspaceId/analytics'
     | '/workspace/$workspaceId/calendar'
@@ -157,6 +202,7 @@ export interface FileRouteTypes {
     | '/workspace/$workspaceId/inbox'
     | '/workspace/$workspaceId/media'
     | '/workspace/$workspaceId/social-accounts'
+    | '/workspace/$workspaceId/settings/clients'
   id:
     | '__root__'
     | '/'
@@ -164,6 +210,9 @@ export interface FileRouteTypes {
     | '/_app/onboarding'
     | '/_app/workspaces'
     | '/accounts/login'
+    | '/accounts/signup'
+    | '/portal/$token'
+    | '/_app/organizations/$orgId/api-keys'
     | '/_app/organizations/$orgId/workspaces'
     | '/_app/workspace/$workspaceId/analytics'
     | '/_app/workspace/$workspaceId/calendar'
@@ -171,12 +220,15 @@ export interface FileRouteTypes {
     | '/_app/workspace/$workspaceId/inbox'
     | '/_app/workspace/$workspaceId/media'
     | '/_app/workspace/$workspaceId/social-accounts'
+    | '/_app/workspace/$workspaceId/settings/clients'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRouteWithChildren
   AccountsLoginRoute: typeof AccountsLoginRoute
+  AccountsSignupRoute: typeof AccountsSignupRoute
+  PortalTokenRoute: typeof PortalTokenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -215,6 +267,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/accounts/login'
       preLoaderRoute: typeof AccountsLoginRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/accounts/signup': {
+      id: '/accounts/signup'
+      path: '/accounts/signup'
+      fullPath: '/accounts/signup'
+      preLoaderRoute: typeof AccountsSignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/portal/$token': {
+      id: '/portal/$token'
+      path: '/portal/$token'
+      fullPath: '/portal/$token'
+      preLoaderRoute: typeof PortalTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app/organizations/$orgId/api-keys': {
+      id: '/_app/organizations/$orgId/api-keys'
+      path: '/organizations/$orgId/api-keys'
+      fullPath: '/organizations/$orgId/api-keys'
+      preLoaderRoute: typeof AppOrganizationsOrgIdApiKeysRouteImport
+      parentRoute: typeof AppRoute
     }
     '/_app/organizations/$orgId/workspaces': {
       id: '/_app/organizations/$orgId/workspaces'
@@ -265,12 +338,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppWorkspaceWorkspaceIdSocialAccountsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/workspace/$workspaceId/settings/clients': {
+      id: '/_app/workspace/$workspaceId/settings/clients'
+      path: '/workspace/$workspaceId/settings/clients'
+      fullPath: '/workspace/$workspaceId/settings/clients'
+      preLoaderRoute: typeof AppWorkspaceWorkspaceIdSettingsClientsRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
 interface AppRouteChildren {
   AppOnboardingRoute: typeof AppOnboardingRoute
   AppWorkspacesRoute: typeof AppWorkspacesRoute
+  AppOrganizationsOrgIdApiKeysRoute: typeof AppOrganizationsOrgIdApiKeysRoute
   AppOrganizationsOrgIdWorkspacesRoute: typeof AppOrganizationsOrgIdWorkspacesRoute
   AppWorkspaceWorkspaceIdAnalyticsRoute: typeof AppWorkspaceWorkspaceIdAnalyticsRoute
   AppWorkspaceWorkspaceIdCalendarRoute: typeof AppWorkspaceWorkspaceIdCalendarRoute
@@ -278,11 +359,13 @@ interface AppRouteChildren {
   AppWorkspaceWorkspaceIdInboxRoute: typeof AppWorkspaceWorkspaceIdInboxRoute
   AppWorkspaceWorkspaceIdMediaRoute: typeof AppWorkspaceWorkspaceIdMediaRoute
   AppWorkspaceWorkspaceIdSocialAccountsRoute: typeof AppWorkspaceWorkspaceIdSocialAccountsRoute
+  AppWorkspaceWorkspaceIdSettingsClientsRoute: typeof AppWorkspaceWorkspaceIdSettingsClientsRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppOnboardingRoute: AppOnboardingRoute,
   AppWorkspacesRoute: AppWorkspacesRoute,
+  AppOrganizationsOrgIdApiKeysRoute: AppOrganizationsOrgIdApiKeysRoute,
   AppOrganizationsOrgIdWorkspacesRoute: AppOrganizationsOrgIdWorkspacesRoute,
   AppWorkspaceWorkspaceIdAnalyticsRoute: AppWorkspaceWorkspaceIdAnalyticsRoute,
   AppWorkspaceWorkspaceIdCalendarRoute: AppWorkspaceWorkspaceIdCalendarRoute,
@@ -291,6 +374,8 @@ const AppRouteChildren: AppRouteChildren = {
   AppWorkspaceWorkspaceIdMediaRoute: AppWorkspaceWorkspaceIdMediaRoute,
   AppWorkspaceWorkspaceIdSocialAccountsRoute:
     AppWorkspaceWorkspaceIdSocialAccountsRoute,
+  AppWorkspaceWorkspaceIdSettingsClientsRoute:
+    AppWorkspaceWorkspaceIdSettingsClientsRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
@@ -299,6 +384,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
   AccountsLoginRoute: AccountsLoginRoute,
+  AccountsSignupRoute: AccountsSignupRoute,
+  PortalTokenRoute: PortalTokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

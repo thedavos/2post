@@ -13,7 +13,7 @@ import type { FastifyReply } from "fastify";
 import { z } from "zod";
 
 import { PrismaService } from "../../prisma/prisma.service";
-import { loginInputSchema } from "@brightbean/shared";
+import { loginInputSchema, signupInputSchema } from "@brightbean/shared";
 import { AuthService } from "./auth.service";
 import {
   ACCESS_TOKEN_TTL_SECONDS,
@@ -40,6 +40,20 @@ export class AuthController {
   async login(@Body() body: unknown, @Res({ passthrough: true }) reply: FastifyReply) {
     const input = loginInputSchema.parse(body);
     const result = await this.auth.login(input.email, input.password);
+
+    this.setCookies(reply, result.accessToken, result.refreshToken);
+    return { ok: true, activeOrgId: result.activeOrgId };
+  }
+
+  @Post("signup")
+  @HttpCode(201)
+  async signup(@Body() body: unknown, @Res({ passthrough: true }) reply: FastifyReply) {
+    const input = signupInputSchema.parse(body);
+    const result = await this.auth.signup({
+      email: input.email,
+      password: input.password,
+      displayName: input.displayName,
+    });
 
     this.setCookies(reply, result.accessToken, result.refreshToken);
     return { ok: true, activeOrgId: result.activeOrgId };

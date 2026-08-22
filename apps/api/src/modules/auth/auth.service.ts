@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { ConflictException, Injectable, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { createHash, randomBytes } from "node:crypto";
 import * as bcrypt from "bcryptjs";
@@ -20,6 +20,52 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly jwt: JwtService,
   ) {}
+
+  /**
+   * Signup with auto-provisioning parity: new users get a default
+   * Organization + Workspace + OWNER membership (legacy accounts post_save).
+   */
+  async signup(input: {
+    email: string;
+    password: string;
+    displayName: string;
+  }) {
+    const existing = await this.prisma.user.findUnique({
+      where: { email: input.email },
+      select: { id: true },
+    });
+    if (existing) {
+      throw new ConflictException("An account with this email already exists");
+    }
+
+    const passwordHash = await bcrypt.hash(input.password, 12);
+    const slugSuffix = Date.now().toString(36);
+
+    const user = await this.prisma.user.create({
+      data: {
+        email: input.email,
+        displayName: input.displayName,
+        passwordHash,
+        tosAcceptedAt: new Date(),
+        orgMemberships: {
+          create: {
+            orgRole: "OWNER",
+            organization: {
+              create: {
+                name: `${input.displayName}'s Org`,
+                slug: `org-${slugSuffix}`,
+                workspaces: {
+                  create: { name: "Main Workspace", slug: `main-${slugSuffix}` },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return this.issueSession(user.id, user.email);
+  }
 
   async login(email: string, password: string) {
     const user = await this.prisma.user.findUnique({ where: { email } });
