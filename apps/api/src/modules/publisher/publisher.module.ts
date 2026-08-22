@@ -6,6 +6,7 @@ import { PrismaModule } from "../../prisma/prisma.module";
 import { DevtoProvider } from "./providers/devto.provider";
 import { BlueskyProvider } from "./providers/bluesky.provider";
 import { MastodonProvider } from "./providers/mastodon.provider";
+import { FacebookProvider } from "./providers/facebook.provider";
 import { PublisherEngine } from "./publisher.engine";
 import { ProviderRegistry } from "./provider.registry";
 
@@ -17,23 +18,24 @@ export const PUBLISH_QUEUE = "publish-due-posts";
     DevtoProvider,
     BlueskyProvider,
     MastodonProvider,
+    FacebookProvider,
     {
       provide: ProviderRegistry,
-      // Remaining in 2b: meta family (facebook, instagram, instagram_login,
-      // threads), linkedin_personal/company, tiktok, youtube,
-      // google_business, pinterest.
+      // Remaining in 2b: instagram, instagram_login, threads,
+      // linkedin_personal/company, tiktok, youtube, google_business, pinterest.
       useFactory: (
         devto: DevtoProvider,
         bluesky: BlueskyProvider,
         mastodon: MastodonProvider,
+        facebook: FacebookProvider,
       ) => {
         const registry = new ProviderRegistry();
-        registry.register(devto);
-        registry.register(bluesky);
-        registry.register(mastodon);
+        for (const provider of [devto, bluesky, mastodon, facebook]) {
+          registry.register(provider);
+        }
         return registry;
       },
-      inject: [DevtoProvider, BlueskyProvider, MastodonProvider],
+      inject: [DevtoProvider, BlueskyProvider, MastodonProvider, FacebookProvider],
     },
     PublisherEngine,
   ],

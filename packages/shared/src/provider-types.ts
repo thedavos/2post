@@ -120,11 +120,22 @@ export interface SocialProvider {
     accessToken: string,
     postId: string,
     text: string,
+    options?: ProviderCallOptions,
   ): Promise<CommentResult>;
-  getPostMetrics(accessToken: string, postId: string): Promise<PostMetrics>;
+  getPostMetrics(
+    accessToken: string,
+    postId: string,
+    options?: ProviderCallOptions,
+  ): Promise<PostMetrics>;
   getAccountMetrics(
     accessToken: string,
     since: Date,
     until: Date,
+    options?: ProviderCallOptions,
   ): Promise<AccountMetrics>;
+}
+
+/** Per-call context (e.g. Facebook page_id for page-scoped operations). */
+export interface ProviderCallOptions {
+  pageId?: string;
 }
