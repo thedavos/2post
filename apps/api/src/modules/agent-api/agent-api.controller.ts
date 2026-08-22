@@ -16,8 +16,8 @@ import { ApiKeyGuard, type ApiKeyRequest } from "../api-keys/api-key.guard";
 
 /**
  * External agent REST API — contract parity with legacy /api/v1 (django-ninja):
- * same paths, auth (bb_studio_ bearer) and permission model. Payload shapes
- * must not change without explicit human approval.
+ * same paths, auth (bb_studio_ bearer), rate limits + headers (in the guard).
+ * Payload shapes must not change without explicit human approval.
  */
 
 function permissions(request: FastifyRequest): string[] {

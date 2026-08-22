@@ -723,3 +723,15 @@ model PostMetricSnapshot {
   @@index([platformPostId, capturedFor])
   @@map("post_metric_snapshots")
 }
+
+/// Fixed-window rate limit counters for the agent API (no Redis required).
+model ApiKeyRateLimit {
+  id             String   @id @default(uuid()) @db.Uuid
+  scopeKey       String   @map("scope_key") // "key:<id>:write" | "ws:<id>:aggregate"
+  windowStart    DateTime @map("window_start") @db.Timestamptz(6)
+  count          Int      @default(0)
+
+  @@unique([scopeKey, windowStart])
+  @@index([scopeKey, windowStart])
+  @@map("api_key_rate_limits")
+}

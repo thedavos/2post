@@ -8,6 +8,7 @@ import { BlueskyProvider } from "./providers/bluesky.provider";
 import { MastodonProvider } from "./providers/mastodon.provider";
 import { FacebookProvider } from "./providers/facebook.provider";
 import { InstagramProvider } from "./providers/instagram.provider";
+import { InstagramLoginProvider } from "./providers/instagram-login.provider";
 import { ThreadsProvider } from "./providers/threads.provider";
 import {
   LinkedInCompanyProvider,
@@ -30,6 +31,7 @@ export const PUBLISH_QUEUE = "publish-due-posts";
     MastodonProvider,
     FacebookProvider,
     InstagramProvider,
+    InstagramLoginProvider,
     ThreadsProvider,
     LinkedInPersonalProvider,
     LinkedInCompanyProvider,
@@ -39,14 +41,13 @@ export const PUBLISH_QUEUE = "publish-due-posts";
     PinterestProvider,
     {
       provide: ProviderRegistry,
-      // instagram_login shares the IG engine and registers when the
-      // SocialAccountsModule lands (it needs its own app credentials).
       useFactory: (
         devto: DevtoProvider,
         bluesky: BlueskyProvider,
         mastodon: MastodonProvider,
         facebook: FacebookProvider,
         instagram: InstagramProvider,
+        instagramLogin: InstagramLoginProvider,
         threads: ThreadsProvider,
         linkedinPersonal: LinkedInPersonalProvider,
         linkedinCompany: LinkedInCompanyProvider,
@@ -62,6 +63,7 @@ export const PUBLISH_QUEUE = "publish-due-posts";
           mastodon,
           facebook,
           instagram,
+          instagramLogin,
           threads,
           linkedinPersonal,
           linkedinCompany,
@@ -80,6 +82,7 @@ export const PUBLISH_QUEUE = "publish-due-posts";
         MastodonProvider,
         FacebookProvider,
         InstagramProvider,
+        InstagramLoginProvider,
         ThreadsProvider,
         LinkedInPersonalProvider,
         LinkedInCompanyProvider,

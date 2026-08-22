@@ -20,12 +20,14 @@ import { ClientPortalModule } from "./modules/client-portal/client-portal.module
 import { ApiKeysModule } from "./modules/api-keys/api-keys.module";
 import { AgentApiModule } from "./modules/agent-api/agent-api.module";
 import { McpModule } from "./modules/mcp/mcp.module";
+import { StorageModule } from "./common/storage/storage.module";
 import { WorkspacesModule } from "./modules/workspaces/workspaces.module";
 import { PrismaModule } from "./prisma/prisma.module";
 
 @Module({
   imports: [
     CryptoModule,
+    StorageModule,
     TenancyModule,
     PrismaModule,
     HealthModule,
