@@ -4,6 +4,8 @@ import PgBoss from "pg-boss";
 import { CryptoModule } from "../../common/crypto/crypto.module";
 import { PrismaModule } from "../../prisma/prisma.module";
 import { DevtoProvider } from "./providers/devto.provider";
+import { BlueskyProvider } from "./providers/bluesky.provider";
+import { MastodonProvider } from "./providers/mastodon.provider";
 import { PublisherEngine } from "./publisher.engine";
 import { ProviderRegistry } from "./provider.registry";
 
@@ -13,16 +15,25 @@ export const PUBLISH_QUEUE = "publish-due-posts";
   imports: [PrismaModule, CryptoModule],
   providers: [
     DevtoProvider,
+    BlueskyProvider,
+    MastodonProvider,
     {
       provide: ProviderRegistry,
-      // Registering more providers in 2b: bluesky, mastodon, meta family,
-      // linkedin, tiktok, youtube, google_business, pinterest, threads.
-      useFactory: (devto: DevtoProvider) => {
+      // Remaining in 2b: meta family (facebook, instagram, instagram_login,
+      // threads), linkedin_personal/company, tiktok, youtube,
+      // google_business, pinterest.
+      useFactory: (
+        devto: DevtoProvider,
+        bluesky: BlueskyProvider,
+        mastodon: MastodonProvider,
+      ) => {
         const registry = new ProviderRegistry();
         registry.register(devto);
+        registry.register(bluesky);
+        registry.register(mastodon);
         return registry;
       },
-      inject: [DevtoProvider],
+      inject: [DevtoProvider, BlueskyProvider, MastodonProvider],
     },
     PublisherEngine,
   ],
