@@ -282,7 +282,7 @@
                    sidebarCollapsed ? 'lg:w-[60px] sidebar-collapsed' : 'lg:w-60',
                    mobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
                ]"
-               x-init="$el.classList.remove('sidebar-initial'); document.documentElement.classList.remove('sidebar-is-collapsed'); $nextTick(() => $el.classList.add('transition-all', 'duration-200'))"
+               x-init="$el.classList.remove('sidebar-initial'); document.documentElement.classList.remove('sidebar-is-collapsed'); $nextTick(() = data-testid="app-shell"> $el.classList.add('transition-all', 'duration-200'))"
                @click="if (window.innerWidth < 1024 && $event.target.closest('a')) { mobileMenuOpen = false }">
 
             <!-- Workspace switcher (top of sidebar) -->

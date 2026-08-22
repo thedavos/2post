@@ -73,12 +73,20 @@
             {% csrf_token %}
             {{ redirect_field }}
 
+            {% if form.non_field_errors %}
+            <div class="mb-4" data-testid="field-error">
+                {% for error in form.non_field_errors %}
+                <p class="text-xs mb-1" style="color: var(--error-500);">{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+
             {% for field in form %}
             {% if field.field.widget.input_type == "checkbox" %}
             <div class="mb-4">
                 <label for="{{ field.id_for_label }}" class="inline-flex items-center gap-2 cursor-pointer text-sm" style="color: var(--text-secondary);">
                     <input type="checkbox"
-                           name="{{ field.html_name }}"
+                           name="{{ field.html_name }}" data-testid="login-{{ field.html_name }}"
                            id="{{ field.id_for_label }}"
                            {% if field.value %}checked{% endif %}
                            class="w-4 h-4 rounded accent-[var(--primary)]" style="border-color: var(--border);">
@@ -91,7 +99,7 @@
                     {{ field.label }}
                 </label>
                 <input type="{{ field.field.widget.input_type }}"
-                       name="{{ field.html_name }}"
+                       name="{{ field.html_name }}" data-testid="login-{{ field.html_name }}"
                        id="{{ field.id_for_label }}"
                        value="{{ field.value|default:'' }}"
                        {% if field.field.widget.attrs.placeholder %}placeholder="{{ field.field.widget.attrs.placeholder }}"{% endif %}
@@ -99,7 +107,7 @@
                        {% if field.field.required %}required{% endif %}
                        class="form-input-styled {% if field.errors %}is-error{% endif %}">
                 {% if field.errors %}
-                <p class="mt-1 text-xs" style="color: var(--error-500);">{{ field.errors.0 }}</p>
+                <p class="mt-1 text-xs" style="color: var(--error-500);" data-testid="field-error">{{ field.errors.0 }}</p>
                 {% endif %}
             </div>
             {% endif %}
@@ -112,7 +120,7 @@
                 </a>
             </div>
 
-            <button type="submit" class="btn-brand">
+            <button type="submit" class="btn-brand" data-testid="login-submit">
                 Sign In
             </button>
         </form>
