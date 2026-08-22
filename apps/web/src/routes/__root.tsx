@@ -1,5 +1,8 @@
 import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
+import { QueryClientProvider } from "@tanstack/react-query";
 import * as React from "react";
+
+import { queryClient } from "~/lib/query-client";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -19,7 +22,9 @@ function RootComponent() {
         <HeadContent />
       </head>
       <body>
-        <Outlet />
+        <QueryClientProvider client={queryClient}>
+          <Outlet />
+        </QueryClientProvider>
         <Scripts />
       </body>
     </html>

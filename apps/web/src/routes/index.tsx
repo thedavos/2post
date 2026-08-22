@@ -1,42 +1,26 @@
-import { createFileRoute } from "@tanstack/react-router";
-import * as stylex from "@stylexjs/stylex";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
-import { colors } from "../styles/tokens.stylex";
-
-const styles = stylex.create({
-  page: {
-    minHeight: "100vh",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 16,
-    backgroundColor: colors.background,
-    color: colors.foreground,
-    fontFamily:
-      "ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif",
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 700,
-  },
-  subtitle: {
-    fontSize: 14,
-    opacity: 0.7,
-  },
-});
+import { queryClient } from "~/lib/query-client";
+import { sessionQuery } from "~/features/auth/session";
 
 export const Route = createFileRoute("/")({
-  component: HomePage,
-});
+  beforeLoad: async () => {
+    let session;
+    try {
+      session = await queryClient.ensureQueryData(sessionQuery());
+    } catch {
+      throw redirect({ to: "/accounts/login", search: { redirect: undefined } });
+    }
 
-function HomePage() {
-  return (
-    <main {...stylex.props(styles.page)}>
-      <h1 {...stylex.props(styles.title)}>BrightBean Studio</h1>
-      <p {...stylex.props(styles.subtitle)}>
-        New stack scaffold — TanStack Start + StyleX. Migration phase 0.
-      </p>
-    </main>
-  );
-}
+    // Land on the first organization's workspace list (legacy default-org behavior).
+    const firstOrg = session?.orgMemberships[0]?.organizationId;
+    if (firstOrg) {
+      throw redirect({
+        to: "/organizations/$orgId/workspaces",
+        params: { orgId: firstOrg },
+      });
+    }
+    throw redirect({ to: "/onboarding" });
+  },
+  component: () => null,
+});

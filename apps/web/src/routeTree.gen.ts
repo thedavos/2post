@@ -10,33 +10,121 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppRouteImport } from './routes/_app'
+import { Route as AppOnboardingRouteImport } from './routes/_app.onboarding'
+import { Route as AppWorkspacesRouteImport } from './routes/_app.workspaces'
+import { Route as AccountsLoginRouteImport } from './routes/accounts.login'
+import { Route as AppOrganizationsOrgIdWorkspacesRouteImport } from './routes/_app.organizations.$orgId.workspaces'
+import { Route as AppWorkspaceWorkspaceIdCalendarRouteImport } from './routes/_app.workspace.$workspaceId.calendar'
+import { Route as AppWorkspaceWorkspaceIdSocialAccountsRouteImport } from './routes/_app.workspace.$workspaceId.social-accounts'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppRoute = AppRouteImport.update({
+  id: '/_app',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppOnboardingRoute = AppOnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppWorkspacesRoute = AppWorkspacesRouteImport.update({
+  id: '/workspaces',
+  path: '/workspaces',
+  getParentRoute: () => AppRoute,
+} as any)
+const AccountsLoginRoute = AccountsLoginRouteImport.update({
+  id: '/accounts/login',
+  path: '/accounts/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppOrganizationsOrgIdWorkspacesRoute =
+  AppOrganizationsOrgIdWorkspacesRouteImport.update({
+    id: '/organizations/$orgId/workspaces',
+    path: '/organizations/$orgId/workspaces',
+    getParentRoute: () => AppRoute,
+  } as any)
+const AppWorkspaceWorkspaceIdCalendarRoute =
+  AppWorkspaceWorkspaceIdCalendarRouteImport.update({
+    id: '/workspace/$workspaceId/calendar',
+    path: '/workspace/$workspaceId/calendar',
+    getParentRoute: () => AppRoute,
+  } as any)
+const AppWorkspaceWorkspaceIdSocialAccountsRoute =
+  AppWorkspaceWorkspaceIdSocialAccountsRouteImport.update({
+    id: '/workspace/$workspaceId/social-accounts',
+    path: '/workspace/$workspaceId/social-accounts',
+    getParentRoute: () => AppRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/onboarding': typeof AppOnboardingRoute
+  '/workspaces': typeof AppWorkspacesRoute
+  '/accounts/login': typeof AccountsLoginRoute
+  '/organizations/$orgId/workspaces': typeof AppOrganizationsOrgIdWorkspacesRoute
+  '/workspace/$workspaceId/calendar': typeof AppWorkspaceWorkspaceIdCalendarRoute
+  '/workspace/$workspaceId/social-accounts': typeof AppWorkspaceWorkspaceIdSocialAccountsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/onboarding': typeof AppOnboardingRoute
+  '/workspaces': typeof AppWorkspacesRoute
+  '/accounts/login': typeof AccountsLoginRoute
+  '/organizations/$orgId/workspaces': typeof AppOrganizationsOrgIdWorkspacesRoute
+  '/workspace/$workspaceId/calendar': typeof AppWorkspaceWorkspaceIdCalendarRoute
+  '/workspace/$workspaceId/social-accounts': typeof AppWorkspaceWorkspaceIdSocialAccountsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_app': typeof AppRouteWithChildren
+  '/_app/onboarding': typeof AppOnboardingRoute
+  '/_app/workspaces': typeof AppWorkspacesRoute
+  '/accounts/login': typeof AccountsLoginRoute
+  '/_app/organizations/$orgId/workspaces': typeof AppOrganizationsOrgIdWorkspacesRoute
+  '/_app/workspace/$workspaceId/calendar': typeof AppWorkspaceWorkspaceIdCalendarRoute
+  '/_app/workspace/$workspaceId/social-accounts': typeof AppWorkspaceWorkspaceIdSocialAccountsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/onboarding'
+    | '/workspaces'
+    | '/accounts/login'
+    | '/organizations/$orgId/workspaces'
+    | '/workspace/$workspaceId/calendar'
+    | '/workspace/$workspaceId/social-accounts'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/onboarding'
+    | '/workspaces'
+    | '/accounts/login'
+    | '/organizations/$orgId/workspaces'
+    | '/workspace/$workspaceId/calendar'
+    | '/workspace/$workspaceId/social-accounts'
+  id:
+    | '__root__'
+    | '/'
+    | '/_app'
+    | '/_app/onboarding'
+    | '/_app/workspaces'
+    | '/accounts/login'
+    | '/_app/organizations/$orgId/workspaces'
+    | '/_app/workspace/$workspaceId/calendar'
+    | '/_app/workspace/$workspaceId/social-accounts'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AppRoute: typeof AppRouteWithChildren
+  AccountsLoginRoute: typeof AccountsLoginRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +136,81 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_app': {
+      id: '/_app'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app/onboarding': {
+      id: '/_app/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof AppOnboardingRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/workspaces': {
+      id: '/_app/workspaces'
+      path: '/workspaces'
+      fullPath: '/workspaces'
+      preLoaderRoute: typeof AppWorkspacesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/accounts/login': {
+      id: '/accounts/login'
+      path: '/accounts/login'
+      fullPath: '/accounts/login'
+      preLoaderRoute: typeof AccountsLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app/organizations/$orgId/workspaces': {
+      id: '/_app/organizations/$orgId/workspaces'
+      path: '/organizations/$orgId/workspaces'
+      fullPath: '/organizations/$orgId/workspaces'
+      preLoaderRoute: typeof AppOrganizationsOrgIdWorkspacesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/workspace/$workspaceId/calendar': {
+      id: '/_app/workspace/$workspaceId/calendar'
+      path: '/workspace/$workspaceId/calendar'
+      fullPath: '/workspace/$workspaceId/calendar'
+      preLoaderRoute: typeof AppWorkspaceWorkspaceIdCalendarRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/workspace/$workspaceId/social-accounts': {
+      id: '/_app/workspace/$workspaceId/social-accounts'
+      path: '/workspace/$workspaceId/social-accounts'
+      fullPath: '/workspace/$workspaceId/social-accounts'
+      preLoaderRoute: typeof AppWorkspaceWorkspaceIdSocialAccountsRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
+interface AppRouteChildren {
+  AppOnboardingRoute: typeof AppOnboardingRoute
+  AppWorkspacesRoute: typeof AppWorkspacesRoute
+  AppOrganizationsOrgIdWorkspacesRoute: typeof AppOrganizationsOrgIdWorkspacesRoute
+  AppWorkspaceWorkspaceIdCalendarRoute: typeof AppWorkspaceWorkspaceIdCalendarRoute
+  AppWorkspaceWorkspaceIdSocialAccountsRoute: typeof AppWorkspaceWorkspaceIdSocialAccountsRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppOnboardingRoute: AppOnboardingRoute,
+  AppWorkspacesRoute: AppWorkspacesRoute,
+  AppOrganizationsOrgIdWorkspacesRoute: AppOrganizationsOrgIdWorkspacesRoute,
+  AppWorkspaceWorkspaceIdCalendarRoute: AppWorkspaceWorkspaceIdCalendarRoute,
+  AppWorkspaceWorkspaceIdSocialAccountsRoute:
+    AppWorkspaceWorkspaceIdSocialAccountsRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AppRoute: AppRouteWithChildren,
+  AccountsLoginRoute: AccountsLoginRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

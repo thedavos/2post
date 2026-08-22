@@ -233,3 +233,5 @@ apps/api/generated/
 
 # ETL local state
 tools/etl/state/
+
+packages/shared/dist-esm/
