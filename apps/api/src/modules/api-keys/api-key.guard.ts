@@ -7,15 +7,24 @@ import {
 } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 
+import { createHash } from "node:crypto";
+
 import { PrismaService } from "../../prisma/prisma.service";
 import type { ApiKey } from "../../../generated/prisma";
 import { parseToken, verifyToken } from "./api-key.crypto";
 import { RateLimitService } from "./rate-limit.service";
 
+export interface AuthContext {
+  kind: "api-key" | "oauth";
+  workspaceId: string;
+  permissions: string[];
+}
+
 const WRITE_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
 
 export interface ApiKeyRequest extends FastifyRequest {
   apiKey: ApiKey;
+  oauthUserId?: string;
 }
 
 /**
@@ -38,6 +47,45 @@ export class ApiKeyGuard implements CanActivate {
 
     const authorization = request.headers.authorization;
     const bearer = authorization?.startsWith("Bearer ") ? authorization.slice(7) : undefined;
+    if (!bearer) {
+      reply.header(
+        "WWW-Authenticate",
+        `Bearer resource_metadata="${process.env.APP_URL ?? ""}/.well-known/oauth-protected-resource/api/v1/mcp"`,
+      );
+      throw new UnauthorizedException("Missing bearer token");
+    }
+
+    // MCP OAuth bearer (opaque token, SHA-256 stored).
+    if (!bearer.startsWith("bb_studio_")) {
+      const token = await this.prisma.oAuthAccessToken.findUnique({
+        where: { tokenHash: createHash("sha256").update(bearer).digest("hex") },
+        include: { user: true },
+      });
+      if (!token || token.revokedAt || token.expiresAt < new Date() || !token.user.isActive) {
+        throw new UnauthorizedException("Invalid token");
+      }
+      const membership = await this.prisma.orgMembership.findFirst({
+        where: { userId: token.userId, organization: { deletionScheduledAt: null } },
+        orderBy: { createdAt: "asc" },
+        select: { organizationId: true },
+      });
+      const workspace = membership
+        ? await this.prisma.workspace.findFirst({
+            where: { organizationId: membership.organizationId },
+            select: { id: true },
+          })
+        : null;
+      request.oauthUserId = token.userId;
+      // Workspace context for tools; per-workspace permission mapping lands
+      // with the MCP tool expansion phase.
+      (request as unknown as Record<string, unknown>)["apiKey"] = {
+        id: `oauth:${token.id}`,
+        name: "MCP OAuth",
+        workspaceId: workspace?.id ?? "",
+        permissions: ["create_posts", "publish_directly", "upload_media", "view_analytics"],
+      };
+      return true;
+    }
 
     const parsed = parseToken(bearer);
     if (!parsed) throw new UnauthorizedException("Invalid API key");

@@ -31,6 +31,8 @@ model User {
   auditActions        AuditLog[]
   notifications       Notification[]
   notificationPreferences NotificationPreference[]
+  oauthAccessTokens OAuthAccessToken[]
+  oauthRefreshTokens OAuthRefreshToken[]
 
   @@map("users")
 }
@@ -734,4 +736,69 @@ model ApiKeyRateLimit {
   @@unique([scopeKey, windowStart])
   @@index([scopeKey, windowStart])
   @@map("api_key_rate_limits")
+}
+
+// ---------------------------------------------------------------------------
+// OAuth 2.1 authorization server (MCP clients, parity django-oauth-toolkit)
+// Public clients + PKCE S256; tokens stored as SHA-256 hashes.
+// ---------------------------------------------------------------------------
+
+model OAuthApplication {
+  id               String   @id @default(uuid()) @db.Uuid
+  clientId         String   @unique @map("client_id")
+  name             String
+  redirectUris     Json     @map("redirect_uris") // string[]
+  grantTypes       String[] @map("grant_types")
+  isConfidential   Boolean  @default(false) @map("is_confidential")
+  clientSecretHash String?  @map("client_secret_hash")
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  @@map("oauth_applications")
+}
+
+model OAuthAuthCode {
+  id                  String   @id @default(uuid()) @db.Uuid
+  codeHash            String   @unique @map("code_hash")
+  clientId            String   @map("client_id")
+  userId              String   @db.Uuid
+  redirectUri         String   @map("redirect_uri")
+  scope               String   @default("")
+  codeChallenge       String?  @map("code_challenge")
+  codeChallengeMethod String?  @map("code_challenge_method")
+  expiresAt           DateTime @map("expires_at") @db.Timestamptz(6)
+  consumedAt          DateTime? @map("consumed_at") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([userId])
+  @@map("oauth_auth_codes")
+}
+
+model OAuthAccessToken {
+  id        String    @id @default(uuid()) @db.Uuid
+  tokenHash String    @unique @map("token_hash")
+  clientId  String    @map("client_id")
+  userId    String    @db.Uuid
+  scope     String    @default("")
+  expiresAt DateTime  @map("expires_at") @db.Timestamptz(6)
+  revokedAt DateTime? @map("revoked_at") @db.Timestamptz(6)
+  createdAt DateTime  @default(now()) @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("oauth_access_tokens")
+}
+
+model OAuthRefreshToken {
+  tokenHash String    @id @map("token_hash")
+  clientId  String    @map("client_id")
+  userId    String    @db.Uuid
+  scope     String    @default("")
+  expiresAt DateTime  @map("expires_at") @db.Timestamptz(6)
+  revokedAt DateTime? @map("revoked_at") @db.Timestamptz(6)
+  createdAt DateTime  @default(now()) @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("oauth_refresh_tokens")
 }
