@@ -27,7 +27,7 @@ export interface OAuthTokens {
   scope?: string;
 }
 
-export type PostType = "text" | "image" | "video" | "carousel" | "article";
+export type PostType = "text" | "image" | "video" | "carousel" | "article" | "link";
 
 export type MediaType = "image" | "video";
 
@@ -53,6 +53,8 @@ export interface PostContent {
   media: Array<{ url: string; type: MediaType; altText?: string }>;
   firstComment?: string;
   scheduledFor?: Date;
+  /** Per-platform extras (tags, canonical URL, privacy, …). */
+  extra?: Record<string, unknown>;
 }
 
 export interface PublishResult {

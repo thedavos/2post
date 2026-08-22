@@ -3,6 +3,7 @@ import PgBoss from "pg-boss";
 
 import { CryptoModule } from "../../common/crypto/crypto.module";
 import { PrismaModule } from "../../prisma/prisma.module";
+import { DevtoProvider } from "./providers/devto.provider";
 import { PublisherEngine } from "./publisher.engine";
 import { ProviderRegistry } from "./provider.registry";
 
@@ -10,7 +11,21 @@ export const PUBLISH_QUEUE = "publish-due-posts";
 
 @Module({
   imports: [PrismaModule, CryptoModule],
-  providers: [PublisherEngine, ProviderRegistry],
+  providers: [
+    DevtoProvider,
+    {
+      provide: ProviderRegistry,
+      // Registering more providers in 2b: bluesky, mastodon, meta family,
+      // linkedin, tiktok, youtube, google_business, pinterest, threads.
+      useFactory: (devto: DevtoProvider) => {
+        const registry = new ProviderRegistry();
+        registry.register(devto);
+        return registry;
+      },
+      inject: [DevtoProvider],
+    },
+    PublisherEngine,
+  ],
   exports: [PublisherEngine, ProviderRegistry],
 })
 export class PublisherModule implements OnApplicationBootstrap {
@@ -31,7 +46,7 @@ export class PublisherModule implements OnApplicationBootstrap {
       "postgres://postgres:postgres@localhost:5432/brightbean_next";
 
     this.boss = new PgBoss({ connectionString });
-    this.boss.on("error", (error) => console.error("[pg-boss]", error));
+    this.boss.on("error", (error: Error) => console.error("[pg-boss]", error));
     await this.boss.start();
 
     await this.boss.createQueue(PUBLISH_QUEUE);
