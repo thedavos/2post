@@ -462,3 +462,22 @@ model QueueEntry {
   @@index([queueId, position])
   @@map("queue_entries")
 }
+
+/// Short-lived OAuth connect requests (state nonce + PKCE verifier storage).
+/// Replaces the Django session-based OAUTH_SESSION_KEY storage.
+model OauthConnectRequest {
+  id           String   @id @default(uuid()) @db.Uuid
+  userId       String   @db.Uuid
+  workspaceId  String   @db.Uuid
+  platform     String
+  /// Random nonce, hashed; compared against the signed state parameter.
+  nonceHash    String   @unique @map("nonce_hash")
+  codeVerifier String?  @map("code_verifier")
+  /// Pending multi-page selection payload (facebook/instagram/linkedin_company).
+  pendingPages Json?
+  expiresAt    DateTime @map("expires_at") @db.Timestamptz(6)
+  createdAt    DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([userId])
+  @@map("oauth_connect_requests")
+}

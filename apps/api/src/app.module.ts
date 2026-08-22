@@ -10,6 +10,7 @@ import { AuthModule } from "./modules/auth/auth.module";
 import { HealthModule } from "./modules/health/health.module";
 import { MembersModule } from "./modules/members/members.module";
 import { OrganizationsModule } from "./modules/organizations/organizations.module";
+import { SocialAccountsModule } from "./modules/social-accounts/social-accounts.module";
 import { WorkspacesModule } from "./modules/workspaces/workspaces.module";
 import { PrismaModule } from "./prisma/prisma.module";
 
@@ -25,6 +26,7 @@ import { PrismaModule } from "./prisma/prisma.module";
     MembersModule,
     ComposerModule,
     CalendarModule,
+    SocialAccountsModule,
   ],
   providers: [{ provide: APP_FILTER, useClass: ZodExceptionFilter }],
 })
