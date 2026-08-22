@@ -68,11 +68,8 @@ test.describe("auth", () => {
     }
   });
 
-  test("wrong password shows feedback (NEW STACK ONLY)", async ({ page }) => {
-    // FINDING: legacy silently re-renders the login form with NO feedback on
-    // bad credentials (allauth errors never surface in the template).
-    // Pre-existing UX bug tracked for independent fix on both stacks.
-    test.skip(!IS_NEW, "legacy shows no error on wrong password — see parity report");
+  test("wrong password shows feedback (both stacks)", async ({ page }) => {
+    // Fixed on legacy: non-field errors now render with data-testid.
     await doLogin(page, EMAIL, "definitely-wrong-password");
 
     const sharedError = page

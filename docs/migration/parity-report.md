@@ -18,10 +18,11 @@ Ensayo general del cutover ejecutado localmente con datos reales:
 
 ## Hallazgos durante el rehearsal
 
-1. **BUG LEGACY (preexistente):** login con password incorrecto en Django NO muestra
-   ningún feedback — allauth re-renderiza el formulario sin errores visibles
-   (`field.errors` nunca llega al template). Trackear fix independiente; el nuevo
-   stack sí muestra "Invalid email or password".
+1. **~~BUG LEGACY (preexistente) — CORREGIDO~~:** login con password incorrecto en
+   Django no mostraba feedback (los non-field errors de allauth nunca se renderizaban).
+   Fix en rama `chore/e2e-parity-testids` del repo legacy (render de non_field_errors +
+   data-testid compartidos). Verificado por Playwright: wrong-password muestra error
+   en AMBOS stacks.
 2. **Django usa BCryptSHA256PasswordHasher** que hashea el **hexdigest** sha256
    antes de bcrypt (no base64). Implementado y testeado en
    `password.crypto.ts` (`bcrypt_sha256$` prefix detection).
