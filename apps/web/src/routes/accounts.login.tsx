@@ -94,6 +94,7 @@ function LoginPage() {
             <input
               {...stylex.props(styles.input)}
               type="email"
+              data-testid="login-login"
               value={email}
               autoComplete="email"
               onChange={(e) => setEmail(e.target.value)}
@@ -106,6 +107,7 @@ function LoginPage() {
             <input
               {...stylex.props(styles.input)}
               type="password"
+              data-testid="login-password"
               value={password}
               autoComplete="current-password"
               onChange={(e) => setPassword(e.target.value)}
@@ -117,10 +119,10 @@ function LoginPage() {
             <p {...stylex.props(styles.error)}>Google sign-in failed — please try again.</p>
           )}
           {mutation.isError && (
-            <p {...stylex.props(styles.error)}>Invalid email or password</p>
+            <p {...stylex.props(styles.error)} data-testid="auth-message">Invalid email or password</p>
           )}
 
-          <Button type="submit" disabled={mutation.isPending}>
+          <Button type="submit" data-testid="login-submit" disabled={mutation.isPending}>
             {mutation.isPending ? "Signing in…" : "Sign in"}
           </Button>
 

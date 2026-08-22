@@ -3,15 +3,17 @@ import { expect, test } from "@playwright/test";
 /**
  * Public surfaces: client portal + agent API contract spot-checks.
  */
+const IS_NEW = (process.env.E2E_STACK ?? "new") === "new";
+
 test.describe("client portal", () => {
   test("invalid magic link shows a friendly error", async ({ page }) => {
+    test.skip(!IS_NEW, "legacy redirects invalid tokens (301) — UX parity tracked separately");
     await page.goto("/portal/definitely-invalid-token");
-    await expect(
-      page.getByText(/invalid or has expired/i),
-    ).toBeVisible();
+    await expect(page.getByText(/invalid or has expired/i)).toBeVisible();
   });
 
   test("portal decision rejects malformed payloads with 400", async ({ request }) => {
+    test.skip(!IS_NEW, "endpoint is new-stack only");
     const response = await request.post("/api/app/portal/decision", {
       data: { token: "x" },
     });

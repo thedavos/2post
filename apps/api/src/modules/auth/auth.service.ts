@@ -1,7 +1,7 @@
 import { ConflictException, Injectable, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { createHash, createHmac, randomBytes } from "node:crypto";
-import * as bcrypt from "bcryptjs";
+import { hashPassword, verifyPassword } from "./password.crypto";
 
 import { PrismaService } from "../../prisma/prisma.service";
 import {
@@ -38,7 +38,7 @@ export class AuthService {
       throw new ConflictException("An account with this email already exists");
     }
 
-    const passwordHash = await bcrypt.hash(input.password, 12);
+    const passwordHash = await hashPassword(input.password);
     const slugSuffix = Date.now().toString(36);
 
     const user = await this.prisma.user.create({
@@ -183,7 +183,7 @@ export class AuthService {
       throw new UnauthorizedException("Invalid email or password");
     }
 
-    const valid = await bcrypt.compare(password, user.passwordHash);
+    const valid = await verifyPassword(password, user.passwordHash);
     if (!valid) {
       throw new UnauthorizedException("Invalid email or password");
     }

@@ -1,5 +1,7 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import * as stylex from "@stylexjs/stylex";
+import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 import { queryClient } from "~/lib/query-client";
 import { sessionQuery } from "~/features/auth/session";
@@ -38,9 +40,24 @@ const styles = stylex.create({
 });
 
 function AppLayout() {
-  const session = queryClient.getQueryData(sessionQuery().queryKey);
-  const activeOrg =
-    session?.orgMemberships[0]?.organization ?? null;
+  // Reactive session state — on auth failure navigate after hydration.
+  // No early return: hook order must stay stable across auth transitions.
+  const { data: session, error } = useQuery(sessionQuery());
+  const activeOrg = session?.orgMemberships[0]?.organization ?? null;
+
+  const shouldRedirect = !import.meta.env.SSR && Boolean(error);
+
+  // Hard navigation on auth failure — deterministic regardless of
+  // hydration/router state.
+  useEffect(() => {
+    console.log("[guard] shouldRedirect:", shouldRedirect);
+    if (shouldRedirect) {
+      window.location.assign(
+        "/accounts/login?redirect=" +
+          encodeURIComponent(window.location.pathname),
+      );
+    }
+  }, [shouldRedirect]);
 
   // White-label: branding arrives on the active workspace (GET /workspaces).
   const workspaces = queryClient.getQueriesData<{
@@ -52,10 +69,10 @@ function AppLayout() {
   useBrandTheme(match?.branding as never);
 
   return (
-    <div {...stylex.props(styles.layout)}>
+    <div {...stylex.props(styles.layout)} data-testid="app-shell">
       <AppSidebar orgName={activeOrg?.name} />
       <main {...stylex.props(styles.main)}>
-        <Outlet />
+        {shouldRedirect ? null : <Outlet />}
       </main>
     </div>
   );

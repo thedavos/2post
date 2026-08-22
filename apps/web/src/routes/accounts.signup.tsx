@@ -85,6 +85,7 @@ function SignupPage() {
             Name
             <input
               {...stylex.props(styles.input)}
+              data-testid="signup-name"
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
               required
@@ -95,6 +96,7 @@ function SignupPage() {
             <input
               {...stylex.props(styles.input)}
               type="email"
+              data-testid="signup-email"
               value={email}
               autoComplete="email"
               onChange={(e) => setEmail(e.target.value)}
@@ -106,6 +108,7 @@ function SignupPage() {
             <input
               {...stylex.props(styles.input)}
               type="password"
+              data-testid="signup-password"
               minLength={8}
               autoComplete="new-password"
               value={password}
@@ -131,7 +134,7 @@ function SignupPage() {
             <p {...stylex.props(styles.error)}>Signup failed — check your details.</p>
           )}
 
-          <Button type="submit" disabled={!acceptTos || mutation.isPending}>
+          <Button type="submit" data-testid="signup-submit" disabled={!acceptTos || mutation.isPending}>
             {mutation.isPending ? "Creating…" : "Create account"}
           </Button>
         </form>

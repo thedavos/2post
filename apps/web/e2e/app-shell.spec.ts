@@ -17,7 +17,10 @@ async function login(page: import("@playwright/test").Page): Promise<void> {
   await page.waitForURL(/organizations|workspaces/, { timeout: 15_000 });
 }
 
+const IS_NEW = (process.env.E2E_STACK ?? "new") === "new";
+
 test.describe.serial("app shell", () => {
+  test.skip(!IS_NEW, "app-shell specs target the new stack URLs; legacy covered by auth.spec reference");
   let workspaceUrl: string | null = null;
 
   test("login lands on an organization workspace list", async ({ page }) => {
