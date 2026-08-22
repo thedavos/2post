@@ -9,6 +9,14 @@ import { MastodonProvider } from "./providers/mastodon.provider";
 import { FacebookProvider } from "./providers/facebook.provider";
 import { InstagramProvider } from "./providers/instagram.provider";
 import { ThreadsProvider } from "./providers/threads.provider";
+import {
+  LinkedInCompanyProvider,
+  LinkedInPersonalProvider,
+} from "./providers/linkedin.provider";
+import { TikTokProvider } from "./providers/tiktok.provider";
+import { YouTubeProvider } from "./providers/youtube.provider";
+import { GoogleBusinessProvider } from "./providers/google-business.provider";
+import { PinterestProvider } from "./providers/pinterest.provider";
 import { PublisherEngine } from "./publisher.engine";
 import { ProviderRegistry } from "./provider.registry";
 
@@ -23,10 +31,16 @@ export const PUBLISH_QUEUE = "publish-due-posts";
     FacebookProvider,
     InstagramProvider,
     ThreadsProvider,
+    LinkedInPersonalProvider,
+    LinkedInCompanyProvider,
+    TikTokProvider,
+    YouTubeProvider,
+    GoogleBusinessProvider,
+    PinterestProvider,
     {
       provide: ProviderRegistry,
-      // Remaining in 2b: instagram_login, linkedin_personal/company, tiktok,
-      // youtube, google_business, pinterest.
+      // instagram_login shares the IG engine and registers when the
+      // SocialAccountsModule lands (it needs its own app credentials).
       useFactory: (
         devto: DevtoProvider,
         bluesky: BlueskyProvider,
@@ -34,9 +48,28 @@ export const PUBLISH_QUEUE = "publish-due-posts";
         facebook: FacebookProvider,
         instagram: InstagramProvider,
         threads: ThreadsProvider,
+        linkedinPersonal: LinkedInPersonalProvider,
+        linkedinCompany: LinkedInCompanyProvider,
+        tiktok: TikTokProvider,
+        youtube: YouTubeProvider,
+        googleBusiness: GoogleBusinessProvider,
+        pinterest: PinterestProvider,
       ) => {
         const registry = new ProviderRegistry();
-        for (const provider of [devto, bluesky, mastodon, facebook, instagram, threads]) {
+        for (const provider of [
+          devto,
+          bluesky,
+          mastodon,
+          facebook,
+          instagram,
+          threads,
+          linkedinPersonal,
+          linkedinCompany,
+          tiktok,
+          youtube,
+          googleBusiness,
+          pinterest,
+        ]) {
           registry.register(provider);
         }
         return registry;
@@ -48,6 +81,12 @@ export const PUBLISH_QUEUE = "publish-due-posts";
         FacebookProvider,
         InstagramProvider,
         ThreadsProvider,
+        LinkedInPersonalProvider,
+        LinkedInCompanyProvider,
+        TikTokProvider,
+        YouTubeProvider,
+        GoogleBusinessProvider,
+        PinterestProvider,
       ],
     },
     PublisherEngine,

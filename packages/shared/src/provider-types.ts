@@ -8,6 +8,7 @@ export type PlatformSlug =
   | "facebook"
   | "instagram"
   | "instagram_login"
+  | "linkedin"
   | "linkedin_personal"
   | "linkedin_company"
   | "tiktok"
@@ -61,6 +62,7 @@ export interface PublishResult {
   platformPostId: string;
   permalink?: string | null;
   publishedAt: Date;
+  meta?: Record<string, unknown>;
 }
 
 export interface CommentResult {
