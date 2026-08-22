@@ -12,6 +12,7 @@ import { queryClient } from "~/lib/query-client";
 export const Route = createFileRoute("/accounts/login")({
   validateSearch: (search: Record<string, unknown>) => ({
     redirect: typeof search.redirect === "string" ? search.redirect : undefined,
+    error: typeof search.error === "string" ? search.error : undefined,
   }),
   component: LoginPage,
 });
@@ -71,7 +72,7 @@ function LoginPage() {
     mutationFn: () => login(email, password),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: sessionQuery().queryKey });
-      await navigate({ to: search.redirect ?? "/", search: { redirect: undefined } });
+      await navigate({ to: search.redirect ?? "/", search: { redirect: undefined, error: undefined } });
     },
   });
 
@@ -112,6 +113,9 @@ function LoginPage() {
             />
           </label>
 
+          {search.error && (
+            <p {...stylex.props(styles.error)}>Google sign-in failed — please try again.</p>
+          )}
           {mutation.isError && (
             <p {...stylex.props(styles.error)}>Invalid email or password</p>
           )}
@@ -119,6 +123,16 @@ function LoginPage() {
           <Button type="submit" disabled={mutation.isPending}>
             {mutation.isPending ? "Signing in…" : "Sign in"}
           </Button>
+
+          <div style={{ textAlign: "center", fontSize: "0.8125rem", color: colors.mutedForeground }}>
+            or
+          </div>
+
+          <a href="/api/app/auth/google" style={{ textDecoration: "none" }}>
+            <Button type="button" variant="outline">
+              Continue with Google
+            </Button>
+          </a>
         </form>
       </Card>
 

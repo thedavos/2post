@@ -1,6 +1,6 @@
 import { ConflictException, Injectable, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { createHash, randomBytes } from "node:crypto";
+import { createHash, createHmac, randomBytes } from "node:crypto";
 import * as bcrypt from "bcryptjs";
 
 import { PrismaService } from "../../prisma/prisma.service";
@@ -65,6 +65,115 @@ export class AuthService {
     });
 
     return this.issueSession(user.id, user.email);
+  }
+
+  /**
+   * Google SSO (consumer OIDC login, allauth parity): verifies the ID token
+   * flow by exchanging the code, then links or creates the local user.
+   */
+  async googleLogin(code: string, redirectUri: string) {
+    const clientId = process.env.GOOGLE_AUTH_CLIENT_ID;
+    const clientSecret = process.env.GOOGLE_AUTH_CLIENT_SECRET;
+    if (!clientId || !clientSecret) {
+      throw new UnauthorizedException("Google login is not configured");
+    }
+
+    // Exchange authorization code for tokens.
+    const tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
+      method: "POST",
+      headers: { "content-type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        code,
+        client_id: clientId,
+        client_secret: clientSecret,
+        redirect_uri: redirectUri,
+        grant_type: "authorization_code",
+      }),
+    });
+    const tokens = (await tokenResponse.json()) as Record<string, unknown>;
+    const idToken = tokens["id_token"] as string | undefined;
+    if (!tokenResponse.ok || !idToken) {
+      throw new UnauthorizedException("Google login failed");
+    }
+
+    // Verify + decode the ID token via Google's tokeninfo endpoint
+    // (signature validated server-side by Google; aud checked below).
+    const infoResponse = await fetch(
+      `https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(idToken)}`,
+    );
+    const info = (await infoResponse.json()) as Record<string, unknown>;
+    if (info["aud"] !== clientId || !info["email"]) {
+      throw new UnauthorizedException("Google login failed");
+    }
+    if (info["email_verified"] !== "true" && info["email_verified"] !== true) {
+      throw new UnauthorizedException("Google account email is not verified");
+    }
+
+    const email = String(info["email"]);
+    const displayName = String(info["name"] ?? email);
+
+    let user = await this.prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      // Auto-provision parity: same default org/workspace as signup.
+      const slugSuffix = Date.now().toString(36);
+      user = await this.prisma.user.create({
+        data: {
+          email,
+          displayName,
+          passwordHash: null,
+          tosAcceptedAt: new Date(),
+          orgMemberships: {
+            create: {
+              orgRole: "OWNER",
+              organization: {
+                create: {
+                  name: `${displayName}'s Org`,
+                  slug: `org-${slugSuffix}`,
+                  workspaces: {
+                    create: { name: "Main Workspace", slug: `main-${slugSuffix}` },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+    }
+    if (!user.isActive) throw new UnauthorizedException("Account disabled");
+
+    return this.issueSession(user.id, user.email);
+  }
+
+  /** Stateless signed state for the Google round-trip (no workspace yet). */
+  signGoogleState(): string {
+    const payload = Buffer.from(
+      JSON.stringify({ purpose: "google-sso", exp: Date.now() + 10 * 60_000 }),
+    ).toString("base64url");
+    return `${payload}.${this.hmac(payload)}`;
+  }
+
+  verifyGoogleState(state: string): boolean {
+    const dot = state.lastIndexOf(".");
+    if (dot <= 0) return false;
+    const body = state.slice(0, dot);
+    try {
+      if (
+        !timingSafeEq(this.hmac(body), state.slice(dot + 1))
+      ) { return false; }
+      const parsed = JSON.parse(Buffer.from(body, "base64url").toString("utf8")) as {
+        purpose?: string;
+        exp?: number;
+      };
+      return parsed.purpose === "google-sso" && typeof parsed.exp === "number" && parsed.exp > Date.now();
+    } catch {
+      return false;
+    }
+  }
+
+  private hmac(value: string): string {
+    return createHmac("sha256", process.env.SECRET_KEY ?? "")
+      .update(value)
+      .digest("base64url");
   }
 
   async login(email: string, password: string) {
@@ -180,4 +289,13 @@ export class AuthService {
     });
     return membership?.organizationId ?? null;
   }
+}
+
+function timingSafeEq(a: string, b: string): boolean {
+  const bufA = Buffer.from(a);
+  const bufB = Buffer.from(b);
+  if (bufA.length !== bufB.length) return false;
+  let diff = 0;
+  for (let i = 0; i < bufA.length; i++) diff |= bufA[i]! ^ bufB[i]!;
+  return diff === 0;
 }

@@ -3,6 +3,7 @@ import * as stylex from "@stylexjs/stylex";
 
 import { queryClient } from "~/lib/query-client";
 import { sessionQuery } from "~/features/auth/session";
+import { useBrandTheme } from "~/lib/brand-theme";
 import { colors, spacing } from "../styles/tokens.stylex";
 import { AppSidebar } from "~/components/layout/app-sidebar";
 
@@ -13,7 +14,7 @@ export const Route = createFileRoute("/_app")({
     } catch {
       throw redirect({
         to: "/accounts/login",
-        search: { redirect: location.href },
+        search: { redirect: location.href, error: undefined },
       });
     }
   },
@@ -39,6 +40,15 @@ function AppLayout() {
   const session = queryClient.getQueryData(sessionQuery().queryKey);
   const activeOrg =
     session?.orgMemberships[0]?.organization ?? null;
+
+  // White-label: branding arrives on the active workspace (GET /workspaces).
+  const workspaces = queryClient.getQueriesData<{
+    results: Array<{ id: string; branding?: Record<string, string> }>;
+  }>({ queryKey: ["workspaces"] });
+  const match = workspaces
+    .flatMap(([, data]) => data?.results ?? [])
+    .find((ws) => typeof window !== "undefined" && window.location.pathname.includes(ws.id));
+  useBrandTheme(match?.branding as never);
 
   return (
     <div {...stylex.props(styles.layout)}>

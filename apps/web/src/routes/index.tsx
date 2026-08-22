@@ -9,7 +9,7 @@ export const Route = createFileRoute("/")({
     try {
       session = await queryClient.ensureQueryData(sessionQuery());
     } catch {
-      throw redirect({ to: "/accounts/login", search: { redirect: undefined } });
+      throw redirect({ to: "/accounts/login", search: { redirect: undefined, error: undefined } });
     }
 
     // Land on the first organization's workspace list (legacy default-org behavior).

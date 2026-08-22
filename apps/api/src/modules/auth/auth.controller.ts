@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   HttpCode,
+  Query,
   Post,
   Res,
   UnauthorizedException,
@@ -57,6 +58,58 @@ export class AuthController {
 
     this.setCookies(reply, result.accessToken, result.refreshToken);
     return { ok: true, activeOrgId: result.activeOrgId };
+  }
+
+  /// Google SSO — browser redirect target (legacy /accounts/google/login parity).
+  @Get("google")
+  async googleStart(@Res({ passthrough: true }) reply: FastifyReply) {
+    if (!process.env.GOOGLE_AUTH_CLIENT_ID) {
+      throw new UnauthorizedException("Google login is not configured");
+    }
+    const state = this.auth.signGoogleState();
+    const params = new URLSearchParams({
+      client_id: process.env.GOOGLE_AUTH_CLIENT_ID!,
+      redirect_uri: `${process.env.APP_URL ?? ""}/social-accounts/callback/google_sso/`,
+      response_type: "code",
+      scope: "openid email profile",
+      state,
+      access_type: "offline",
+      prompt: "select_account",
+    });
+    reply.redirect(
+      `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`,
+      302,
+    );
+    return { url: `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}` };
+  }
+
+  /// Google SSO callback — exchanges the code and issues app cookies.
+  @Get("google/callback")
+  async googleCallback(
+    @Query("code") code: string | undefined,
+    @Query("state") state: string | undefined,
+    @Query("error") error: string | undefined,
+    @Res({ passthrough: true }) reply: FastifyReply,
+  ) {
+    const failUrl = `${process.env.APP_URL ?? ""}/accounts/login?error=google`;
+    if (error || !code || !state || !this.auth.verifyGoogleState(state)) {
+      reply.redirect(failUrl, 302);
+      return { url: failUrl };
+    }
+
+    try {
+      const result = await this.auth.googleLogin(
+        code,
+        `${process.env.APP_URL ?? ""}/social-accounts/callback/google_sso/`,
+      );
+      this.setCookies(reply, result.accessToken, result.refreshToken);
+      const successUrl = `${process.env.APP_URL ?? ""}/`;
+      reply.redirect(successUrl, 302);
+      return { url: successUrl };
+    } catch {
+      reply.redirect(failUrl, 302);
+      return { url: failUrl };
+    }
   }
 
   @Post("refresh")

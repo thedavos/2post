@@ -19,6 +19,7 @@ import { Route as PortalTokenRouteImport } from './routes/portal.$token'
 import { Route as AppOrganizationsOrgIdApiKeysRouteImport } from './routes/_app.organizations.$orgId.api-keys'
 import { Route as AppOrganizationsOrgIdWorkspacesRouteImport } from './routes/_app.organizations.$orgId.workspaces'
 import { Route as AppWorkspaceWorkspaceIdAnalyticsRouteImport } from './routes/_app.workspace.$workspaceId.analytics'
+import { Route as AppWorkspaceWorkspaceIdApprovalsRouteImport } from './routes/_app.workspace.$workspaceId.approvals'
 import { Route as AppWorkspaceWorkspaceIdCalendarRouteImport } from './routes/_app.workspace.$workspaceId.calendar'
 import { Route as AppWorkspaceWorkspaceIdComposerRouteImport } from './routes/_app.workspace.$workspaceId.composer'
 import { Route as AppWorkspaceWorkspaceIdInboxRouteImport } from './routes/_app.workspace.$workspaceId.inbox'
@@ -78,6 +79,12 @@ const AppWorkspaceWorkspaceIdAnalyticsRoute =
     path: '/workspace/$workspaceId/analytics',
     getParentRoute: () => AppRoute,
   } as any)
+const AppWorkspaceWorkspaceIdApprovalsRoute =
+  AppWorkspaceWorkspaceIdApprovalsRouteImport.update({
+    id: '/workspace/$workspaceId/approvals',
+    path: '/workspace/$workspaceId/approvals',
+    getParentRoute: () => AppRoute,
+  } as any)
 const AppWorkspaceWorkspaceIdCalendarRoute =
   AppWorkspaceWorkspaceIdCalendarRouteImport.update({
     id: '/workspace/$workspaceId/calendar',
@@ -125,6 +132,7 @@ export interface FileRoutesByFullPath {
   '/organizations/$orgId/api-keys': typeof AppOrganizationsOrgIdApiKeysRoute
   '/organizations/$orgId/workspaces': typeof AppOrganizationsOrgIdWorkspacesRoute
   '/workspace/$workspaceId/analytics': typeof AppWorkspaceWorkspaceIdAnalyticsRoute
+  '/workspace/$workspaceId/approvals': typeof AppWorkspaceWorkspaceIdApprovalsRoute
   '/workspace/$workspaceId/calendar': typeof AppWorkspaceWorkspaceIdCalendarRoute
   '/workspace/$workspaceId/composer': typeof AppWorkspaceWorkspaceIdComposerRoute
   '/workspace/$workspaceId/inbox': typeof AppWorkspaceWorkspaceIdInboxRoute
@@ -142,6 +150,7 @@ export interface FileRoutesByTo {
   '/organizations/$orgId/api-keys': typeof AppOrganizationsOrgIdApiKeysRoute
   '/organizations/$orgId/workspaces': typeof AppOrganizationsOrgIdWorkspacesRoute
   '/workspace/$workspaceId/analytics': typeof AppWorkspaceWorkspaceIdAnalyticsRoute
+  '/workspace/$workspaceId/approvals': typeof AppWorkspaceWorkspaceIdApprovalsRoute
   '/workspace/$workspaceId/calendar': typeof AppWorkspaceWorkspaceIdCalendarRoute
   '/workspace/$workspaceId/composer': typeof AppWorkspaceWorkspaceIdComposerRoute
   '/workspace/$workspaceId/inbox': typeof AppWorkspaceWorkspaceIdInboxRoute
@@ -161,6 +170,7 @@ export interface FileRoutesById {
   '/_app/organizations/$orgId/api-keys': typeof AppOrganizationsOrgIdApiKeysRoute
   '/_app/organizations/$orgId/workspaces': typeof AppOrganizationsOrgIdWorkspacesRoute
   '/_app/workspace/$workspaceId/analytics': typeof AppWorkspaceWorkspaceIdAnalyticsRoute
+  '/_app/workspace/$workspaceId/approvals': typeof AppWorkspaceWorkspaceIdApprovalsRoute
   '/_app/workspace/$workspaceId/calendar': typeof AppWorkspaceWorkspaceIdCalendarRoute
   '/_app/workspace/$workspaceId/composer': typeof AppWorkspaceWorkspaceIdComposerRoute
   '/_app/workspace/$workspaceId/inbox': typeof AppWorkspaceWorkspaceIdInboxRoute
@@ -180,6 +190,7 @@ export interface FileRouteTypes {
     | '/organizations/$orgId/api-keys'
     | '/organizations/$orgId/workspaces'
     | '/workspace/$workspaceId/analytics'
+    | '/workspace/$workspaceId/approvals'
     | '/workspace/$workspaceId/calendar'
     | '/workspace/$workspaceId/composer'
     | '/workspace/$workspaceId/inbox'
@@ -197,6 +208,7 @@ export interface FileRouteTypes {
     | '/organizations/$orgId/api-keys'
     | '/organizations/$orgId/workspaces'
     | '/workspace/$workspaceId/analytics'
+    | '/workspace/$workspaceId/approvals'
     | '/workspace/$workspaceId/calendar'
     | '/workspace/$workspaceId/composer'
     | '/workspace/$workspaceId/inbox'
@@ -215,6 +227,7 @@ export interface FileRouteTypes {
     | '/_app/organizations/$orgId/api-keys'
     | '/_app/organizations/$orgId/workspaces'
     | '/_app/workspace/$workspaceId/analytics'
+    | '/_app/workspace/$workspaceId/approvals'
     | '/_app/workspace/$workspaceId/calendar'
     | '/_app/workspace/$workspaceId/composer'
     | '/_app/workspace/$workspaceId/inbox'
@@ -303,6 +316,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppWorkspaceWorkspaceIdAnalyticsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/workspace/$workspaceId/approvals': {
+      id: '/_app/workspace/$workspaceId/approvals'
+      path: '/workspace/$workspaceId/approvals'
+      fullPath: '/workspace/$workspaceId/approvals'
+      preLoaderRoute: typeof AppWorkspaceWorkspaceIdApprovalsRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/workspace/$workspaceId/calendar': {
       id: '/_app/workspace/$workspaceId/calendar'
       path: '/workspace/$workspaceId/calendar'
@@ -354,6 +374,7 @@ interface AppRouteChildren {
   AppOrganizationsOrgIdApiKeysRoute: typeof AppOrganizationsOrgIdApiKeysRoute
   AppOrganizationsOrgIdWorkspacesRoute: typeof AppOrganizationsOrgIdWorkspacesRoute
   AppWorkspaceWorkspaceIdAnalyticsRoute: typeof AppWorkspaceWorkspaceIdAnalyticsRoute
+  AppWorkspaceWorkspaceIdApprovalsRoute: typeof AppWorkspaceWorkspaceIdApprovalsRoute
   AppWorkspaceWorkspaceIdCalendarRoute: typeof AppWorkspaceWorkspaceIdCalendarRoute
   AppWorkspaceWorkspaceIdComposerRoute: typeof AppWorkspaceWorkspaceIdComposerRoute
   AppWorkspaceWorkspaceIdInboxRoute: typeof AppWorkspaceWorkspaceIdInboxRoute
@@ -368,6 +389,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppOrganizationsOrgIdApiKeysRoute: AppOrganizationsOrgIdApiKeysRoute,
   AppOrganizationsOrgIdWorkspacesRoute: AppOrganizationsOrgIdWorkspacesRoute,
   AppWorkspaceWorkspaceIdAnalyticsRoute: AppWorkspaceWorkspaceIdAnalyticsRoute,
+  AppWorkspaceWorkspaceIdApprovalsRoute: AppWorkspaceWorkspaceIdApprovalsRoute,
   AppWorkspaceWorkspaceIdCalendarRoute: AppWorkspaceWorkspaceIdCalendarRoute,
   AppWorkspaceWorkspaceIdComposerRoute: AppWorkspaceWorkspaceIdComposerRoute,
   AppWorkspaceWorkspaceIdInboxRoute: AppWorkspaceWorkspaceIdInboxRoute,
