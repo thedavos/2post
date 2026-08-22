@@ -12,12 +12,26 @@ export interface MediaStorage {
   put(key: string, data: Buffer, contentType: string): Promise<void>;
   /** A URL from which the object can be read (signed for S3, served path local). */
   publicUrl(key: string): Promise<string>;
+  /** Raw bytes (local) — S3 delegates to presigned redirects instead. */
+  read?(key: string): Promise<Buffer>;
 }
 
 class LocalMediaStorage implements MediaStorage {
   readonly backend = "local" as const;
 
   constructor(private readonly root: string) {}
+
+  async read(key: string): Promise<Buffer> {
+    const path = await import("node:path");
+    // Prevent path traversal outside MEDIA_ROOT.
+    const absPath = path.resolve(this.root, key);
+    const resolvedRoot = path.resolve(this.root);
+    if (!absPath.startsWith(resolvedRoot)) {
+      throw new Error("Invalid media key");
+    }
+    const { readFile } = await import("node:fs/promises");
+    return readFile(absPath);
+  }
 
   async put(key: string, data: Buffer, _contentType: string): Promise<void> {
     const { writeFile, mkdir } = await import("node:fs/promises");
@@ -93,5 +107,15 @@ export class StorageService implements MediaStorage, OnModuleInit {
 
   async publicUrl(key: string): Promise<string> {
     return this.delegate.publicUrl(key);
+  }
+
+  get isLocal(): boolean {
+    return this.backend === "local";
+  }
+
+  /** Local-only raw read; callers must check isLocal first. */
+  async read(key: string): Promise<Buffer> {
+    if (!this.delegate.read) throw new Error("read() only supported on local backend");
+    return this.delegate.read(key);
   }
 }
