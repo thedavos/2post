@@ -9,6 +9,7 @@ import { AppSidebar } from "~/components/layout/app-sidebar";
 
 export const Route = createFileRoute("/_app")({
   beforeLoad: async ({ location }) => {
+    if (import.meta.env.SSR) return; // client-side guard avoids SSR cookie leakage
     try {
       await queryClient.ensureQueryData(sessionQuery());
     } catch {

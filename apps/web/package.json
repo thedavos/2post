@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "start": "node dist/server/server.js",
     "typecheck": "tsc --noEmit",
-    "test": "echo \"no tests yet\""
+    "test": "echo \"no tests yet\"",
+    "e2e": "playwright test"
   },
   "dependencies": {
     "@brightbean/shared": "workspace:*",
@@ -21,9 +22,11 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
     "@stylexjs/unplugin": "^0.19.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.7.0",
     "typescript": "^5.7.2",
     "vite": "^6.0.0",
     "vite-tsconfig-paths": "^5.1.4"

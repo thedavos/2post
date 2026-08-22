@@ -15,7 +15,8 @@
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test",
     "db:migrate": "pnpm --filter @brightbean/api prisma migrate dev",
-    "db:seed": "pnpm --filter @brightbean/api db:seed"
+    "db:seed": "pnpm --filter @brightbean/api db:seed",
+    "e2e": "pnpm --filter @brightbean/web e2e"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",
