@@ -12,7 +12,9 @@
         "../api/src/index.ts"
       ]
     },
-    "noEmit": true
+    "noEmit": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   },
   "include": [
     "src"

@@ -19,6 +19,7 @@ import { CurrentUser } from "../auth/current-user.decorator";
 import { JwtAuthGuard, type AuthenticatedRequest } from "../auth/jwt-auth.guard";
 import { MembershipService } from "../../common/tenancy/membership.service";
 import { PrismaService } from "../../prisma/prisma.service";
+import { AuditAction } from "../../common/audit/audit.decorator";
 import { organizationCreateSchema } from "@brightbean/shared";
 
 const renameSchema = z.object({ name: z.string().min(1).max(120) });
@@ -120,6 +121,7 @@ export class OrganizationsController {
     return { ok: true, activeOrgId: orgId };
   }
 
+  @AuditAction("organization.delete")
   @Delete(":orgId")
   async scheduleDeletion(
     @CurrentUser() user: AuthenticatedRequest["user"],

@@ -15,6 +15,7 @@ import { z } from "zod";
 
 import { MembershipService } from "../../common/tenancy/membership.service";
 import { PrismaService } from "../../prisma/prisma.service";
+import { AuditAction } from "../../common/audit/audit.decorator";
 import { workspaceCreateSchema } from "@brightbean/shared";
 import { CurrentUser } from "../auth/current-user.decorator";
 import { JwtAuthGuard, type AuthenticatedRequest } from "../auth/jwt-auth.guard";
@@ -100,6 +101,7 @@ export class WorkspacesController {
     });
   }
 
+  @AuditAction("workspace.delete")
   @Delete("workspaces/:workspaceId")
   async remove(
     @CurrentUser() user: AuthenticatedRequest["user"],

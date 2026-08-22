@@ -1,4 +1,4 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Inject, Injectable, Logger } from "@nestjs/common";
 
 import type { PostContent } from "@brightbean/shared";
 import { CryptoService } from "../../common/crypto/crypto.service";
@@ -19,9 +19,10 @@ export class PublisherEngine {
   private readonly logger = new Logger(PublisherEngine.name);
 
   constructor(
-    private readonly prisma: PrismaService,
-    private readonly registry: ProviderRegistry,
-    private readonly crypto: CryptoService,
+    // Explicit @Inject keeps DI stable under any transpiler (tsx/swc).
+    @Inject(PrismaService) private readonly prisma: PrismaService,
+    @Inject(ProviderRegistry) private readonly registry: ProviderRegistry,
+    @Inject(CryptoService) private readonly crypto: CryptoService,
   ) {}
 
   /// Called by the pg-boss job every 15 seconds (legacy cadence).
