@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 import { APP_FILTER } from "@nestjs/core";
 
+import { AuditModule } from "./common/audit/audit.module";
 import { CryptoModule } from "./common/crypto/crypto.module";
 import { ZodExceptionFilter } from "./common/filters/zod-exception.filter";
 import { TenancyModule } from "./common/tenancy/tenancy.module";
@@ -27,6 +28,7 @@ import { PrismaModule } from "./prisma/prisma.module";
 
 @Module({
   imports: [
+    AuditModule,
     CryptoModule,
     StorageModule,
     TenancyModule,
