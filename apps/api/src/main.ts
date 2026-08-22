@@ -20,6 +20,24 @@ async function bootstrap() {
   );
 
   await app.register(cookie);
+
+  // Webhook signature verification needs the EXACT raw bytes — stash them on
+  // the request for /webhooks/* URLs before Fastify parses JSON.
+  const instance = app.getHttpAdapter().getInstance();
+  instance.addHook("preParsing", async (request: unknown, _reply: unknown, payload: unknown) => {
+    const req = request as { url?: string; rawBody?: Buffer };
+    if (req.url && req.url.startsWith("/webhooks/")) {
+      const { Readable } = await import("node:stream");
+      const chunks: Buffer[] = [];
+      for await (const chunk of payload as AsyncIterable<Buffer>) {
+        chunks.push(chunk as Buffer);
+      }
+      req.rawBody = Buffer.concat(chunks);
+      return Readable.from(req.rawBody);
+    }
+    return payload;
+  });
+
   app.enableShutdownHooks();
 
   await app.listen(PORT, HOST);

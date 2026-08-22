@@ -29,6 +29,8 @@ model User {
   orgMemberships      OrgMembership[]
   workspaceMemberships WorkspaceMembership[]
   auditActions        AuditLog[]
+  notifications       Notification[]
+  notificationPreferences NotificationPreference[]
 
   @@map("users")
 }
@@ -65,6 +67,7 @@ model Organization {
   orgMemberships OrgMembership[]
   invitations Invitation[]
   auditLogs  AuditLog[]
+  mediaAssets MediaAsset[]
 
   @@map("organizations")
 }
@@ -88,6 +91,11 @@ model Workspace {
   ideaGroups IdeaGroup[]
   ideas Idea[]
   queues Queue[]
+  mediaFolders MediaFolder[]
+  mediaAssets MediaAsset[]
+  inboxMessages InboxMessage[]
+  portalTokens PortalAccess[]
+  apiKeys ApiKey[]
 
   @@unique([organizationId, slug])
   @@index([organizationId])
@@ -217,6 +225,8 @@ model SocialAccount {
   platformPosts PlatformPost[]
   postingSlots PostingSlot[]
   rateLimitStates RateLimitState[]
+  inboxMessages InboxMessage[]
+  metricSnapshots AccountMetricSnapshot[]
 
   @@unique([workspaceId, platform, accountPlatformId])
   @@index([platform])
@@ -368,6 +378,7 @@ model PlatformPost {
   post          Post          @relation(fields: [postId], references: [id], onDelete: Cascade)
   socialAccount SocialAccount @relation(fields: [socialAccountId], references: [id], onDelete: Cascade)
   publishLogs   PublishLog[]
+  metricSnapshots PostMetricSnapshot[]
 
   @@unique([postId, socialAccountId])
   @@index([status, scheduledAt])
@@ -480,4 +491,235 @@ model OauthConnectRequest {
 
   @@index([userId])
   @@map("oauth_connect_requests")
+}
+
+// ---------------------------------------------------------------------------
+// Phase 2c: inbox, media library, notifications, client portal, API keys
+// ---------------------------------------------------------------------------
+
+enum InboxMessageType {
+  COMMENT
+  MENTION
+  DM
+  REVIEW
+}
+
+enum InboxStatus {
+  UNREAD
+  OPEN
+  RESOLVED
+  ARCHIVED
+}
+
+enum InboxSentiment {
+  POSITIVE
+  NEUTRAL
+  NEGATIVE
+}
+
+model InboxMessage {
+  id                String          @id @default(uuid()) @db.Uuid
+  workspaceId       String          @db.Uuid
+  socialAccountId   String          @db.Uuid
+  platformMessageId String          @map("platform_message_id")
+  threadId          String?         @map("thread_id")
+  messageType       InboxMessageType @default(COMMENT) @map("message_type")
+  status            InboxStatus     @default(UNREAD)
+  sentiment         InboxSentiment  @default(NEUTRAL)
+  senderName        String          @default("") @map("sender_name")
+  senderHandle      String          @default("") @map("sender_handle")
+  senderPlatformId  String          @default("") @map("sender_platform_id")
+  body              String          @default("")
+  permalink         String?
+  assignedToId      String?         @db.Uuid
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  socialAccount SocialAccount @relation(fields: [socialAccountId], references: [id], onDelete: Cascade)
+  replies       InboxReply[]
+
+  @@unique([socialAccountId, platformMessageId])
+  @@index([workspaceId, status])
+  @@map("inbox_messages")
+}
+
+model InboxReply {
+  id              String   @id @default(uuid()) @db.Uuid
+  messageId       String   @db.Uuid
+  userId          String?  @db.Uuid
+  body            String
+  platformReplyId String?  @map("platform_reply_id")
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  message InboxMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@index([messageId])
+  @@map("inbox_replies")
+}
+
+enum MediaProcessingStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+model MediaFolder {
+  id          String  @id @default(uuid()) @db.Uuid
+  workspaceId String  @db.Uuid
+  name        String
+  parentId    String? @db.Uuid
+  position    Int     @default(0)
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  workspace Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  parent    MediaFolder?   @relation("folder-tree", fields: [parentId], references: [id], onDelete: SetNull)
+  children  MediaFolder[]  @relation("folder-tree")
+  assets    MediaAsset[]
+
+  @@unique([workspaceId, parentId, name])
+  @@map("media_folders")
+}
+
+model MediaAsset {
+  id                String               @id @default(uuid()) @db.Uuid
+  organizationId    String?              @db.Uuid
+  workspaceId       String?              @db.Uuid
+  folderId          String?              @db.Uuid
+  mediaType         String               @map("media_type")
+  originalFilename  String               @map("original_filename")
+  /// Storage key (S3 key or local relative path) — copied verbatim by the ETL.
+  storageKey        String               @map("storage_key")
+  fileSizeBytes     Int                  @default(0) @map("file_size_bytes")
+  width             Int?
+  height            Int?
+  altText           String               @default("") @map("alt_text")
+  processingStatus  MediaProcessingStatus @default(PENDING) @map("processing_status")
+  uploadedById      String?              @db.Uuid
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  organization Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  workspace    Workspace?    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  folder       MediaFolder?  @relation(fields: [folderId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId])
+  @@map("media_assets")
+}
+
+enum NotificationChannel {
+  IN_APP
+  EMAIL
+  WEBHOOK
+}
+
+model Notification {
+  id          String              @id @default(uuid()) @db.Uuid
+  userId      String              @db.Uuid
+  eventType   String              @map("event_type")
+  channel     NotificationChannel @default(IN_APP)
+  title       String
+  body        String              @default("")
+  payload     Json                @default("{}")
+  readAt      DateTime?           @map("read_at") @db.Timestamptz(6)
+  createdAt   DateTime            @default(now()) @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("notifications")
+}
+
+model NotificationPreference {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  eventType String   @map("event_type")
+  inApp     Boolean  @default(true) @map("in_app")
+  email     Boolean  @default(false)
+  webhook   Boolean  @default(false)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, eventType])
+  @@map("notification_preferences")
+}
+
+/// Client-portal magic links: 32-byte token, SHA-256 stored, 30-day validity.
+model PortalAccess {
+  id          String    @id @default(uuid()) @db.Uuid
+  workspaceId String    @db.Uuid
+  clientEmail String    @map("client_email")
+  tokenHash   String    @unique @map("token_hash")
+  createdById String?   @db.Uuid
+  expiresAt   DateTime  @map("expires_at") @db.Timestamptz(6)
+  revokedAt   DateTime? @map("revoked_at") @db.Timestamptz(6)
+  lastUsedAt  DateTime? @map("last_used_at") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+  @@map("portal_access_tokens")
+}
+
+/// Scoped bearer credential for agents — bb_studio_<random>_<lookup8>.
+/// At rest only lookupPrefix + HMAC-SHA256(random, peppered) are stored.
+model ApiKey {
+  id           String    @id @default(uuid()) @db.Uuid
+  workspaceId  String    @db.Uuid
+  name         String
+  lookupPrefix String    @map("lookup_prefix")
+  tokenHash    String    @map("token_hash")
+  permissions  Json      @default("[]")
+  issuedById   String?   @map("issued_by_id") @db.Uuid
+  lastUsedAt   DateTime? @map("last_used_at") @db.Timestamptz(6)
+  revokedAt    DateTime? @map("revoked_at") @db.Timestamptz(6)
+  expiresAt    DateTime? @map("expires_at") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([lookupPrefix])
+  @@index([workspaceId])
+  @@map("api_keys")
+}
+
+/// Channel-level metric snapshot per account per day (analytics sync writes).
+model AccountMetricSnapshot {
+  id              String   @id @default(uuid()) @db.Uuid
+  socialAccountId String   @db.Uuid
+  capturedFor     DateTime @map("captured_for") @db.Timestamptz(6)
+  followers       Int?
+  followerDelta   Int?     @map("follower_delta")
+  impressions     Int?
+  reach           Int?
+  views           Int?
+  engagements     Int?
+  meta            Json     @default("{}")
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  socialAccount SocialAccount @relation(fields: [socialAccountId], references: [id], onDelete: Cascade)
+
+  @@unique([socialAccountId, capturedFor])
+  @@map("account_metric_snapshots")
+}
+
+model PostMetricSnapshot {
+  id              String   @id @default(uuid()) @db.Uuid
+  platformPostId  String   @db.Uuid
+  capturedFor     DateTime @map("captured_for") @db.Timestamptz(6)
+  impressions     Int?
+  reach           Int?
+  likes           Int?
+  comments        Int?
+  shares          Int?
+  views           Int?
+  watchTimeMs     Int?     @map("watch_time_ms")
+  meta            Json     @default("{}")
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  platformPost PlatformPost @relation(fields: [platformPostId], references: [id], onDelete: Cascade)
+
+  @@unique([platformPostId, capturedFor])
+  @@index([platformPostId, capturedFor])
+  @@map("post_metric_snapshots")
 }
