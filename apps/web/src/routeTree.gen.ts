@@ -25,6 +25,8 @@ import { Route as AppWorkspaceWorkspaceIdCalendarRouteImport } from './routes/_a
 import { Route as AppWorkspaceWorkspaceIdComposerRouteImport } from './routes/_app.workspace.$workspaceId.composer'
 import { Route as AppWorkspaceWorkspaceIdInboxRouteImport } from './routes/_app.workspace.$workspaceId.inbox'
 import { Route as AppWorkspaceWorkspaceIdMediaRouteImport } from './routes/_app.workspace.$workspaceId.media'
+import { Route as AppWorkspaceWorkspaceIdMembersRouteImport } from './routes/_app.workspace.$workspaceId.members'
+import { Route as AppWorkspaceWorkspaceIdSettingsRouteImport } from './routes/_app.workspace.$workspaceId.settings'
 import { Route as AppWorkspaceWorkspaceIdSocialAccountsRouteImport } from './routes/_app.workspace.$workspaceId.social-accounts'
 import { Route as AccountsPasswordResetConfirmRouteImport } from './routes/accounts.password.reset.confirm'
 import { Route as AppWorkspaceWorkspaceIdSettingsClientsRouteImport } from './routes/_app.workspace.$workspaceId.settings.clients'
@@ -116,6 +118,18 @@ const AppWorkspaceWorkspaceIdMediaRoute =
     path: '/workspace/$workspaceId/media',
     getParentRoute: () => AppRoute,
   } as any)
+const AppWorkspaceWorkspaceIdMembersRoute =
+  AppWorkspaceWorkspaceIdMembersRouteImport.update({
+    id: '/workspace/$workspaceId/members',
+    path: '/workspace/$workspaceId/members',
+    getParentRoute: () => AppRoute,
+  } as any)
+const AppWorkspaceWorkspaceIdSettingsRoute =
+  AppWorkspaceWorkspaceIdSettingsRouteImport.update({
+    id: '/workspace/$workspaceId/settings',
+    path: '/workspace/$workspaceId/settings',
+    getParentRoute: () => AppRoute,
+  } as any)
 const AppWorkspaceWorkspaceIdSocialAccountsRoute =
   AppWorkspaceWorkspaceIdSocialAccountsRouteImport.update({
     id: '/workspace/$workspaceId/social-accounts',
@@ -130,9 +144,9 @@ const AccountsPasswordResetConfirmRoute =
   } as any)
 const AppWorkspaceWorkspaceIdSettingsClientsRoute =
   AppWorkspaceWorkspaceIdSettingsClientsRouteImport.update({
-    id: '/workspace/$workspaceId/settings/clients',
-    path: '/workspace/$workspaceId/settings/clients',
-    getParentRoute: () => AppRoute,
+    id: '/clients',
+    path: '/clients',
+    getParentRoute: () => AppWorkspaceWorkspaceIdSettingsRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -151,6 +165,8 @@ export interface FileRoutesByFullPath {
   '/workspace/$workspaceId/composer': typeof AppWorkspaceWorkspaceIdComposerRoute
   '/workspace/$workspaceId/inbox': typeof AppWorkspaceWorkspaceIdInboxRoute
   '/workspace/$workspaceId/media': typeof AppWorkspaceWorkspaceIdMediaRoute
+  '/workspace/$workspaceId/members': typeof AppWorkspaceWorkspaceIdMembersRoute
+  '/workspace/$workspaceId/settings': typeof AppWorkspaceWorkspaceIdSettingsRouteWithChildren
   '/workspace/$workspaceId/social-accounts': typeof AppWorkspaceWorkspaceIdSocialAccountsRoute
   '/accounts/password/reset/confirm': typeof AccountsPasswordResetConfirmRoute
   '/workspace/$workspaceId/settings/clients': typeof AppWorkspaceWorkspaceIdSettingsClientsRoute
@@ -171,6 +187,8 @@ export interface FileRoutesByTo {
   '/workspace/$workspaceId/composer': typeof AppWorkspaceWorkspaceIdComposerRoute
   '/workspace/$workspaceId/inbox': typeof AppWorkspaceWorkspaceIdInboxRoute
   '/workspace/$workspaceId/media': typeof AppWorkspaceWorkspaceIdMediaRoute
+  '/workspace/$workspaceId/members': typeof AppWorkspaceWorkspaceIdMembersRoute
+  '/workspace/$workspaceId/settings': typeof AppWorkspaceWorkspaceIdSettingsRouteWithChildren
   '/workspace/$workspaceId/social-accounts': typeof AppWorkspaceWorkspaceIdSocialAccountsRoute
   '/accounts/password/reset/confirm': typeof AccountsPasswordResetConfirmRoute
   '/workspace/$workspaceId/settings/clients': typeof AppWorkspaceWorkspaceIdSettingsClientsRoute
@@ -193,6 +211,8 @@ export interface FileRoutesById {
   '/_app/workspace/$workspaceId/composer': typeof AppWorkspaceWorkspaceIdComposerRoute
   '/_app/workspace/$workspaceId/inbox': typeof AppWorkspaceWorkspaceIdInboxRoute
   '/_app/workspace/$workspaceId/media': typeof AppWorkspaceWorkspaceIdMediaRoute
+  '/_app/workspace/$workspaceId/members': typeof AppWorkspaceWorkspaceIdMembersRoute
+  '/_app/workspace/$workspaceId/settings': typeof AppWorkspaceWorkspaceIdSettingsRouteWithChildren
   '/_app/workspace/$workspaceId/social-accounts': typeof AppWorkspaceWorkspaceIdSocialAccountsRoute
   '/accounts/password/reset/confirm': typeof AccountsPasswordResetConfirmRoute
   '/_app/workspace/$workspaceId/settings/clients': typeof AppWorkspaceWorkspaceIdSettingsClientsRoute
@@ -215,6 +235,8 @@ export interface FileRouteTypes {
     | '/workspace/$workspaceId/composer'
     | '/workspace/$workspaceId/inbox'
     | '/workspace/$workspaceId/media'
+    | '/workspace/$workspaceId/members'
+    | '/workspace/$workspaceId/settings'
     | '/workspace/$workspaceId/social-accounts'
     | '/accounts/password/reset/confirm'
     | '/workspace/$workspaceId/settings/clients'
@@ -235,6 +257,8 @@ export interface FileRouteTypes {
     | '/workspace/$workspaceId/composer'
     | '/workspace/$workspaceId/inbox'
     | '/workspace/$workspaceId/media'
+    | '/workspace/$workspaceId/members'
+    | '/workspace/$workspaceId/settings'
     | '/workspace/$workspaceId/social-accounts'
     | '/accounts/password/reset/confirm'
     | '/workspace/$workspaceId/settings/clients'
@@ -256,6 +280,8 @@ export interface FileRouteTypes {
     | '/_app/workspace/$workspaceId/composer'
     | '/_app/workspace/$workspaceId/inbox'
     | '/_app/workspace/$workspaceId/media'
+    | '/_app/workspace/$workspaceId/members'
+    | '/_app/workspace/$workspaceId/settings'
     | '/_app/workspace/$workspaceId/social-accounts'
     | '/accounts/password/reset/confirm'
     | '/_app/workspace/$workspaceId/settings/clients'
@@ -385,6 +411,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppWorkspaceWorkspaceIdMediaRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/workspace/$workspaceId/members': {
+      id: '/_app/workspace/$workspaceId/members'
+      path: '/workspace/$workspaceId/members'
+      fullPath: '/workspace/$workspaceId/members'
+      preLoaderRoute: typeof AppWorkspaceWorkspaceIdMembersRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/workspace/$workspaceId/settings': {
+      id: '/_app/workspace/$workspaceId/settings'
+      path: '/workspace/$workspaceId/settings'
+      fullPath: '/workspace/$workspaceId/settings'
+      preLoaderRoute: typeof AppWorkspaceWorkspaceIdSettingsRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/workspace/$workspaceId/social-accounts': {
       id: '/_app/workspace/$workspaceId/social-accounts'
       path: '/workspace/$workspaceId/social-accounts'
@@ -401,13 +441,28 @@ declare module '@tanstack/react-router' {
     }
     '/_app/workspace/$workspaceId/settings/clients': {
       id: '/_app/workspace/$workspaceId/settings/clients'
-      path: '/workspace/$workspaceId/settings/clients'
+      path: '/clients'
       fullPath: '/workspace/$workspaceId/settings/clients'
       preLoaderRoute: typeof AppWorkspaceWorkspaceIdSettingsClientsRouteImport
-      parentRoute: typeof AppRoute
+      parentRoute: typeof AppWorkspaceWorkspaceIdSettingsRoute
     }
   }
 }
+
+interface AppWorkspaceWorkspaceIdSettingsRouteChildren {
+  AppWorkspaceWorkspaceIdSettingsClientsRoute: typeof AppWorkspaceWorkspaceIdSettingsClientsRoute
+}
+
+const AppWorkspaceWorkspaceIdSettingsRouteChildren: AppWorkspaceWorkspaceIdSettingsRouteChildren =
+  {
+    AppWorkspaceWorkspaceIdSettingsClientsRoute:
+      AppWorkspaceWorkspaceIdSettingsClientsRoute,
+  }
+
+const AppWorkspaceWorkspaceIdSettingsRouteWithChildren =
+  AppWorkspaceWorkspaceIdSettingsRoute._addFileChildren(
+    AppWorkspaceWorkspaceIdSettingsRouteChildren,
+  )
 
 interface AppRouteChildren {
   AppOnboardingRoute: typeof AppOnboardingRoute
@@ -420,8 +475,9 @@ interface AppRouteChildren {
   AppWorkspaceWorkspaceIdComposerRoute: typeof AppWorkspaceWorkspaceIdComposerRoute
   AppWorkspaceWorkspaceIdInboxRoute: typeof AppWorkspaceWorkspaceIdInboxRoute
   AppWorkspaceWorkspaceIdMediaRoute: typeof AppWorkspaceWorkspaceIdMediaRoute
+  AppWorkspaceWorkspaceIdMembersRoute: typeof AppWorkspaceWorkspaceIdMembersRoute
+  AppWorkspaceWorkspaceIdSettingsRoute: typeof AppWorkspaceWorkspaceIdSettingsRouteWithChildren
   AppWorkspaceWorkspaceIdSocialAccountsRoute: typeof AppWorkspaceWorkspaceIdSocialAccountsRoute
-  AppWorkspaceWorkspaceIdSettingsClientsRoute: typeof AppWorkspaceWorkspaceIdSettingsClientsRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
@@ -435,10 +491,11 @@ const AppRouteChildren: AppRouteChildren = {
   AppWorkspaceWorkspaceIdComposerRoute: AppWorkspaceWorkspaceIdComposerRoute,
   AppWorkspaceWorkspaceIdInboxRoute: AppWorkspaceWorkspaceIdInboxRoute,
   AppWorkspaceWorkspaceIdMediaRoute: AppWorkspaceWorkspaceIdMediaRoute,
+  AppWorkspaceWorkspaceIdMembersRoute: AppWorkspaceWorkspaceIdMembersRoute,
+  AppWorkspaceWorkspaceIdSettingsRoute:
+    AppWorkspaceWorkspaceIdSettingsRouteWithChildren,
   AppWorkspaceWorkspaceIdSocialAccountsRoute:
     AppWorkspaceWorkspaceIdSocialAccountsRoute,
-  AppWorkspaceWorkspaceIdSettingsClientsRoute:
-    AppWorkspaceWorkspaceIdSettingsClientsRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)

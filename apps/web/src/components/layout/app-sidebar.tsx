@@ -9,10 +9,15 @@ const NAV_ITEMS = [
 
 const WORKSPACE_NAV = [
   { suffix: "calendar", label: "Calendar" },
+  { suffix: "composer", label: "Compose" },
+  { suffix: "approvals", label: "Approvals" },
   { suffix: "inbox", label: "Inbox" },
   { suffix: "analytics", label: "Analytics" },
   { suffix: "media", label: "Media Library" },
   { suffix: "social-accounts", label: "Channels" },
+  { suffix: "members", label: "Team" },
+  { suffix: "settings/clients", label: "Client Portal" },
+  { suffix: "settings", label: "Settings" },
 ] as const;
 
 const styles = stylex.create({
