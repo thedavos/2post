@@ -132,6 +132,30 @@ const steps: Step[] = [
           },
           update: {},
         });
+
+        // Auto-provision workspace memberships for all org workspaces
+        // (legacy Django uses org-level access + per-workspace checks).
+        const roleMap: Record<string, string> = {
+          OWNER: "OWNER",
+          ADMIN: "MANAGER",
+          MEMBER: "EDITOR",
+        };
+        const wsRole = roleMap[m.org_role.toUpperCase()] ?? "VIEWER";
+        for (const w of ws) {
+          if (w.org_id !== m.org_id) continue;
+          const existing = await dst.workspaceMembership.findUnique({
+            where: { userId_workspaceId: { userId: m.user_id, workspaceId: w.id } },
+          });
+          if (!existing) {
+            await dst.workspaceMembership.create({
+              data: {
+                userId: m.user_id,
+                workspaceId: w.id,
+                workspaceRole: wsRole as never,
+              },
+            });
+          }
+        }
       }
     },
   },
