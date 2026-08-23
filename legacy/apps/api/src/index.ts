@@ -1,1 +1,0 @@
-export { bootstrapWorker } from "./worker";

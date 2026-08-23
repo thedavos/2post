@@ -1,1 +1,0 @@
-{% autoescape off %}Confirm your email for Brightbean{% endautoescape %}
