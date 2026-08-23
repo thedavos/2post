@@ -1,61 +1,76 @@
 import * as stylex from "@stylexjs/stylex";
 
 /**
- * Token port from theme/static_src/tailwind.config.js + base.html.
- * Brand colors remain CSS-var overridable for white-label workspaces
- * (createTheme overrides applied at the workspace root at runtime).
+ * Token port from 2post-logo-refresh theme/static_src/src/styles.css.
+ * Three-layer white-label architecture:
+ *   Layer 1 → Brand Tokens   (swap these to white-label)
+ *   Layer 2 → Semantic Tokens (reference brand tokens)
+ *   Layer 3 → Component Tokens (reference semantic tokens)
+ *
+ * To rebrand: change ONLY the brand token values below.
  */
 
-// Tailwind indigo scale (legacy default palette usage centers on indigo).
-const indigo = {
-  50: "#eef2ff",
-  100: "#e0e7ff",
-  200: "#c7d2fe",
-  300: "#a5b4fc",
-  400: "#818cf8",
-  500: "#6366f1",
-  600: "#4f46e5",
-  700: "#4338ca",
-  800: "#3730a3",
-  900: "#312e81",
+// ─── Brand Tokens — Ember (warm orange) ─────────────────────────────
+
+export const brand = stylex.defineVars({
+  50: "#FFF7ED",
+  100: "#FFEDD5",
+  200: "#FED7AA",
+  300: "#FDBA74",
+  400: "#FB923C",
+  500: "#EA580C",
+  600: "#C2410C",
+  700: "#9A3412",
+  800: "#7C2D12",
+  900: "#7C2D12",
+});
+
+export const brandGreen = stylex.defineVars({
+  100: "#EFF2DC",
+  200: "#DDE4B9",
+  500: "#94A43F",
+  600: "#7B8A33",
+});
+
+// ─── Neutrals — warm stone ──────────────────────────────────────────
+
+const neutral = {
+  50: "#FAFAF9", 100: "#F5F5F4", 200: "#E7E5E4", 300: "#D6D3D1",
+  400: "#A8A29E", 500: "#78716C", 600: "#57534E", 700: "#44403C",
+  800: "#292524", 900: "#1C1917", 950: "#171412",
 } as const;
 
-const gray = {
-  50: "#f9fafb",
-  100: "#f3f4f6",
-  200: "#e5e7eb",
-  300: "#d1d5db",
-  400: "#9ca3af",
-  500: "#6b7280",
-  600: "#4b5563",
-  700: "#374151",
-  800: "#1f2937",
-  900: "#111827",
-} as const;
+// ─── Semantic Tokens ────────────────────────────────────────────────
 
 export const colors = stylex.defineVars({
-  // White-label overridables — same defaults as --brand-* custom properties.
-  brandPrimary: "var(--brand-primary, #4f46e5)",
-  brandPrimaryHover: "var(--brand-primary-hover, #4338ca)",
-  brandSecondary: "var(--brand-secondary, #7c3aed)",
+  brandPrimary: "var(--brand-primary, #EA580C)",
+  brandPrimaryHover: "var(--brand-primary-hover, #C2410C)",
+  brandSecondary: "var(--brand-secondary, #9A3412)",
 
-  background: gray[50],
-  surface: "#ffffff",
-  foreground: gray[900],
-  muted: gray[100],
-  mutedForeground: gray[500],
-  border: gray[200],
-  destructive: "#dc2626",
-  success: "#16a34a",
-  warning: "#f59e0b",
-
-  primary: indigo[600],
+  primary: "var(--brand-500, #EA580C)",
+  primaryHover: "var(--brand-600, #C2410C)",
+  primarySoft: "var(--brand-50, #FFF7ED)",
+  primaryMuted: "var(--brand-100, #FFEDD5)",
+  primaryRing: "var(--brand-200, #FED7AA)",
   primaryForeground: "#ffffff",
-  primaryHover: indigo[700],
 
-  sidebar: gray[900],
-  sidebarForeground: gray[300],
-  sidebarActive: indigo[500],
+  background: "rgb(247, 246, 242)",
+  surface: neutral[50],
+  surfaceElevated: "#FFFFFF",
+  foreground: neutral[900],
+  muted: neutral[100],
+  mutedForeground: neutral[500],
+  border: neutral[200],
+  borderHover: neutral[300],
+  destructive: "#EF4444",
+  success: "#22C55E",
+  warning: "#EAB308",
+
+  sidebar: neutral[950],
+  sidebarForeground: neutral[400],
+  sidebarActive: "var(--brand-500, #EA580C)",
+
+  greenAccent: "#94A43F",
 });
 
 export const spacing = stylex.defineVars({
@@ -74,10 +89,11 @@ export const spacing = stylex.defineVars({
 });
 
 export const radii = stylex.defineVars({
-  sm: "4px",
-  md: "8px",
-  lg: "12px",
-  xl: "16px",
+  sm: "0.25rem",
+  md: "0.375rem",
+  lg: "0.5rem",
+  xl: "0.75rem",
+  "2xl": "1rem",
   full: "9999px",
 });
 
@@ -89,4 +105,10 @@ export const fontSizes = stylex.defineVars({
   xl: "1.25rem",
   "2xl": "1.5rem",
   "3xl": "1.875rem",
+});
+
+export const shadows = stylex.defineVars({
+  xs: "0 1px 2px rgba(23,20,18,0.05)",
+  sm: "0 1px 3px rgba(23,20,18,0.08), 0 1px 2px rgba(23,20,18,0.04)",
+  md: "0 4px 6px rgba(23,20,18,0.06), 0 2px 4px rgba(23,20,18,0.04)",
 });

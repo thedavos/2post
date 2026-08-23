@@ -78,7 +78,7 @@ function LoginPage() {
 
   return (
     <main {...stylex.props(styles.page)}>
-      <h1 {...stylex.props(styles.title)}>BrightBean Studio</h1>
+      <h1 {...stylex.props(styles.title)}>2post</h1>
       <p {...stylex.props(styles.subtitle)}>Sign in to your workspace</p>
 
       <Card>

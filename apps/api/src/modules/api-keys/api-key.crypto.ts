@@ -7,10 +7,12 @@ import { createHash, createHmac, hkdfSync, randomBytes } from "node:crypto";
  * At rest:       lookupPrefix = sha256(random)[0:8]
  *                tokenHash    = HMAC-SHA256(pepper, random)
  * pepper         = HKDF-SHA256(SECRET_KEY, salt=ENCRYPTION_KEY_SALT,
- *                              info="brightbean-api-key-hmac", 32)
+ *                              info="2post-api-key-hmac", 32)
  */
 
-export const TOKEN_PREFIX = "bb_studio_";
+export const TOKEN_PREFIX = "2post_";
+/// Legacy prefix — keys issued before the rebrand still verify.
+const LEGACY_PREFIX = "bb_studio_";
 const LOOKUP_LEN = 8;
 
 export interface ParsedToken {
@@ -25,7 +27,7 @@ function hmacPepper(): Buffer {
     throw new Error("ENCRYPTION_KEY_SALT must be set for ApiKey HMAC peppering.");
   }
   return Buffer.from(
-    hkdfSync("sha256", secret, salt, "brightbean-api-key-hmac", 32),
+    hkdfSync("sha256", secret, salt, "2post-api-key-hmac", 32),
   );
 }
 
@@ -39,8 +41,15 @@ export function makeLookup(randomPart: string): string {
 
 /** Split a raw bearer token; null when malformed (strict legacy rules). */
 export function parseToken(raw: string | undefined | null): ParsedToken | null {
-  if (!raw || !raw.startsWith(TOKEN_PREFIX)) return null;
-  const body = raw.slice(TOKEN_PREFIX.length);
+  if (!raw) return null;
+  let body: string;
+  if (raw.startsWith(TOKEN_PREFIX)) {
+    body = raw.slice(TOKEN_PREFIX.length);
+  } else if (raw.startsWith(LEGACY_PREFIX)) {
+    body = raw.slice(LEGACY_PREFIX.length);
+  } else {
+    return null;
+  }
   // The secret may contain underscores — split on the LAST one only.
   const idx = body.lastIndexOf("_");
   if (idx <= 0) return null;

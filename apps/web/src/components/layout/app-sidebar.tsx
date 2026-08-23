@@ -77,7 +77,7 @@ export function AppSidebar({ orgName }: { orgName?: string }) {
   return (
     <aside {...stylex.props(styles.sidebar)}>
       <Link to="/" {...stylex.props(styles.brand)}>
-        BrightBean
+        2post
       </Link>
 
       <nav {...stylex.props(styles.nav)}>
@@ -120,7 +120,7 @@ export function AppSidebar({ orgName }: { orgName?: string }) {
       )}
 
       <div {...stylex.props(styles.orgFooter)}>
-        {orgName ? `Signed in to ${orgName}` : "BrightBean Studio"}
+        {orgName ? `Signed in to ${orgName}` : "2post"}
       </div>
     </aside>
   );
