@@ -2,6 +2,7 @@ import { ConflictException, Injectable, UnauthorizedException } from "@nestjs/co
 import { JwtService } from "@nestjs/jwt";
 import { createHash, createHmac, randomBytes } from "node:crypto";
 import { hashPassword, verifyPassword } from "./password.crypto";
+import { EmailService } from "../../common/email/email.service";
 
 import { PrismaService } from "../../prisma/prisma.service";
 import {
@@ -19,6 +20,7 @@ export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwt: JwtService,
+    private readonly email: EmailService,
   ) {}
 
   /**
@@ -176,7 +178,32 @@ export class AuthService {
       .digest("base64url");
   }
 
+  /// Legacy django-ratelimit parity: 10 failed logins / 5 min per email.
+  private async checkLoginRateLimit(email: string): Promise<void> {
+    const windowStart = new Date(Math.floor(Date.now() / 300_000) * 300_000);
+    const scopeKey = `login-fail:${email.toLowerCase()}`;
+    const row = await this.prisma.apiKeyRateLimit.findUnique({
+      where: { scopeKey_windowStart: { scopeKey, windowStart } },
+    });
+    if ((row?.count ?? 0) >= 10) {
+      throw new UnauthorizedException(
+        "Too many failed login attempts. Try again in a few minutes.",
+      );
+    }
+  }
+
+  private async recordLoginFailure(email: string): Promise<void> {
+    const windowStart = new Date(Math.floor(Date.now() / 300_000) * 300_000);
+    const scopeKey = `login-fail:${email.toLowerCase()}`;
+    await this.prisma.apiKeyRateLimit.upsert({
+      where: { scopeKey_windowStart: { scopeKey, windowStart } },
+      create: { scopeKey, windowStart, count: 1 },
+      update: { count: { increment: 1 } },
+    });
+  }
+
   async login(email: string, password: string) {
+    await this.checkLoginRateLimit(email);
     const user = await this.prisma.user.findUnique({ where: { email } });
 
     if (!user?.passwordHash || !user.isActive) {
@@ -185,6 +212,7 @@ export class AuthService {
 
     const valid = await verifyPassword(password, user.passwordHash);
     if (!valid) {
+      await this.recordLoginFailure(email);
       throw new UnauthorizedException("Invalid email or password");
     }
 
@@ -288,6 +316,76 @@ export class AuthService {
       select: { organizationId: true },
     });
     return membership?.organizationId ?? null;
+  }
+
+  async changePassword(
+    userId: string,
+    currentPassword: string,
+    newPassword: string,
+  ): Promise<void> {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user?.passwordHash) throw new UnauthorizedException("No password set");
+    const valid = await verifyPassword(currentPassword, user.passwordHash);
+    if (!valid) throw new UnauthorizedException("Current password is incorrect");
+
+    const passwordHash = await hashPassword(newPassword);
+    await this.prisma.$transaction([
+      this.prisma.user.update({
+        where: { id: userId },
+        data: { passwordHash },
+      }),
+      this.prisma.session.updateMany({
+        where: { userId, revokedAt: null },
+        data: { revokedAt: new Date() },
+      }),
+    ]);
+  }
+
+  /// Legacy parity: always-200 forgot flow; token = 32B random, SHA-256 at
+  /// rest, 1-hour expiry. Email sent when SMTP configured (log otherwise).
+  async requestPasswordReset(email: string): Promise<void> {
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (!user || !user.isActive) return;
+
+    const raw = randomBytes(32).toString("base64url");
+    await this.prisma.passwordResetToken.create({
+      data: {
+        userId: user.id,
+        tokenHash: sha256(raw),
+        expiresAt: new Date(Date.now() + 3600 * 1000),
+      },
+    });
+
+    const base = process.env.APP_URL ?? "";
+    await this.email.sendPasswordReset(
+      email,
+      `${base}/accounts/password/reset/confirm?token=${raw}`,
+    );
+  }
+
+  async resetPassword(token: string, newPassword: string): Promise<void> {
+    const record = await this.prisma.passwordResetToken.findUnique({
+      where: { tokenHash: sha256(token) },
+    });
+    if (!record || record.usedAt || record.expiresAt < new Date()) {
+      throw new UnauthorizedException("Invalid or expired reset token");
+    }
+
+    const passwordHash = await hashPassword(newPassword);
+    await this.prisma.$transaction([
+      this.prisma.user.update({
+        where: { id: record.userId },
+        data: { passwordHash },
+      }),
+      this.prisma.session.updateMany({
+        where: { userId: record.userId, revokedAt: null },
+        data: { revokedAt: new Date() },
+      }),
+      this.prisma.passwordResetToken.update({
+        where: { id: record.id },
+        data: { usedAt: new Date() },
+      }),
+    ]);
   }
 }
 

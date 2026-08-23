@@ -297,6 +297,231 @@ const steps: Step[] = [
     },
   },
   {
+    id: "06_inbox",
+    description: "inbox messages (dedup by social account + platform msg id)",
+    async run({ src, dst, dryRun, log }) {
+      const { rows } = await src.query(
+        `SELECT id::text, workspace_id::text AS workspace_id, social_account_id::text AS sa_id,
+                platform_message_id, message_type, status, sentiment,
+                sender_name, sender_handle, sender_avatar_url, body,
+                extra, received_at
+         FROM inbox_message`,
+      );
+      log(`rows: ${rows.length}`);
+      if (dryRun) return;
+      for (const r of rows) {
+        await dst.inboxMessage.upsert({
+          where: {
+            socialAccountId_platformMessageId: {
+              socialAccountId: r.sa_id,
+              platformMessageId: r.platform_message_id,
+            },
+          },
+          create: {
+            id: r.id,
+            workspaceId: r.workspace_id,
+            socialAccountId: r.sa_id,
+            platformMessageId: r.platform_message_id,
+            messageType: r.message_type.toUpperCase() as never,
+            status: r.status.toUpperCase() as never,
+            sentiment: r.sentiment.toUpperCase() as never,
+            senderName: r.sender_name ?? "",
+            senderHandle: r.sender_handle ?? "",
+            body: r.body ?? "",
+
+            createdAt: r.created_at ?? r.received_at ?? new Date(),
+          },
+          update: {},
+        });
+      }
+    },
+  },
+  {
+    id: "07_media",
+    description: "media assets (originals + variants metadata)",
+    async run({ src, dst, dryRun, log }) {
+      const { rows } = await src.query(
+        `SELECT id::text, workspace_id::text AS workspace_id, media_type,
+                filename, file AS storage_key, file_size, width, height,
+                alt_text, processing_status, created_at
+         FROM media_library_media_asset WHERE workspace_id IS NOT NULL`,
+      );
+      log(`assets: ${rows.length}`);
+      if (dryRun) return;
+
+      for (const r of rows) {
+        // Legacy stores the file path in `file`; copy verbatim.
+        const storageKey = String(r.file || "").replace(/^media\//, "");
+        const asset = await dst.mediaAsset.upsert({
+          where: { id: r.id },
+          create: {
+            id: r.id,
+            workspaceId: r.workspace_id,
+            mediaType: r.media_type || "document",
+            originalFilename: r.filename || "unknown",
+            storageKey,
+            fileSizeBytes: r.file_size ?? 0,
+            width: r.width,
+            height: r.height,
+            altText: r.alt_text ?? "",
+            processingStatus: r.processing_status?.toUpperCase() === "COMPLETED" ? "COMPLETED" : "PENDING",
+            createdAt: r.created_at,
+          },
+          update: {},
+        });
+        void asset;
+      }
+    },
+  },
+  {
+    id: "08_tags",
+    description: "composer tags",
+    async run({ src, dst, dryRun, log }) {
+      const { rows } = await src.query(
+        `SELECT id::text, workspace_id::text AS workspace_id, name, created_at FROM composer_tag`,
+      );
+      log(`tags: ${rows.length}`);
+      if (dryRun) return;
+      for (const t of rows) {
+        await dst.tag.upsert({
+          where: { id: t.id },
+          create: { id: t.id, workspaceId: t.workspace_id, name: t.name, createdAt: t.created_at },
+          update: {},
+        });
+      }
+    },
+  },
+  {
+    id: "09_calendar",
+    description: "posting slots, queues, queue entries",
+    async run({ src, dst, dryRun, log }) {
+      const { rows: slots } = await src.query(
+        `SELECT id::text, social_account_id::text AS sa_id, day_of_week, time,
+                is_active, created_at FROM calendar_posting_slot`,
+      );
+      const { rows: queues } = await src.query(
+        `SELECT q.id::text, q.name, q.is_active, q.created_at,
+                q.category_id::text AS category_id, q.social_account_id::text AS account_id,
+                q.workspace_id::text AS workspace_id
+         FROM calendar_queue q`,
+      );
+      const { rows: entries } = await src.query(
+        `SELECT id::text, position, assigned_slot_datetime, queue_id::text AS queue_id,
+                post_id::text AS post_id FROM calendar_queue_entry`,
+      );
+      log(`slots: ${slots.length}, queues: ${queues.length}, entries: ${entries.length}`);
+      if (dryRun) return;
+
+      for (const slot of slots) {
+        await dst.postingSlot.upsert({
+          where: { id: slot.id },
+          create: {
+            id: slot.id,
+            socialAccountId: slot.sa_id,
+            dayOfWeek: slot.day_of_week.toUpperCase() as never,
+            time: String(slot.time).slice(0, 5),
+            isActive: slot.is_active,
+          },
+          update: {},
+        });
+      }
+      for (const q of queues) {
+        await dst.queue.upsert({
+          where: { id: q.id },
+          create: {
+            id: q.id,
+            workspaceId: q.workspace_id,
+            name: q.name,
+            categoryId: q.category_id ?? null,
+            accountId: q.account_id ?? null,
+            isActive: q.is_active,
+            createdAt: q.created_at,
+          },
+          update: {},
+        });
+      }
+      for (const e of entries) {
+        if (!(await dst.post.findUnique({ where: { id: e.post_id }, select: { id: true } }))) continue;
+        if (!(await dst.queue.findUnique({ where: { id: e.queue_id }, select: { id: true } }))) continue;
+        await dst.queueEntry.upsert({
+          where: { id: e.id },
+          create: {
+            id: e.id,
+            queueId: e.queue_id,
+            postId: e.post_id,
+            position: e.position ?? 0,
+            assignedSlotDatetime: e.assigned_slot_datetime ?? null,
+          },
+          update: {},
+        });
+      }
+    },
+  },
+  {
+    id: "10_publish_logs",
+    description: "publish logs + rate limit states",
+    async run({ src, dst, dryRun, log }) {
+      const { rows: logs } = await src.query(
+        `SELECT id::text, platform_post_id::text AS pp_id, attempt_number,
+                status_code, response_body, error_message, duration_ms, created_at
+         FROM publisher_publish_log`,
+      );
+      const validPpIds = new Set(
+        (
+          await src.query("SELECT id::text FROM composer_platform_post")
+        ).rows.map((r) => r.id as string),
+      );
+      log(`logs: ${logs.length}`);
+      if (dryRun) return;
+
+      for (const l of logs) {
+        if (!validPpIds.has(l.pp_id)) continue;
+        await dst.publishLog.upsert({
+          where: { id: l.id },
+          create: {
+            id: l.id,
+            platformPostId: l.pp_id,
+            attemptNumber: l.attempt_number ?? 1,
+            statusCode: l.status_code,
+            responseBody: (l.response_body ?? "").slice(0, 10000),
+            errorMessage: (l.error_message ?? "").slice(0, 10000),
+            durationMs: l.duration_ms ?? 0,
+            createdAt: l.created_at,
+          },
+          update: {},
+        });
+      }
+
+      const { rows: rl } = await src.query(
+        `SELECT id::text, social_account_id::text AS sa_id, platform,
+                requests_remaining, window_resets_at FROM publisher_rate_limit_state`,
+      );
+      const { rows: validAccounts } = await src.query(
+        "SELECT id::text FROM social_accounts_social_account",
+      );
+      const accountSet = new Set(validAccounts.map((r) => r.id as string));
+      for (const r of rl) {
+        if (!accountSet.has(r.sa_id)) continue;
+        await dst.rateLimitState.upsert({
+          where: {
+            socialAccountId_platform: {
+              socialAccountId: r.sa_id,
+              platform: r.platform,
+            },
+          },
+          create: {
+            id: r.id,
+            socialAccountId: r.sa_id,
+            platform: r.platform,
+            requestsRemaining: r.requests_remaining ?? -1,
+            windowResetsAt: r.window_resets_at ?? null,
+          },
+          update: {},
+        });
+      }
+    },
+  },
+  {
     id: "99_verify",
     description: "row-count verification report (source vs target)",
     async run({ src, dst, dryRun, log }) {
@@ -310,6 +535,12 @@ const steps: Step[] = [
         ["posts", "composer_post", "post"],
         ["platform_posts", "composer_platform_post", "platformPost"],
         ["api_keys", "api_keys_api_key", "apiKey"],
+        ["inbox_messages", "inbox_message", "inboxMessage"],
+        ["media_assets", "media_library_media_asset", "mediaAsset"],
+        ["tags", "composer_tag", "tag"],
+        ["posting_slots", "calendar_posting_slot", "postingSlot"],
+        ["queues", "calendar_queue", "queue"],
+        ["publish_logs", "publisher_publish_log", "publishLog"],
       ];
 
       let failures = 0;

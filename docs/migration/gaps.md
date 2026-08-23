@@ -8,14 +8,15 @@ Fuente: inventario honesto post-rehearsal. Marcar ✅ al cerrar cada ítem con s
 - [x] 1. OAuth 2.1 server (`/oauth/authorize|token|register` + `.well-known`) — sin esto Claude Desktop/MCP-OAuth se rompe
 - [ ] 2. Jobs pg-boss restantes: analytics sync, refresh tokens <24h, health check cuentas, posts recurrentes, media para publicaciones inminentes, cleanup diario
 - [x] 3. Pipeline de media: variantes por plataforma (sharp) + FFmpeg (límite 2 transcodes concurrentes)
-- [ ] 4. Envío de email (SMTP/Resend): invitaciones, notificaciones, reset
-- [ ] 5. Password reset completo (endpoints + emails)
-- [ ] 6. Backfill de inbox (paridad `backfill_inbox`)
+- [x] 4. Envío de email (SMTP/Resend): invitaciones, notificaciones, reset
+- [x] 5. Password reset completo (endpoints + emails)
+- [x] 6. Backfill de inbox (paridad `backfill_inbox`)
 - [x] 7. Audit log interceptor (tabla existe, nadie escribe)
-- [ ] 8. Rate limit en login/OAuth endpoints
+- [x] 8. Rate limit en login/OAuth endpoints
 
 **ETL**
-- [ ] 9. Steps restantes: inbox_messages(+replies), media_assets, tags, ideas, notification_preferences, portal_access_tokens, **oauth_server apps/grants/tokens**, audit_log, publish_logs, metric_snapshots, rate_limit_states, queue_entries/slots, workspace settings/branding, credentials platform-level
+- [x] 9. Steps core implementados (11 steps): users, orgs/ws/members, social_accounts, composer(posts/categories/platform_posts), api_keys, inbox, media_assets, tags, calendar(slots/queues/entries), publish_logs+rate_limit_states — verificación 14 tablas ✓
+- [ ] 9b. Steps avanzados: ideas, notification prefs/deliveries, portal tokens, oauth2 grants/apps/tokens, audit_log, workspace settings
 
 ## 🟡 UX visible
 

@@ -14,7 +14,12 @@ import type { FastifyReply } from "fastify";
 import { z } from "zod";
 
 import { PrismaService } from "../../prisma/prisma.service";
-import { loginInputSchema, signupInputSchema } from "@brightbean/shared";
+import {
+  emailSchema,
+  loginInputSchema,
+  passwordSchema,
+  signupInputSchema,
+} from "@brightbean/shared";
 import { AuthService } from "./auth.service";
 import {
   ACCESS_TOKEN_TTL_SECONDS,
@@ -110,6 +115,41 @@ export class AuthController {
       reply.redirect(failUrl, 302);
       return { url: failUrl };
     }
+  }
+
+  /// Always-200 forgot flow (legacy parity — no user enumeration).
+  @Post("forgot-password")
+  @HttpCode(200)
+  forgotPassword(@Body() body: unknown) {
+    const input = z.object({ email: emailSchema }).parse(body);
+    void this.auth.requestPasswordReset(input.email);
+    return { ok: true };
+  }
+
+  @Post("reset-password")
+  @HttpCode(200)
+  resetPassword(@Body() body: unknown) {
+    const input = z
+      .object({
+        token: z.string().min(10),
+        password: z.string().min(8).max(128),
+      })
+      .parse(body);
+    return this.auth.resetPassword(input.token, input.password);
+  }
+
+  @Post("change-password")
+  @HttpCode(200)
+  @UseGuards(JwtAuthGuard)
+  changePassword(
+    @CurrentUser() claims: AccessTokenClaims,
+    @Body() body: unknown,
+  ) {
+    const input = z
+      .object({ currentPassword: passwordSchema, newPassword: passwordSchema })
+      .parse(body);
+    void claims;
+    return this.auth.changePassword(claims.sub, input.currentPassword, input.newPassword);
   }
 
   @Post("refresh")

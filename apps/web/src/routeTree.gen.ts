@@ -16,6 +16,7 @@ import { Route as AppWorkspacesRouteImport } from './routes/_app.workspaces'
 import { Route as AccountsLoginRouteImport } from './routes/accounts.login'
 import { Route as AccountsSignupRouteImport } from './routes/accounts.signup'
 import { Route as PortalTokenRouteImport } from './routes/portal.$token'
+import { Route as AccountsPasswordForgotRouteImport } from './routes/accounts.password.forgot'
 import { Route as AppOrganizationsOrgIdApiKeysRouteImport } from './routes/_app.organizations.$orgId.api-keys'
 import { Route as AppOrganizationsOrgIdWorkspacesRouteImport } from './routes/_app.organizations.$orgId.workspaces'
 import { Route as AppWorkspaceWorkspaceIdAnalyticsRouteImport } from './routes/_app.workspace.$workspaceId.analytics'
@@ -25,6 +26,7 @@ import { Route as AppWorkspaceWorkspaceIdComposerRouteImport } from './routes/_a
 import { Route as AppWorkspaceWorkspaceIdInboxRouteImport } from './routes/_app.workspace.$workspaceId.inbox'
 import { Route as AppWorkspaceWorkspaceIdMediaRouteImport } from './routes/_app.workspace.$workspaceId.media'
 import { Route as AppWorkspaceWorkspaceIdSocialAccountsRouteImport } from './routes/_app.workspace.$workspaceId.social-accounts'
+import { Route as AccountsPasswordResetConfirmRouteImport } from './routes/accounts.password.reset.confirm'
 import { Route as AppWorkspaceWorkspaceIdSettingsClientsRouteImport } from './routes/_app.workspace.$workspaceId.settings.clients'
 
 const IndexRoute = IndexRouteImport.update({
@@ -59,6 +61,11 @@ const AccountsSignupRoute = AccountsSignupRouteImport.update({
 const PortalTokenRoute = PortalTokenRouteImport.update({
   id: '/portal/$token',
   path: '/portal/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccountsPasswordForgotRoute = AccountsPasswordForgotRouteImport.update({
+  id: '/accounts/password/forgot',
+  path: '/accounts/password/forgot',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppOrganizationsOrgIdApiKeysRoute =
@@ -115,6 +122,12 @@ const AppWorkspaceWorkspaceIdSocialAccountsRoute =
     path: '/workspace/$workspaceId/social-accounts',
     getParentRoute: () => AppRoute,
   } as any)
+const AccountsPasswordResetConfirmRoute =
+  AccountsPasswordResetConfirmRouteImport.update({
+    id: '/accounts/password/reset/confirm',
+    path: '/accounts/password/reset/confirm',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AppWorkspaceWorkspaceIdSettingsClientsRoute =
   AppWorkspaceWorkspaceIdSettingsClientsRouteImport.update({
     id: '/workspace/$workspaceId/settings/clients',
@@ -129,6 +142,7 @@ export interface FileRoutesByFullPath {
   '/accounts/login': typeof AccountsLoginRoute
   '/accounts/signup': typeof AccountsSignupRoute
   '/portal/$token': typeof PortalTokenRoute
+  '/accounts/password/forgot': typeof AccountsPasswordForgotRoute
   '/organizations/$orgId/api-keys': typeof AppOrganizationsOrgIdApiKeysRoute
   '/organizations/$orgId/workspaces': typeof AppOrganizationsOrgIdWorkspacesRoute
   '/workspace/$workspaceId/analytics': typeof AppWorkspaceWorkspaceIdAnalyticsRoute
@@ -138,6 +152,7 @@ export interface FileRoutesByFullPath {
   '/workspace/$workspaceId/inbox': typeof AppWorkspaceWorkspaceIdInboxRoute
   '/workspace/$workspaceId/media': typeof AppWorkspaceWorkspaceIdMediaRoute
   '/workspace/$workspaceId/social-accounts': typeof AppWorkspaceWorkspaceIdSocialAccountsRoute
+  '/accounts/password/reset/confirm': typeof AccountsPasswordResetConfirmRoute
   '/workspace/$workspaceId/settings/clients': typeof AppWorkspaceWorkspaceIdSettingsClientsRoute
 }
 export interface FileRoutesByTo {
@@ -147,6 +162,7 @@ export interface FileRoutesByTo {
   '/accounts/login': typeof AccountsLoginRoute
   '/accounts/signup': typeof AccountsSignupRoute
   '/portal/$token': typeof PortalTokenRoute
+  '/accounts/password/forgot': typeof AccountsPasswordForgotRoute
   '/organizations/$orgId/api-keys': typeof AppOrganizationsOrgIdApiKeysRoute
   '/organizations/$orgId/workspaces': typeof AppOrganizationsOrgIdWorkspacesRoute
   '/workspace/$workspaceId/analytics': typeof AppWorkspaceWorkspaceIdAnalyticsRoute
@@ -156,6 +172,7 @@ export interface FileRoutesByTo {
   '/workspace/$workspaceId/inbox': typeof AppWorkspaceWorkspaceIdInboxRoute
   '/workspace/$workspaceId/media': typeof AppWorkspaceWorkspaceIdMediaRoute
   '/workspace/$workspaceId/social-accounts': typeof AppWorkspaceWorkspaceIdSocialAccountsRoute
+  '/accounts/password/reset/confirm': typeof AccountsPasswordResetConfirmRoute
   '/workspace/$workspaceId/settings/clients': typeof AppWorkspaceWorkspaceIdSettingsClientsRoute
 }
 export interface FileRoutesById {
@@ -167,6 +184,7 @@ export interface FileRoutesById {
   '/accounts/login': typeof AccountsLoginRoute
   '/accounts/signup': typeof AccountsSignupRoute
   '/portal/$token': typeof PortalTokenRoute
+  '/accounts/password/forgot': typeof AccountsPasswordForgotRoute
   '/_app/organizations/$orgId/api-keys': typeof AppOrganizationsOrgIdApiKeysRoute
   '/_app/organizations/$orgId/workspaces': typeof AppOrganizationsOrgIdWorkspacesRoute
   '/_app/workspace/$workspaceId/analytics': typeof AppWorkspaceWorkspaceIdAnalyticsRoute
@@ -176,6 +194,7 @@ export interface FileRoutesById {
   '/_app/workspace/$workspaceId/inbox': typeof AppWorkspaceWorkspaceIdInboxRoute
   '/_app/workspace/$workspaceId/media': typeof AppWorkspaceWorkspaceIdMediaRoute
   '/_app/workspace/$workspaceId/social-accounts': typeof AppWorkspaceWorkspaceIdSocialAccountsRoute
+  '/accounts/password/reset/confirm': typeof AccountsPasswordResetConfirmRoute
   '/_app/workspace/$workspaceId/settings/clients': typeof AppWorkspaceWorkspaceIdSettingsClientsRoute
 }
 export interface FileRouteTypes {
@@ -187,6 +206,7 @@ export interface FileRouteTypes {
     | '/accounts/login'
     | '/accounts/signup'
     | '/portal/$token'
+    | '/accounts/password/forgot'
     | '/organizations/$orgId/api-keys'
     | '/organizations/$orgId/workspaces'
     | '/workspace/$workspaceId/analytics'
@@ -196,6 +216,7 @@ export interface FileRouteTypes {
     | '/workspace/$workspaceId/inbox'
     | '/workspace/$workspaceId/media'
     | '/workspace/$workspaceId/social-accounts'
+    | '/accounts/password/reset/confirm'
     | '/workspace/$workspaceId/settings/clients'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -205,6 +226,7 @@ export interface FileRouteTypes {
     | '/accounts/login'
     | '/accounts/signup'
     | '/portal/$token'
+    | '/accounts/password/forgot'
     | '/organizations/$orgId/api-keys'
     | '/organizations/$orgId/workspaces'
     | '/workspace/$workspaceId/analytics'
@@ -214,6 +236,7 @@ export interface FileRouteTypes {
     | '/workspace/$workspaceId/inbox'
     | '/workspace/$workspaceId/media'
     | '/workspace/$workspaceId/social-accounts'
+    | '/accounts/password/reset/confirm'
     | '/workspace/$workspaceId/settings/clients'
   id:
     | '__root__'
@@ -224,6 +247,7 @@ export interface FileRouteTypes {
     | '/accounts/login'
     | '/accounts/signup'
     | '/portal/$token'
+    | '/accounts/password/forgot'
     | '/_app/organizations/$orgId/api-keys'
     | '/_app/organizations/$orgId/workspaces'
     | '/_app/workspace/$workspaceId/analytics'
@@ -233,6 +257,7 @@ export interface FileRouteTypes {
     | '/_app/workspace/$workspaceId/inbox'
     | '/_app/workspace/$workspaceId/media'
     | '/_app/workspace/$workspaceId/social-accounts'
+    | '/accounts/password/reset/confirm'
     | '/_app/workspace/$workspaceId/settings/clients'
   fileRoutesById: FileRoutesById
 }
@@ -242,6 +267,8 @@ export interface RootRouteChildren {
   AccountsLoginRoute: typeof AccountsLoginRoute
   AccountsSignupRoute: typeof AccountsSignupRoute
   PortalTokenRoute: typeof PortalTokenRoute
+  AccountsPasswordForgotRoute: typeof AccountsPasswordForgotRoute
+  AccountsPasswordResetConfirmRoute: typeof AccountsPasswordResetConfirmRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -293,6 +320,13 @@ declare module '@tanstack/react-router' {
       path: '/portal/$token'
       fullPath: '/portal/$token'
       preLoaderRoute: typeof PortalTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/accounts/password/forgot': {
+      id: '/accounts/password/forgot'
+      path: '/accounts/password/forgot'
+      fullPath: '/accounts/password/forgot'
+      preLoaderRoute: typeof AccountsPasswordForgotRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_app/organizations/$orgId/api-keys': {
@@ -358,6 +392,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppWorkspaceWorkspaceIdSocialAccountsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/accounts/password/reset/confirm': {
+      id: '/accounts/password/reset/confirm'
+      path: '/accounts/password/reset/confirm'
+      fullPath: '/accounts/password/reset/confirm'
+      preLoaderRoute: typeof AccountsPasswordResetConfirmRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_app/workspace/$workspaceId/settings/clients': {
       id: '/_app/workspace/$workspaceId/settings/clients'
       path: '/workspace/$workspaceId/settings/clients'
@@ -408,6 +449,8 @@ const rootRouteChildren: RootRouteChildren = {
   AccountsLoginRoute: AccountsLoginRoute,
   AccountsSignupRoute: AccountsSignupRoute,
   PortalTokenRoute: PortalTokenRoute,
+  AccountsPasswordForgotRoute: AccountsPasswordForgotRoute,
+  AccountsPasswordResetConfirmRoute: AccountsPasswordResetConfirmRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -28,9 +28,17 @@ function makeDeps() {
     orgMembership: {
       findFirst: vi.fn().mockResolvedValue({ organizationId: "org-1" }),
     },
+    apiKeyRateLimit: {
+      findUnique: vi.fn().mockResolvedValue(null),
+      upsert: vi.fn().mockImplementation(({ where }: { where: { scopeKey_windowStart: { scopeKey: string; windowStart: Date } } }) => ({
+        scopeKey: where.scopeKey_windowStart.scopeKey,
+        windowStart: where.scopeKey_windowStart.windowStart,
+        count: 1,
+      })),
+    },
   };
   const jwt = { sign: vi.fn().mockReturnValue("access-token") };
-  return { prisma, jwt: jwt as unknown as JwtService, service: new AuthService(prisma as never, jwt as unknown as JwtService) };
+  return { prisma, jwt: jwt as unknown as JwtService, service: new AuthService(prisma as never, jwt as unknown as JwtService, { sendPasswordReset: vi.fn(), sendInvitation: vi.fn(), send: vi.fn(), configured: false } as never) };
 }
 
 describe("AuthService", () => {
