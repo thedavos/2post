@@ -7,7 +7,7 @@ Fuente: inventario honesto post-rehearsal. Marcar ✅ al cerrar cada ítem con s
 **Backend**
 - [x] 1. OAuth 2.1 server (`/oauth/authorize|token|register` + `.well-known`) — sin esto Claude Desktop/MCP-OAuth se rompe
 - [ ] 2. Jobs pg-boss restantes: analytics sync, refresh tokens <24h, health check cuentas, posts recurrentes, media para publicaciones inminentes, cleanup diario
-- [ ] 3. Pipeline de media: variantes por plataforma (sharp) + FFmpeg (límite 2 transcodes concurrentes)
+- [x] 3. Pipeline de media: variantes por plataforma (sharp) + FFmpeg (límite 2 transcodes concurrentes)
 - [ ] 4. Envío de email (SMTP/Resend): invitaciones, notificaciones, reset
 - [ ] 5. Password reset completo (endpoints + emails)
 - [ ] 6. Backfill de inbox (paridad `backfill_inbox`)

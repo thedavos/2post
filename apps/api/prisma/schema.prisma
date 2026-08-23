@@ -603,6 +603,7 @@ model MediaAsset {
   organization Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   workspace    Workspace?    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   folder       MediaFolder?  @relation(fields: [folderId], references: [id], onDelete: SetNull)
+  variants     MediaVariant[]
 
   @@index([workspaceId])
   @@map("media_assets")
@@ -801,4 +802,23 @@ model OAuthRefreshToken {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("oauth_refresh_tokens")
+}
+
+/// Platform-optimized derivative of an asset (parity legacy MediaAssetVersion).
+model MediaVariant {
+  id         String @id @default(uuid()) @db.Uuid
+  assetId    String @map("asset_id") @db.Uuid
+  /// Variant name: "square" | "portrait" | "story" | "landscape" | "thumb" | "video_mp4"
+  name       String
+  storageKey String @map("storage_key")
+  mimeType   String @map("mime_type")
+  width      Int?
+  height     Int?
+  fileSizeBytes Int @default(0) @map("file_size_bytes")
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  asset MediaAsset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  @@unique([assetId, name])
+  @@map("media_variants")
 }

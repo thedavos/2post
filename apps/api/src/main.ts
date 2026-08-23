@@ -3,6 +3,7 @@ import "reflect-metadata";
 import { type NestFastifyApplication, FastifyAdapter } from "@nestjs/platform-fastify";
 import { NestFactory } from "@nestjs/core";
 import cookie from "@fastify/cookie";
+import multipart from "@fastify/multipart";
 
 import { AppModule } from "./app.module";
 
@@ -20,6 +21,7 @@ async function bootstrap() {
   );
 
   await app.register(cookie);
+  await app.register(multipart, { limits: { fileSize: 512 * 1024 * 1024 } });
 
   // Webhook signature verification needs the EXACT raw bytes — stash them on
   // the request for /webhooks/* URLs before Fastify parses JSON.
