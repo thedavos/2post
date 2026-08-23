@@ -4,7 +4,9 @@ Guidance for AI coding agents working in this repository.
 
 ## Repository state: mid-migration
 
-This repo is migrating from **Django 5 + HTMX/Alpine + Tailwind** to **TanStack Start + React / NestJS + Fastify / StyleX**. Read `docs/migration/00-overview.md` first. The Django app is the **live product** — never break it. New-stack code lives under `apps/web`, `apps/api`, `apps/worker`, `packages/shared`.
+This repo is migrating from **Django 5 + HTMX/Alpine + Tailwind** to **TanStack Start + React / NestJS + Fastify / StyleX**. Read `docs/migration/00-overview.md` first.
+
+**Legacy Django code has been moved to `legacy/`** — it is frozen and kept as reference for the ETL and rollback window only. Do not modify it. All active code lives in the pnpm workspaces: `apps/web`, `apps/api`, `apps/worker`, `packages/shared`.
 
 - Work on the current product's features → edit the Django code (`apps/`, `providers/`, `templates/`).
 - Work on the migration → edit the new workspaces and follow the docs in `docs/migration/`.
