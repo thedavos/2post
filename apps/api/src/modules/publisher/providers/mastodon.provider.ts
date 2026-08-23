@@ -186,6 +186,42 @@ export class MastodonProvider implements SocialProvider {
     };
   }
 
+  async getMessages(accessToken: string) {
+    const search = new URLSearchParams({ "types[]": "mention,favourite,reblog" });
+    const data = await getJson(`${this.instanceUrl}/api/v1/notifications?${search.toString()}`, accessToken);
+
+    const results: Array<{
+      platformMessageId: string; senderPlatformId: string; senderName: string;
+      body: string; receivedAt: Date;
+    }> = [];
+    for (const notif of ((data as unknown as Array<Record<string, unknown>>) ?? [])) {
+      const status = notif["status"] as Record<string, unknown> | undefined;
+      let text = String(status?.["content"] ?? "");
+      text = text.replace(/<[^>]+>/g, ""); // strip HTML
+      results.push({
+        platformMessageId: String(notif["id"]),
+        senderPlatformId: String((notif["account"] as Record<string,unknown>)?.["id"] ?? ""),
+        senderName: String((notif["account"] as Record<string,unknown>)?.["display_name"] ?? ""),
+        body: text,
+        receivedAt: new Date(String(notif["created_at"])),
+      });
+    }
+    return results;
+  }
+
+  async replyToMessage(accessToken: string, messageId: string, text: string) {
+    const notif = await getJson(`${this.instanceUrl}/api/v1/notifications/${messageId}`, accessToken);
+    const status = notif["status"] as Record<string, unknown> | undefined;
+    const statusId = status?.["id"] ? String(status["id"]) : null;
+    if (!statusId) throw new Error("Cannot reply: notification has no associated status");
+    const result = await postFormAuth(`${this.instanceUrl}/api/v1/statuses`, {
+      status: text,
+      in_reply_to_id: statusId,
+      visibility: "public",
+    }, accessToken);
+    return { platformReplyId: String(result["id"]) };
+  }
+
   getAccountMetrics(): never {
     throw new Error("Mastodon does not expose follower-growth account metrics");
   }

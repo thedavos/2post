@@ -311,11 +311,46 @@ export class InstagramProvider implements SocialProvider {
     return { platformCommentId: String(data["id"]) };
   }
 
-  getMessages(): never {
-    throw new Error("Inbox sync lands with the inbox phase");
+  async getMessages(accessToken: string, since?: Date) {
+    const igUserId = "me";
+    const params = new URLSearchParams({
+      fields: "id,participants,messages{id,message,from,created_time}",
+    });
+    if (since) params.set("since", String(Math.floor(since.getTime() / 1000)));
+
+    const convosRes = await graphGet(
+      `${GRAPH_BASE_URL}/${igUserId}/conversations`,
+      accessToken,
+      Object.fromEntries(params),
+    );
+
+    const results: Array<{
+      platformMessageId: string; senderPlatformId: string; senderName: string;
+      body: string; receivedAt: Date; conversationId?: string;
+    }> = [];
+    for (const convo of ((convosRes["data"] as Array<Record<string, unknown>>) ?? [])) {
+      for (const msg of (((convo["messages"] as Record<string, unknown> | undefined)?.["data"] as Array<Record<string, unknown>>) ?? [])) {
+        const from = (msg["from"] ?? {}) as Record<string, unknown>;
+        results.push({
+          platformMessageId: String(msg["id"]),
+          senderPlatformId: String(from["id"] ?? ""),
+          senderName: String(from["name"] ?? from["username"] ?? ""),
+          body: String(msg["message"] ?? ""),
+          receivedAt: new Date(String(msg["created_time"])),
+          conversationId: String(convo["id"]),
+        });
+      }
+    }
+    return results;
   }
-  replyToMessage(): never {
-    throw new Error("Inbox sync lands with the inbox phase");
+
+  async replyToMessage(accessToken: string, conversationId: string, text: string) {
+    const data = await graphPost(
+      `${GRAPH_BASE_URL}/${conversationId}/messages`,
+      accessToken,
+      { message: text },
+    );
+    return { platformReplyId: String(data["id"]) };
   }
 
   // ------------------------------------------------------------------

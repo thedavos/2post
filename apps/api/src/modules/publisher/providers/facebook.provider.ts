@@ -347,11 +347,52 @@ export class FacebookProvider implements SocialProvider {
     return { platformCommentId: String(data["id"]) };
   }
 
-  getMessages(): never {
-    throw new Error("Inbox sync lands with the inbox phase");
+  async getMessages(accessToken: string, since?: Date) {
+    const pageId = "me"; // resolved from token scope
+    const params = new URLSearchParams({ fields: "id,message,from,created_time" });
+    if (since) params.set("since", String(Math.floor(since.getTime() / 1000)));
+
+    const results: Array<{
+      platformMessageId: string;
+      senderPlatformId: string;
+      senderName: string;
+      body: string;
+      receivedAt: Date;
+      conversationId?: string;
+    }> = [];
+
+    const convosRes = await graphGet(
+      `${GRAPH_BASE_URL}/${pageId}/conversations`,
+      accessToken,
+      Object.fromEntries(since ? [["since", String(Math.floor(since.getTime() / 1000))]] : []),
+    );
+    for (const convo of ((convosRes["data"] as Array<Record<string, unknown>>) ?? [])) {
+      const convoId = String(convo["id"]);
+      const msgsRes = await graphGet(`${GRAPH_BASE_URL}/${convoId}/messages`, accessToken, {
+        fields: "id,message,from,created_time",
+      });
+      for (const msg of ((msgsRes["data"] as Array<Record<string, unknown>>) ?? [])) {
+        const from = (msg["from"] ?? {}) as Record<string, unknown>;
+        results.push({
+          platformMessageId: String(msg["id"]),
+          senderPlatformId: String(from["id"] ?? ""),
+          senderName: String(from["name"] ?? ""),
+          body: String(msg["message"] ?? ""),
+          receivedAt: new Date(String(msg["created_time"])),
+          conversationId: convoId,
+        });
+      }
+    }
+    return results;
   }
-  replyToMessage(): never {
-    throw new Error("Inbox sync lands with the inbox phase");
+
+  async replyToMessage(accessToken: string, conversationId: string, text: string) {
+    const data = await graphPost(
+      `${GRAPH_BASE_URL}/${conversationId}/messages`,
+      accessToken,
+      { message: text },
+    );
+    return { platformReplyId: String(data["id"]) };
   }
 
   // ------------------------------------------------------------------

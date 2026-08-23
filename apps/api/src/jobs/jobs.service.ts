@@ -11,6 +11,8 @@ import { PrismaService } from "../prisma/prisma.service";
 import { PublisherEngine } from "../modules/publisher/publisher.engine";
 import { ProviderRegistry } from "../modules/publisher/provider.registry";
 import { cronFromSeconds, JOB_SCHEDULES, type JobName } from "./jobs.constants";
+import { AnalyticsSyncService } from "./jobs-sync.services";
+import { InboxSyncService } from "./jobs-sync.services";
 
 /**
  * Central pg-boss lifecycle — parity with the django-background-tasks
@@ -28,6 +30,8 @@ export class JobsService implements OnApplicationBootstrap {
     @Inject(CryptoService) private readonly crypto: CryptoService,
     @Inject(PublisherEngine) private readonly publisherEngine: PublisherEngine,
     @Inject(ProviderRegistry) private readonly registry: ProviderRegistry,
+    private readonly inboxSync: InboxSyncService,
+    private readonly analyticsSync: AnalyticsSyncService,
   ) {}
 
   async onApplicationBootstrap() {
