@@ -73,6 +73,14 @@
             {% csrf_token %}
             {{ redirect_field }}
 
+            {% if form.non_field_errors %}
+            <div class="mb-4" data-testid="field-error">
+                {% for error in form.non_field_errors %}
+                <p class="text-xs mb-1" style="color: var(--error-500);">{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+
             {% for field in form %}
             <div class="mb-4">
                 <label for="{{ field.id_for_label }}" class="block text-sm font-semibold mb-1.5" style="color: var(--text-primary);">
@@ -80,7 +88,7 @@
                 </label>
                 {% if field.field.widget.input_type == "password" %}
                 <input type="password"
-                       name="{{ field.html_name }}"
+                       name="{{ field.html_name }}" data-testid="signup-{{ field.html_name }}"
                        id="{{ field.id_for_label }}"
                        {% if field.field.widget.attrs.placeholder %}placeholder="{{ field.field.widget.attrs.placeholder }}"{% endif %}
                        {% if field.field.widget.attrs.autocomplete %}autocomplete="{{ field.field.widget.attrs.autocomplete }}"{% endif %}
@@ -88,7 +96,7 @@
                        class="form-input-styled {% if field.errors %}is-error{% endif %}">
                 {% else %}
                 <input type="{{ field.field.widget.input_type }}"
-                       name="{{ field.html_name }}"
+                       name="{{ field.html_name }}" data-testid="signup-{{ field.html_name }}"
                        id="{{ field.id_for_label }}"
                        value="{{ field.value|default:'' }}"
                        {% if field.field.widget.attrs.placeholder %}placeholder="{{ field.field.widget.attrs.placeholder }}"{% endif %}
@@ -98,7 +106,7 @@
                        class="form-input-styled {% if field.errors %}is-error{% endif %}">
                 {% endif %}
                 {% if field.errors %}
-                <p class="mt-1 text-xs" style="color: var(--error-500);">{{ field.errors.0 }}</p>
+                <p class="mt-1 text-xs" style="color: var(--error-500);" data-testid="field-error">{{ field.errors.0 }}</p>
                 {% endif %}
                 {% if field.help_text %}
                 <div class="mt-1 text-xs" style="color: var(--text-ghost);">{{ field.help_text }}</div>
@@ -107,7 +115,7 @@
             {% endfor %}
 
             <div class="mt-6">
-                <button type="submit" class="btn-brand">
+                <button type="submit" class="btn-brand" data-testid="signup-submit">
                     Create Account
                 </button>
             </div>
