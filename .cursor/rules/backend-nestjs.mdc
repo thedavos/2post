@@ -1,0 +1,16 @@
+---
+description: Backend rules for NestJS + Fastify + Prisma + pg-boss
+globs: apps/api/**,apps/worker/**,packages/shared/**
+alwaysApply: false
+---
+
+- All business logic lives in `apps/api`; the frontend never touches Prisma.
+- One NestJS module per domain, mirroring the Django app map in `docs/migration/03-backend-nestjs.md` §2.
+- Validation via zod schemas from `packages/shared` (nestjs-zod global pipe). No hand-written DTO types that duplicate a shared schema.
+- Every tenant-scoped Prisma query must pass through the tenant client extension/guard — an unscoped query is a security bug.
+- Permission checks use `@RequirePermission('<permission>')` with permission strings identical to the legacy ones (`create_posts`, `publish_directly`, `upload_media`, `view_analytics`, …).
+- Social providers: one class per platform implementing `SocialProvider` from `packages/shared/src/provider-types.ts`; port HTTP request shapes exactly from `providers/*.py` including bugfix quirks from git history.
+- pg-boss jobs: idempotent processors under `modules/<domain>/jobs/`, intervals per docs §4; never schedule with in-memory timers.
+- Webhook routes need raw-body access for HMAC signature verification; verify with constant-time compare before parsing.
+- Rate-limit responses must include `Retry-After`, `X-RateLimit-Limit`, `X-RateLimit-Remaining` exactly as today.
+- Tests required per endpoint: unit + supertest e2e incl. auth-negative case.

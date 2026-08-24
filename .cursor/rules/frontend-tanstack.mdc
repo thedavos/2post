@@ -1,0 +1,14 @@
+---
+description: Frontend rules for TanStack Start + React
+globs: apps/web/**
+alwaysApply: false
+---
+
+- File-based routes mirror the current URL structure (see `docs/migration/04-frontend-tanstack.md` §2). Keep paths identical to the Django URLs they replace.
+- Server state exclusively via TanStack Query; query keys defined in `packages/shared/src/query-keys.ts`.
+- Optimistic updates must implement rollback on mutation error.
+- Forms: react-hook-form + zod resolvers derived from `packages/shared` schemas.
+- All API calls go through `src/lib/api.ts` with `credentials: 'include'`; no other fetch wrappers.
+- Business logic belongs in the API — components only render state and call mutations.
+- Port HTMX patterns as documented: partial swaps → mutations + invalidation; infinite scroll → `useInfiniteQuery`; drag-and-drop → `@dnd-kit` with optimistic move; notification badge → 30 s refetch interval.
+- Visual parity with the current product is a requirement, not a nice-to-have.

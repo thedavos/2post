@@ -1,0 +1,839 @@
+// Phase 0 baseline: identity + tenancy core.
+// Domain models (composer, calendar, inbox, analytics, …) are added
+// module-by-module in later phases — see docs/migration/02-database.md.
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(uuid()) @db.Uuid
+  email         String    @unique
+  passwordHash  String?
+  displayName   String?
+  isActive      Boolean   @default(true)
+  isSuperuser   Boolean   @default(false)
+  /// Terms-of-service acceptance (parity with legacy accounts.User).
+  tosAcceptedAt DateTime? @db.Timestamptz(6)
+  lastLoginAt   DateTime? @db.Timestamptz(6)
+  createdAt     DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt     DateTime  @default(now()) @updatedAt @db.Timestamptz(6)
+
+  sessions            Session[]
+  orgMemberships      OrgMembership[]
+  workspaceMemberships WorkspaceMembership[]
+  auditActions        AuditLog[]
+  notifications       Notification[]
+  notificationPreferences NotificationPreference[]
+  oauthAccessTokens OAuthAccessToken[]
+  oauthRefreshTokens OAuthRefreshToken[]
+  passwordResetTokens PasswordResetToken[]
+
+  @@map("users")
+}
+
+/// Server-side session backing the refresh token cookie (30-day sliding).
+model Session {
+  id               String   @id @default(uuid()) @db.Uuid
+  userId           String   @db.Uuid
+  refreshTokenHash String   @unique
+  userAgent        String?
+  ip               String?
+  expiresAt        DateTime @db.Timestamptz(6)
+  lastUsedAt       DateTime @default(now()) @db.Timestamptz(6)
+  revokedAt        DateTime? @db.Timestamptz(6)
+  createdAt        DateTime @default(now()) @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model Organization {
+  id                  String    @id @default(uuid()) @db.Uuid
+  name                String
+  slug                String    @unique
+  settings            Json      @default("{}")
+  /// Soft-delete grace period (14 days reversible), parity with legacy.
+  deletionScheduledAt DateTime? @db.Timestamptz(6)
+  createdAt           DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt           DateTime  @default(now()) @updatedAt @db.Timestamptz(6)
+
+  workspaces  Workspace[]
+  orgMemberships OrgMembership[]
+  invitations Invitation[]
+  auditLogs  AuditLog[]
+  mediaAssets MediaAsset[]
+
+  @@map("organizations")
+}
+
+model Workspace {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @db.Uuid
+  name           String
+  slug           String
+  branding       Json     @default("{}")
+  defaults       Json     @default("{}")
+  createdAt      DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt      DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  memberships WorkspaceMembership[]
+  socialAccounts SocialAccount[]
+  posts Post[]
+  contentCategories ContentCategory[]
+  tags Tag[]
+  ideaGroups IdeaGroup[]
+  ideas Idea[]
+  queues Queue[]
+  mediaFolders MediaFolder[]
+  mediaAssets MediaAsset[]
+  inboxMessages InboxMessage[]
+  portalTokens PortalAccess[]
+  apiKeys ApiKey[]
+
+  @@unique([organizationId, slug])
+  @@index([organizationId])
+  @@map("workspaces")
+}
+
+enum OrgRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+/// Parity with legacy members.OrgMembership.
+model OrgMembership {
+  id             String  @id @default(uuid()) @db.Uuid
+  userId         String  @db.Uuid
+  organizationId String  @db.Uuid
+  orgRole        OrgRole @default(MEMBER)
+  createdAt      DateTime @default(now()) @db.Timestamptz(6)
+
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, organizationId])
+  @@index([organizationId])
+  @@map("org_memberships")
+}
+
+enum WorkspaceRole {
+  OWNER
+  MANAGER
+  EDITOR
+  CONTRIBUTOR
+  CLIENT
+  VIEWER
+}
+
+/// Parity with legacy members.WorkspaceMembership. Custom roles extend
+/// this via a permissions override column in a later phase if needed.
+model WorkspaceMembership {
+  id            String        @id @default(uuid()) @db.Uuid
+  userId        String        @db.Uuid
+  workspaceId   String        @db.Uuid
+  workspaceRole WorkspaceRole @default(VIEWER)
+  createdAt     DateTime      @default(now()) @db.Timestamptz(6)
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, workspaceId])
+  @@index([workspaceId])
+  @@map("workspace_memberships")
+}
+
+model Invitation {
+  id             String    @id @default(uuid()) @db.Uuid
+  organizationId String    @db.Uuid
+  email          String
+  orgRole        OrgRole   @default(MEMBER)
+  /// JSON: { [workspaceId]: WorkspaceRole } — parity with legacy invite form.
+  workspaceRoles Json      @default("{}")
+  tokenHash      String    @unique
+  invitedById    String?   @db.Uuid
+  expiresAt      DateTime  @db.Timestamptz(6)
+  acceptedAt     DateTime? @db.Timestamptz(6)
+  createdAt      DateTime  @default(now()) @db.Timestamptz(6)
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@map("invitations")
+}
+
+/// Append-only audit log for destructive actions (1-year retention).
+model AuditLog {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String?  @db.Uuid
+  actorUserId    String?  @db.Uuid
+  action         String
+  targetType     String?
+  targetId       String?  @db.Uuid
+  metadata       Json     @default("{}")
+  createdAt      DateTime @default(now()) @db.Timestamptz(6)
+
+  organization Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  actor        User?         @relation(fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, createdAt])
+  @@map("audit_log")
+}
+
+// ---------------------------------------------------------------------------
+// Phase 2a: social accounts (minimal), composer, calendar, publisher
+// ---------------------------------------------------------------------------
+
+enum ConnectionStatus {
+  CONNECTED
+  TOKEN_EXPIRING
+  DISCONNECTED
+  ERROR
+}
+
+/// Parity with legacy social_accounts.SocialAccount. Token fields store the
+/// same base64 AES-256-GCM ciphertext written by the Django EncryptedTextField.
+model SocialAccount {
+  id              String   @id @default(uuid()) @db.Uuid
+  workspaceId     String   @db.Uuid
+  platform        String
+  /// Native account ID on the platform (dedup/webhook matching key).
+  accountPlatformId String @map("account_platform_id")
+  accountName     String   @map("account_name")
+  accountHandle   String   @default("") @map("account_handle")
+  avatarUrl       String   @default("") @map("avatar_url")
+  followerCount   Int      @default(0) @map("follower_count")
+
+  oauthAccessToken  String? @map("oauth_access_token")
+  oauthRefreshToken String? @map("oauth_refresh_token")
+  tokenExpiresAt    DateTime? @map("token_expires_at") @db.Timestamptz(6)
+  instanceUrl       String  @default("") @map("instance_url")
+
+  connectionStatus  ConnectionStatus @default(CONNECTED) @map("connection_status")
+  lastHealthCheckAt DateTime? @map("last_health_check_at") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  platformPosts PlatformPost[]
+  postingSlots PostingSlot[]
+  rateLimitStates RateLimitState[]
+  inboxMessages InboxMessage[]
+  metricSnapshots AccountMetricSnapshot[]
+
+  @@unique([workspaceId, platform, accountPlatformId])
+  @@index([platform])
+  @@map("social_accounts")
+}
+
+model ContentCategory {
+  id          String @id @default(uuid()) @db.Uuid
+  workspaceId String @db.Uuid
+  name        String
+  color       String
+  position    Int    @default(0)
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  posts     Post[]
+
+  @@unique([workspaceId, name])
+  @@map("content_categories")
+}
+
+model Tag {
+  id          String @id @default(uuid()) @db.Uuid
+  workspaceId String @db.Uuid
+  name        String
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, name])
+  @@map("tags")
+}
+
+enum IdeaStatus {
+  NEW
+  IN_PROGRESS
+  READY
+  CONVERTED
+  ARCHIVED
+}
+
+model IdeaGroup {
+  id          String @id @default(uuid()) @db.Uuid
+  workspaceId String @db.Uuid
+  name        String
+  position    Int    @default(0)
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  ideas     Idea[]
+
+  @@map("idea_groups")
+}
+
+model Idea {
+  id          String  @id @default(uuid()) @db.Uuid
+  workspaceId String  @db.Uuid
+  authorId    String? @db.Uuid
+  title       String
+  description String  @default("")
+  tags        Json    @default("[]")
+  status      IdeaStatus @default(NEW)
+  groupId     String? @db.Uuid
+  position    Int     @default(0)
+  /// Set when the idea is converted into a Post.
+  postId      String? @unique @db.Uuid
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  workspace Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  group     IdeaGroup? @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  post      Post?      @relation(fields: [postId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId, status])
+  @@map("ideas")
+}
+
+/// Aggregate post: shared content; per-platform state lives on PlatformPost.
+model Post {
+  id               String   @id @default(uuid()) @db.Uuid
+  workspaceId      String   @db.Uuid
+  authorId         String?  @db.Uuid
+  title            String   @default("")
+  caption          String   @default("")
+  firstComment     String   @default("") @map("first_comment")
+  internalNotes    String   @default("") @map("internal_notes")
+  tags             Json     @default("[]")
+  categoryId       String?  @db.Uuid
+
+  scheduledAt      DateTime? @map("scheduled_at") @db.Timestamptz(6)
+  publishedAt      DateTime? @map("published_at") @db.Timestamptz(6)
+  proposedPublishAt DateTime? @map("proposed_publish_at") @db.Timestamptz(6)
+
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  workspace     Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  category      ContentCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  platformPosts PlatformPost[]
+  queueEntries  QueueEntry[]
+  idea          Idea?
+
+  @@index([workspaceId, scheduledAt])
+  @@index([workspaceId, createdAt])
+  @@map("posts")
+}
+
+enum PlatformPostStatus {
+  DRAFT
+  PENDING_REVIEW
+  PENDING_CLIENT
+  APPROVED
+  CHANGES_REQUESTED
+  REJECTED
+  SCHEDULED
+  PUBLISHING
+  PUBLISHED
+  FAILED
+  ON_HOLD
+}
+
+/// Per-platform variant with its own editorial status and overrides.
+/// Parity with legacy composer.PlatformPost incl. the state machine.
+model PlatformPost {
+  id             String @id @default(uuid()) @db.Uuid
+  postId         String @db.Uuid
+  socialAccountId String @db.Uuid
+
+  platformSpecificTitle       String? @map("platform_specific_title")
+  platformSpecificCaption     String? @map("platform_specific_caption")
+  platformSpecificMedia       Json?   @map("platform_specific_media")
+  platformSpecificFirstComment String? @map("platform_specific_first_comment")
+  platformExtra               Json    @default("{}") @map("platform_extra")
+
+  status         PlatformPostStatus @default(DRAFT)
+  platformPostId String  @default("") @map("platform_post_id")
+  publishError   String  @default("") @map("publish_error")
+  publishedAt    DateTime? @map("published_at") @db.Timestamptz(6)
+  /// Falls back to Post.scheduledAt when NULL.
+  scheduledAt    DateTime? @map("scheduled_at") @db.Timestamptz(6)
+  retryCount     Int     @default(0) @map("retry_count")
+  nextRetryAt    DateTime? @map("next_retry_at") @db.Timestamptz(6)
+
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  post          Post          @relation(fields: [postId], references: [id], onDelete: Cascade)
+  socialAccount SocialAccount @relation(fields: [socialAccountId], references: [id], onDelete: Cascade)
+  publishLogs   PublishLog[]
+  metricSnapshots PostMetricSnapshot[]
+
+  @@unique([postId, socialAccountId])
+  @@index([status, scheduledAt])
+  @@map("platform_posts")
+}
+
+model PublishLog {
+  id             String @id @default(uuid()) @db.Uuid
+  platformPostId String @db.Uuid
+  attemptNumber  Int    @default(1) @map("attempt_number")
+  statusCode     Int?   @map("status_code")
+  responseBody   String @default("") @map("response_body")
+  errorMessage   String @default("") @map("error_message")
+  durationMs     Int    @default(0) @map("duration_ms")
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  platformPost PlatformPost @relation(fields: [platformPostId], references: [id], onDelete: Cascade)
+
+  @@index([platformPostId, createdAt])
+  @@map("publish_logs")
+}
+
+/// Rate-limit tracking from API response headers (-1 = unknown).
+model RateLimitState {
+  id                String @id @default(uuid()) @db.Uuid
+  socialAccountId   String @db.Uuid
+  platform          String
+  requestsRemaining Int    @default(-1) @map("requests_remaining")
+  windowResetsAt    DateTime? @map("window_resets_at") @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  socialAccount SocialAccount @relation(fields: [socialAccountId], references: [id], onDelete: Cascade)
+
+  @@unique([socialAccountId, platform])
+  @@map("rate_limit_states")
+}
+
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+/// Recurring weekly posting slot for an account (workspace timezone).
+model PostingSlot {
+  id              String    @id @default(uuid()) @db.Uuid
+  socialAccountId String    @db.Uuid
+  dayOfWeek       DayOfWeek @map("day_of_week")
+  time            String
+  isActive        Boolean   @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  socialAccount SocialAccount @relation(fields: [socialAccountId], references: [id], onDelete: Cascade)
+
+  @@index([socialAccountId, dayOfWeek])
+  @@map("posting_slots")
+}
+
+model Queue {
+  id          String  @id @default(uuid()) @db.Uuid
+  workspaceId String  @db.Uuid
+  name        String
+  categoryId  String? @db.Uuid
+  accountId   String? @db.Uuid
+  isActive    Boolean @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  entries   QueueEntry[]
+
+  @@map("queues")
+}
+
+/// Posts queued in order; auto-assigned to the next free recurring slot.
+model QueueEntry {
+  id                   String   @id @default(uuid()) @db.Uuid
+  queueId              String   @db.Uuid
+  postId               String   @unique @db.Uuid
+  position             Int      @default(0)
+  assignedSlotDatetime DateTime? @map("assigned_slot_datetime") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  queue Queue @relation(fields: [queueId], references: [id], onDelete: Cascade)
+  post  Post  @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([queueId, position])
+  @@map("queue_entries")
+}
+
+/// Short-lived OAuth connect requests (state nonce + PKCE verifier storage).
+/// Replaces the Django session-based OAUTH_SESSION_KEY storage.
+model OauthConnectRequest {
+  id           String   @id @default(uuid()) @db.Uuid
+  userId       String   @db.Uuid
+  workspaceId  String   @db.Uuid
+  platform     String
+  /// Random nonce, hashed; compared against the signed state parameter.
+  nonceHash    String   @unique @map("nonce_hash")
+  codeVerifier String?  @map("code_verifier")
+  /// Pending multi-page selection payload (facebook/instagram/linkedin_company).
+  pendingPages Json?
+  expiresAt    DateTime @map("expires_at") @db.Timestamptz(6)
+  createdAt    DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([userId])
+  @@map("oauth_connect_requests")
+}
+
+// ---------------------------------------------------------------------------
+// Phase 2c: inbox, media library, notifications, client portal, API keys
+// ---------------------------------------------------------------------------
+
+enum InboxMessageType {
+  COMMENT
+  MENTION
+  DM
+  REVIEW
+}
+
+enum InboxStatus {
+  UNREAD
+  OPEN
+  RESOLVED
+  ARCHIVED
+}
+
+enum InboxSentiment {
+  POSITIVE
+  NEUTRAL
+  NEGATIVE
+}
+
+model InboxMessage {
+  id                String          @id @default(uuid()) @db.Uuid
+  workspaceId       String          @db.Uuid
+  socialAccountId   String          @db.Uuid
+  platformMessageId String          @map("platform_message_id")
+  threadId          String?         @map("thread_id")
+  messageType       InboxMessageType @default(COMMENT) @map("message_type")
+  status            InboxStatus     @default(UNREAD)
+  sentiment         InboxSentiment  @default(NEUTRAL)
+  senderName        String          @default("") @map("sender_name")
+  senderHandle      String          @default("") @map("sender_handle")
+  senderPlatformId  String          @default("") @map("sender_platform_id")
+  body              String          @default("")
+  permalink         String?
+  assignedToId      String?         @db.Uuid
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  socialAccount SocialAccount @relation(fields: [socialAccountId], references: [id], onDelete: Cascade)
+  replies       InboxReply[]
+
+  @@unique([socialAccountId, platformMessageId])
+  @@index([workspaceId, status])
+  @@map("inbox_messages")
+}
+
+model InboxReply {
+  id              String   @id @default(uuid()) @db.Uuid
+  messageId       String   @db.Uuid
+  userId          String?  @db.Uuid
+  body            String
+  platformReplyId String?  @map("platform_reply_id")
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  message InboxMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@index([messageId])
+  @@map("inbox_replies")
+}
+
+enum MediaProcessingStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+model MediaFolder {
+  id          String  @id @default(uuid()) @db.Uuid
+  workspaceId String  @db.Uuid
+  name        String
+  parentId    String? @db.Uuid
+  position    Int     @default(0)
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  workspace Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  parent    MediaFolder?   @relation("folder-tree", fields: [parentId], references: [id], onDelete: SetNull)
+  children  MediaFolder[]  @relation("folder-tree")
+  assets    MediaAsset[]
+
+  @@unique([workspaceId, parentId, name])
+  @@map("media_folders")
+}
+
+model MediaAsset {
+  id                String               @id @default(uuid()) @db.Uuid
+  organizationId    String?              @db.Uuid
+  workspaceId       String?              @db.Uuid
+  folderId          String?              @db.Uuid
+  mediaType         String               @map("media_type")
+  originalFilename  String               @map("original_filename")
+  /// Storage key (S3 key or local relative path) — copied verbatim by the ETL.
+  storageKey        String               @map("storage_key")
+  fileSizeBytes     Int                  @default(0) @map("file_size_bytes")
+  width             Int?
+  height            Int?
+  altText           String               @default("") @map("alt_text")
+  processingStatus  MediaProcessingStatus @default(PENDING) @map("processing_status")
+  uploadedById      String?              @db.Uuid
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  organization Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  workspace    Workspace?    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  folder       MediaFolder?  @relation(fields: [folderId], references: [id], onDelete: SetNull)
+  variants     MediaVariant[]
+
+  @@index([workspaceId])
+  @@map("media_assets")
+}
+
+enum NotificationChannel {
+  IN_APP
+  EMAIL
+  WEBHOOK
+}
+
+model Notification {
+  id          String              @id @default(uuid()) @db.Uuid
+  userId      String              @db.Uuid
+  eventType   String              @map("event_type")
+  channel     NotificationChannel @default(IN_APP)
+  title       String
+  body        String              @default("")
+  payload     Json                @default("{}")
+  readAt      DateTime?           @map("read_at") @db.Timestamptz(6)
+  createdAt   DateTime            @default(now()) @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("notifications")
+}
+
+model NotificationPreference {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  eventType String   @map("event_type")
+  inApp     Boolean  @default(true) @map("in_app")
+  email     Boolean  @default(false)
+  webhook   Boolean  @default(false)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, eventType])
+  @@map("notification_preferences")
+}
+
+/// Client-portal magic links: 32-byte token, SHA-256 stored, 30-day validity.
+model PortalAccess {
+  id          String    @id @default(uuid()) @db.Uuid
+  workspaceId String    @db.Uuid
+  clientEmail String    @map("client_email")
+  tokenHash   String    @unique @map("token_hash")
+  createdById String?   @db.Uuid
+  expiresAt   DateTime  @map("expires_at") @db.Timestamptz(6)
+  revokedAt   DateTime? @map("revoked_at") @db.Timestamptz(6)
+  lastUsedAt  DateTime? @map("last_used_at") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+  @@map("portal_access_tokens")
+}
+
+/// Scoped bearer credential for agents — bb_studio_<random>_<lookup8>.
+/// At rest only lookupPrefix + HMAC-SHA256(random, peppered) are stored.
+model ApiKey {
+  id           String    @id @default(uuid()) @db.Uuid
+  workspaceId  String    @db.Uuid
+  name         String
+  lookupPrefix String    @map("lookup_prefix")
+  tokenHash    String    @map("token_hash")
+  permissions  Json      @default("[]")
+  issuedById   String?   @map("issued_by_id") @db.Uuid
+  lastUsedAt   DateTime? @map("last_used_at") @db.Timestamptz(6)
+  revokedAt    DateTime? @map("revoked_at") @db.Timestamptz(6)
+  expiresAt    DateTime? @map("expires_at") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([lookupPrefix])
+  @@index([workspaceId])
+  @@map("api_keys")
+}
+
+/// Channel-level metric snapshot per account per day (analytics sync writes).
+model AccountMetricSnapshot {
+  id              String   @id @default(uuid()) @db.Uuid
+  socialAccountId String   @db.Uuid
+  capturedFor     DateTime @map("captured_for") @db.Timestamptz(6)
+  followers       Int?
+  followerDelta   Int?     @map("follower_delta")
+  impressions     Int?
+  reach           Int?
+  views           Int?
+  engagements     Int?
+  meta            Json     @default("{}")
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  socialAccount SocialAccount @relation(fields: [socialAccountId], references: [id], onDelete: Cascade)
+
+  @@unique([socialAccountId, capturedFor])
+  @@map("account_metric_snapshots")
+}
+
+model PostMetricSnapshot {
+  id              String   @id @default(uuid()) @db.Uuid
+  platformPostId  String   @db.Uuid
+  capturedFor     DateTime @map("captured_for") @db.Timestamptz(6)
+  impressions     Int?
+  reach           Int?
+  likes           Int?
+  comments        Int?
+  shares          Int?
+  views           Int?
+  watchTimeMs     Int?     @map("watch_time_ms")
+  meta            Json     @default("{}")
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  platformPost PlatformPost @relation(fields: [platformPostId], references: [id], onDelete: Cascade)
+
+  @@unique([platformPostId, capturedFor])
+  @@index([platformPostId, capturedFor])
+  @@map("post_metric_snapshots")
+}
+
+/// Fixed-window rate limit counters for the agent API (no Redis required).
+model ApiKeyRateLimit {
+  id             String   @id @default(uuid()) @db.Uuid
+  scopeKey       String   @map("scope_key") // "key:<id>:write" | "ws:<id>:aggregate"
+  windowStart    DateTime @map("window_start") @db.Timestamptz(6)
+  count          Int      @default(0)
+
+  @@unique([scopeKey, windowStart])
+  @@index([scopeKey, windowStart])
+  @@map("api_key_rate_limits")
+}
+
+// ---------------------------------------------------------------------------
+// OAuth 2.1 authorization server (MCP clients, parity django-oauth-toolkit)
+// Public clients + PKCE S256; tokens stored as SHA-256 hashes.
+// ---------------------------------------------------------------------------
+
+model OAuthApplication {
+  id               String   @id @default(uuid()) @db.Uuid
+  clientId         String   @unique @map("client_id")
+  name             String
+  redirectUris     Json     @map("redirect_uris") // string[]
+  grantTypes       String[] @map("grant_types")
+  isConfidential   Boolean  @default(false) @map("is_confidential")
+  clientSecretHash String?  @map("client_secret_hash")
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  @@map("oauth_applications")
+}
+
+model OAuthAuthCode {
+  id                  String   @id @default(uuid()) @db.Uuid
+  codeHash            String   @unique @map("code_hash")
+  clientId            String   @map("client_id")
+  userId              String   @db.Uuid
+  redirectUri         String   @map("redirect_uri")
+  scope               String   @default("")
+  codeChallenge       String?  @map("code_challenge")
+  codeChallengeMethod String?  @map("code_challenge_method")
+  expiresAt           DateTime @map("expires_at") @db.Timestamptz(6)
+  consumedAt          DateTime? @map("consumed_at") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([userId])
+  @@map("oauth_auth_codes")
+}
+
+model OAuthAccessToken {
+  id        String    @id @default(uuid()) @db.Uuid
+  tokenHash String    @unique @map("token_hash")
+  clientId  String    @map("client_id")
+  userId    String    @db.Uuid
+  scope     String    @default("")
+  expiresAt DateTime  @map("expires_at") @db.Timestamptz(6)
+  revokedAt DateTime? @map("revoked_at") @db.Timestamptz(6)
+  createdAt DateTime  @default(now()) @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("oauth_access_tokens")
+}
+
+model OAuthRefreshToken {
+  tokenHash String    @id @map("token_hash")
+  clientId  String    @map("client_id")
+  userId    String    @db.Uuid
+  scope     String    @default("")
+  expiresAt DateTime  @map("expires_at") @db.Timestamptz(6)
+  revokedAt DateTime? @map("revoked_at") @db.Timestamptz(6)
+  createdAt DateTime  @default(now()) @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("oauth_refresh_tokens")
+}
+
+/// Platform-optimized derivative of an asset (parity legacy MediaAssetVersion).
+model MediaVariant {
+  id         String @id @default(uuid()) @db.Uuid
+  assetId    String @map("asset_id") @db.Uuid
+  /// Variant name: "square" | "portrait" | "story" | "landscape" | "thumb" | "video_mp4"
+  name       String
+  storageKey String @map("storage_key")
+  mimeType   String @map("mime_type")
+  width      Int?
+  height     Int?
+  fileSizeBytes Int @default(0) @map("file_size_bytes")
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  asset MediaAsset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  @@unique([assetId, name])
+  @@map("media_variants")
+}
+
+model PasswordResetToken {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  tokenHash String    @unique @map("token_hash")
+  expiresAt DateTime  @map("expires_at") @db.Timestamptz(6)
+  usedAt    DateTime? @map("used_at") @db.Timestamptz(6)
+  createdAt DateTime  @default(now()) @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("password_reset_tokens")
+}

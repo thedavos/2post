@@ -1,0 +1,14 @@
+---
+description: Legacy Django code conventions while it remains the live product
+globs: apps/**,providers/**,templates/**,config/**
+alwaysApply: false
+---
+
+This code is frozen-in-place during the migration: bug fixes and current-product features are allowed, refactors beyond task scope are not.
+
+- Follow ruff config in `pyproject.toml` (line length 120, isort first-party `apps`/`config`); never lint/format `*/migrations/*`.
+- Tenancy: use the scoped model managers — never bypass org/workspace filtering.
+- Secrets and platform tokens go through `EncryptedTextField` / `apps/common/encryption.py`. Do not alter its crypto format (the new stack must stay byte-compatible with it).
+- New social platforms: one module in `providers/` implementing `SocialProvider`, register in the registry, add to the Platform enum. Nothing else changes.
+- Tests: pytest with settings module `config.settings.test`; port relevant expectations to vitest when the corresponding feature migrates.
+- Before finishing: `ruff check .`, `ruff format --check .`, `mypy apps/ config/ --ignore-missing-imports`, `pytest`.

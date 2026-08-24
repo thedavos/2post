@@ -1,0 +1,51 @@
+name: CI (new stack)
+
+on:
+  push:
+    branches: [main, feat/stack-migration-tanstack-nestjs]
+    paths:
+      - "apps/**"
+      - "packages/**"
+      - "tools/**"
+      - "pnpm-lock.yaml"
+      - ".github/workflows/ci-new-stack.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "apps/**"
+      - "packages/**"
+      - "tools/**"
+      - "pnpm-lock.yaml"
+      - ".github/workflows/ci-new-stack.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-new-stack-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-typecheck-test:
+    name: Lint + Typecheck + Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm lint
+
+      - run: pnpm typecheck
+
+      - run: pnpm test

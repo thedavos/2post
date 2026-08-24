@@ -218,3 +218,20 @@ theme/static/css/dist/
 # Local seed scripts (not for version control)
 /seed_ad_analytics.py
 /seed_ad_calendar.py
+
+# Node / new stack (TanStack Start + NestJS monorepo)
+node_modules/
+.pnpm-store/
+*.tsbuildinfo
+.nitro/
+.output/
+.tanstack/
+.vite/
+playwright-report/
+test-results/
+apps/api/generated/
+
+# ETL local state
+tools/etl/state/
+
+packages/shared/dist-esm/

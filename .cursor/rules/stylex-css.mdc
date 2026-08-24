@@ -1,0 +1,16 @@
+---
+description: StyleX styling rules — the only CSS system allowed in apps/web
+globs: apps/web/**/*.tsx,apps/web/**/*.ts
+alwaysApply: false
+---
+
+- Styling only via `@stylexjs/stylex`: `stylex.create` co-located per component, applied with `stylex.props(...)` (composition is last-wins).
+- camelCase properties. Longhand over multi-value shorthands (`borderWidth/Style/Color`, `paddingBlock/paddingInline`); single-value shorthands are fine.
+- Numbers are px; other units stay strings (`'1.5rem'`, `'50%'`).
+- Conditions live inside property values with a REQUIRED `default` key: `{ default: null, ':hover': '…' }`. Responsive via mobile-first `@media (min-width: …)` keys (sm 640 / md 768 / lg 1024 / xl 1280 / 2xl 1536).
+- No Tailwind classes anywhere in `apps/web`. When converting from Tailwind: resolve each class to computed CSS first, then reshape — never pattern-match class names.
+- Descendant-selector utilities don't exist in StyleX: `space-x-*` → parent `gap`; `divide-*` → child borders; `group-hover`/`peer-*` → lifted state or CSS variables. Flag anything that can't convert 1:1 instead of silently changing the design.
+- Colors, spacing, radii, shadows ONLY through tokens in `src/styles/tokens.stylex.ts` (`stylex.defineVars`). No raw hex values in components.
+- White-label theming via `stylex.createTheme` overrides on a workspace root; no runtime style injection or `<style>` tags.
+- Shared UI primitives (`src/components/ui/`) come first; screens compose primitives instead of restyling hosts.
+- Run the StyleX ESLint plugin + typecheck on every change; fix all reported violations.
